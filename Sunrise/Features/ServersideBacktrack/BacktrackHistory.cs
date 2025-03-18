@@ -101,9 +101,10 @@ public class BacktrackHistory(Player player)
 
                 if (sqrDistance < minSqrDistance)
                 {
-                    best.Timestamp = Mathf.Lerp(newest.Timestamp, oldest.Timestamp, t);
-                    best.Position = lerpedPosition;
+                    best.Position = Vector3.MoveTowards(lerpedPosition, claimed.Position, 0.1f); // Allow for small error. Increases the accuracy without meaningfully harming the security
                     minSqrDistance = sqrDistance;
+
+                    best.Timestamp = Mathf.Lerp(newest.Timestamp, oldest.Timestamp, t);
 
                     if (minSqrDistance < AcceptedDistance)
                     {
@@ -121,7 +122,7 @@ public class BacktrackHistory(Player player)
 
                 if (angle < minAngle)
                 {
-                    best.Rotation = Quaternion.RotateTowards(newest.Rotation, claimed.Rotation, 1); // Allow for small error. Increases the accuracy without meaningfully harming the security
+                    best.Rotation = Quaternion.RotateTowards(newest.Rotation, claimed.Rotation, 1);
                     minAngle = angle;
 
                     if (minAngle < AcceptedAngle)
