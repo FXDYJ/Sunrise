@@ -68,7 +68,6 @@ public static class VisibilityPatch
         [
             new(OpCodes.Ldloc_1), // currentRole1
             new(OpCodes.Ldloc, 3), // position2
-            new(OpCodes.Ldloc, 4), // V_5 (distanceSqr)
             new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
         ]);
 
@@ -76,7 +75,6 @@ public static class VisibilityPatch
     }
 
     public static bool Enabled = false;
-    public static float RoomGridSize = 15;
     public static float SmallerRoomGridSize = 9;
 
     /// <summary>
@@ -93,6 +91,7 @@ public static class VisibilityPatch
         Vector3Int cords1 = RoomIdUtils.PositionToCoords(position1);
         Vector3Int cords2 = RoomIdUtils.PositionToCoords(position2);
 
+        // If rooms are diagonal to each other
         if (cords1.x != cords2.x && cords1.y != cords2.y)
             return flags | InvisibilityFlags.OutOfRange;
 
