@@ -24,42 +24,6 @@ namespace Sunrise.Features.CustomVisibility;
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public static class VisibilityPatch
 {
-    public static readonly HashSet<RoomType> SmallerGridRooms =
-    [
-        // Common rooms
-        RoomType.EzStraight,
-        RoomType.HczStraight,
-        RoomType.LczStraight,
-
-        RoomType.EzTCross,
-        RoomType.LczTCross,
-
-        RoomType.EzCurve,
-        RoomType.HczCurve,
-        RoomType.LczCurve,
-
-        // Unique to zones
-        RoomType.EzShelter,
-
-        RoomType.HczArmory,
-        RoomType.HczTesla,
-
-        RoomType.LczAirlock,
-        RoomType.LczArmory,
-
-        // Unique rooms
-        RoomType.EzDownstairsPcs,
-        RoomType.EzIntercom,
-        RoomType.EzCollapsedTunnel,
-        RoomType.EzSmallrooms,
-
-        RoomType.Lcz914,
-        RoomType.LczToilets,
-        RoomType.LczCheckpointA,
-        RoomType.LczCheckpointB,
-        RoomType.LczClassDSpawn,
-    ];
-
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         List<CodeInstruction> newInstructions = instructions.ToList();
@@ -76,6 +40,7 @@ public static class VisibilityPatch
 
     public static bool Enabled = false;
     public static float SmallerRoomGridSize = 9;
+    static int counter = 0;
 
     /// <summary>
     ///     This method limits visibility diagonally when players are inside the facility.
@@ -92,17 +57,16 @@ public static class VisibilityPatch
         Vector3Int cords2 = RoomIdUtils.PositionToCoords(position2);
 
         // If rooms are diagonal to each other
-        if (cords1.x != cords2.x && cords1.y != cords2.y)
-            return flags | InvisibilityFlags.OutOfRange;
-
-        if (Math.Abs(position1.z - position2.z) > SmallerRoomGridSize)
+        if (cords1.x != cords2.x && cords1.z != cords2.z)
         {
-            if (Math.Abs(position1.y - position2.y) > SmallerRoomGridSize)
-            {
-                if (Room.Get(position1) is Room room1 && SmallerGridRooms.Contains(room1.Type) && Room.Get(position2) is Room room2 && SmallerGridRooms.Contains(room2.Type) && room1 != room2)
-                    return flags | InvisibilityFlags.OutOfRange;
-            }
+            if (counter++ % 30 == 0)
+                Log.Warn($"{role1.FpcModule?.Hub?.nicknameSync?.MyNick} cant see - Position1: {position1}, Position2: {position2}, Cords1: {cords1}, Cords2: {cords2}");
+
+            return flags | InvisibilityFlags.OutOfRange;
         }
+
+        if (counter++ % 30 == 0)
+            Log.Warn($"{role1.FpcModule?.Hub?.nicknameSync?.MyNick} - Position1: {position1}, Position2: {position2}, Cords1: {cords1}, Cords2: {cords2}");
 
         return flags;
     }
