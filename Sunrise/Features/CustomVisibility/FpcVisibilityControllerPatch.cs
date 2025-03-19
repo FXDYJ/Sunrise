@@ -24,7 +24,54 @@ namespace Sunrise.Features.CustomVisibility;
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public static class VisibilityPatch
 {
-    public static readonly HashSet<RoomType> WhitelistedRooms =
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        List<CodeInstruction> newInstructions = instructions.ToList();
+
+        newInstructions.InsertRange(newInstructions.Count - 1,
+        [
+            new(OpCodes.Ldloc_2), // currentRole1
+            new(OpCodes.Ldloc, 4), // position2
+            new(OpCodes.Ldloc, 6), // V_5 (distanceSqr)
+            new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
+        ]);
+
+        return newInstructions;
+    }
+
+    public static float RoomGridSize = 15;
+    public static float SmallerRoomGridSize = 9;
+
+    /// <summary>
+    ///     This method limits visibility diagonally when players are inside the facility.
+    /// </summary>
+    [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
+    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole role1, Vector3 position2, float distanceSqr)
+    {
+        // players are either out of range or confirmed in range
+        if ((flags & InvisibilityFlags.OutOfRange) != 0 || distanceSqr < SmallerRoomGridSize * SmallerRoomGridSize)
+            return flags;
+
+        Vector3 position1 = role1.FpcModule.Position;
+        Vector3Int cords1 = RoomIdUtils.PositionToCoords(position1);
+        Vector3Int cords2 = RoomIdUtils.PositionToCoords(position2);
+
+        if (cords1.x != cords2.x && cords1.y != cords2.y)
+            return flags | InvisibilityFlags.OutOfRange;
+
+        if (Math.Abs(position1.z - position2.z) > SmallerRoomGridSize)
+        {
+            if (Math.Abs(position1.y - position2.y) > SmallerRoomGridSize)
+            {
+                if (Room.Get(position1) is Room room1 && SmallerGridRooms.Contains(room1.Type) && Room.Get(position2) is Room room2 && SmallerGridRooms.Contains(room2.Type))
+                    return flags | InvisibilityFlags.OutOfRange;
+            }
+        }
+
+        return flags;
+    }
+
+    public static readonly HashSet<RoomType> SmallerGridRooms =
     [
         // Common rooms
         RoomType.EzStraight,
@@ -59,47 +106,4 @@ public static class VisibilityPatch
         RoomType.LczCheckpointB,
         RoomType.LczClassDSpawn,
     ];
-
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        List<CodeInstruction> newInstructions = instructions.ToList();
-
-        newInstructions.InsertRange(newInstructions.Count - 1,
-        [
-            new(OpCodes.Ldloc_2), // currentRole1
-            new(OpCodes.Ldloc, 4), // position2
-            new(OpCodes.Ldloc, 6), // V_5 (distanceSqr)
-            new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
-        ]);
-
-        return newInstructions;
-    }
-
-    public static float CrossArmWidth = 9;
-    public static float RoomGridSize = 15;
-
-    /// <summary>
-    ///     This method limits visibility diagonally when players are inside the facility.
-    /// </summary>
-    [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole role1, Vector3 position2, float distanceSqr)
-    {
-        // players are either out of range or confirmed in range
-        if ((flags & InvisibilityFlags.OutOfRange) != 0 || distanceSqr < CrossArmWidth * CrossArmWidth)
-            return flags;
-        
-        Vector3Int cords1 = RoomIdUtils.PositionToCoords(role1.FpcModule.Position);
-        Vector3Int cords2 = RoomIdUtils.PositionToCoords(position2);
-
-        if (Math.Abs(position1.z - position2.z) > CrossArmWidth)
-        {
-            if (Math.Abs(position1.y - position2.y) > CrossArmWidth)
-            {
-                if (Room.Get(position1) is Room room1 && WhitelistedRooms.Contains(room1.Type) && Room.Get(position2) is Room room2 && WhitelistedRooms.Contains(room2.Type))
-                    return flags | InvisibilityFlags.OutOfRange;
-            }
-        }
-
-        return flags;
-    }
 }
