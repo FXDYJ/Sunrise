@@ -1,12 +1,9 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
-using Exiled.API.Enums;
 using Exiled.API.Extensions;
 using HarmonyLib;
 using JetBrains.Annotations;
-using MapEditorReborn.API.Extensions;
 using MapGeneration;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.Visibility;
