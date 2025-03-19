@@ -10,6 +10,7 @@ using MapEditorReborn.API.Extensions;
 using MapGeneration;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.Visibility;
+using Sunrise.Utility;
 
 namespace Sunrise.Features.CustomVisibility;
 
@@ -26,15 +27,6 @@ namespace Sunrise.Features.CustomVisibility;
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public static class VisibilityPatch
 {
-    static readonly Vector3Int[] Directions =
-    [
-        Vector3Int.forward,
-        Vector3Int.right,
-        Vector3Int.back,
-        Vector3Int.left,
-    ];
-    static Dictionary<Vector3Int, HashSet<Vector3Int>> _roomMap = new();
-
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         List<CodeInstruction> newInstructions = instructions.ToList();
@@ -50,7 +42,8 @@ public static class VisibilityPatch
     }
 
     public static bool Enabled = false;
-    public static float SmallerRoomGridSize = 9;
+    public static float ForcedVisibilitySqrDistance = 12f * 12f;
+    static int counter;
 
     /// <summary>
     ///     This method limits visibility diagonally when players are inside the facility.
@@ -63,14 +56,29 @@ public static class VisibilityPatch
             return flags;
 
         Vector3 position1 = role1.FpcModule.Position;
+
+        if (MathExtensions.SqrDistance(position1, position2) < ForcedVisibilitySqrDistance)
+            return flags;
+
         Vector3Int coords1 = RoomIdUtils.PositionToCoords(position1); // observer
-        Vector3Int coords2 = RoomIdUtils.PositionToCoords(position2); // owner
+        Vector3Int coords2 = RoomIdUtils.PositionToCoords(position2); // other player
 
-        if (!_roomMap.TryGetValue(coords1, out HashSet<Vector3Int> roomMap))
-            _roomMap[coords1] = roomMap = GetVisibleCords(Room.Get(position1));
+        if (RoomVisibilityData.Get(coords1) is not RoomVisibilityData visibilityData)
+        {
+            if (counter++ % 30 == 0)
+                Log.Warn($"Failed to get visibility data for room {coords1}. Cords2: {coords2}");
+            return flags;
+        }
 
-        if (!roomMap.Contains(coords2))
+        if (!visibilityData.CheckVisibility(coords2))
+        {
+            if (counter++ % 30 == 0)
+                Log.Warn($"Player at {coords1} can't see player at {coords2}");
             return flags | InvisibilityFlags.OutOfRange;
+        }
+
+        if (counter++ % 30 == 0)
+            Log.Warn($"Player at {coords1} can see player at {coords2}");
 
         return flags;
     }
