@@ -26,8 +26,15 @@ namespace Sunrise.Features.CustomVisibility;
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public static class VisibilityPatch
 {
-    private static Dictionary<Vector3Int, HashSet<Vector3Int>> _roomMap = new();
-    
+    static readonly Vector3Int[] Directions =
+    [
+        Vector3Int.forward,
+        Vector3Int.right,
+        Vector3Int.back,
+        Vector3Int.left,
+    ];
+    static Dictionary<Vector3Int, HashSet<Vector3Int>> _roomMap = new();
+
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         List<CodeInstruction> newInstructions = instructions.ToList();
@@ -59,57 +66,32 @@ public static class VisibilityPatch
         Vector3Int coords1 = RoomIdUtils.PositionToCoords(position1); // observer
         Vector3Int coords2 = RoomIdUtils.PositionToCoords(position2); // owner
 
-        if (!_roomMap.TryGetValue(coords1, out var roomMap))
-            _roomMap[coords1] = roomMap = GetSeeingCoords(Room.Get(position1));
-        
+        if (!_roomMap.TryGetValue(coords1, out HashSet<Vector3Int> roomMap))
+            _roomMap[coords1] = roomMap = GetVisibleCords(Room.Get(position1));
+
         if (!roomMap.Contains(coords2))
             return flags | InvisibilityFlags.OutOfRange;
 
         return flags;
     }
-    
-    private static readonly Vector3Int[] Directions =
-    [
-        Vector3Int.forward,
-        Vector3Int.right,
-        Vector3Int.back,
-        Vector3Int.left
-    ];
 
-    public static HashSet<Vector3Int> GetSeeingCoords(Room startRoom)
+    public static HashSet<Vector3Int> GetVisibleCords(Room room)
     {
-        Vector3Int roomCoords = RoomIdUtils.PositionToCoords(startRoom.Position);
-        HashSet<Vector3Int> seeing = [roomCoords];
+        Vector3Int roomCords = RoomIdUtils.PositionToCoords(room.Position);
+        HashSet<Vector3Int> seeing = [roomCords];
 
-        foreach (Vector3Int direction in Directions)
+        foreach (Room nearestRoom in room.NearestRooms)
         {
-            Room currentRoom = startRoom;
-            Vector3Int currentCoords = roomCoords;
-            
-            while (true)
-            {
-                Room nextRoom = null;
-                
-                foreach (Room room in currentRoom.NearestRooms)
-                {
-                    Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
+            Vector3Int direction = RoomIdUtils.PositionToCoords(nearestRoom.Position) - roomCords;
+            Vector3Int cords = roomCords += direction;
 
-                    if (coords - currentCoords == direction)
-                    {
-                        seeing.Add(coords);
-                        nextRoom = room;
-                        currentCoords = coords;
-                        break;
-                    }
-                }
-                
-                if (nextRoom == null)
-                    break;
-                
-                currentRoom = nextRoom;
+            while (RoomIdentifier.RoomsByCoordinates.ContainsKey(cords))
+            {
+                seeing.Add(cords);
+                cords += direction;
             }
         }
-        
+
         return seeing;
     }
 }

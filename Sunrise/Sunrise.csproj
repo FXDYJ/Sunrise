@@ -457,6 +457,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="EntryPoint\SunriseLoader.cs" />
+        <Compile Include="Features\CustomVisibility\RoomVoisibilityData.cs" />
         <Compile Include="Features\ServersideBacktrack\EntryMatchFlags.cs" />
         <Compile Include="Features\CustomVisibility\FpcVisibilityControllerPatch.cs" />
         <Compile Include="Utility\Colors.cs" />
