@@ -1,5 +1,3 @@
-using Exiled.API.Features.Items;
-using Exiled.Events.EventArgs.Player;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideBacktrack;
@@ -16,13 +14,11 @@ public class ServersideBacktrackModule : PluginModule
     protected override void OnEnabled()
     {
         StaticUnityMethods.OnUpdate += OnUpdate;
-        Handlers.Player.ChangingItem += OnChangingItem;
     }
 
     protected override void OnDisabled()
     {
         StaticUnityMethods.OnUpdate -= OnUpdate;
-        Handlers.Player.ChangingItem -= OnChangingItem;
     }
 
     protected override void OnReset()
@@ -34,19 +30,8 @@ public class ServersideBacktrackModule : PluginModule
     {
         foreach (Player player in Player.Dictionary.Values)
         {
-            // No point in backtracking players that are not going to shoot
-            if (player.CurrentItem is Firearm)
-            {
-                BacktrackHistory history = BacktrackHistories.GetOrAdd(player, () => new(player));
-                history.RecordEntry();
-            }
+            BacktrackHistory history = BacktrackHistories.GetOrAdd(player, () => new(player));
+            history.RecordEntry();
         }
-    }
-
-    static void OnChangingItem(ChangingItemEventArgs ev)
-    {
-        // Prevent old entries from being used
-        if (ev.Item is Firearm && BacktrackHistories.TryGetValue(ev.Player, out BacktrackHistory history))
-            history.Entries.Clear();
     }
 }
