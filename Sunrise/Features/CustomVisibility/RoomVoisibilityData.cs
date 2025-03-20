@@ -7,16 +7,18 @@ namespace Sunrise.Features.CustomVisibility;
 
 public class RoomVisibilityData
 {
-    // Some rooms can be seen through diagonally
-    public static readonly HashSet<RoomType> ExtraVisibilityRooms =
-    [
-        RoomType.HczNuke,
-        RoomType.HczCornerDeep,
-        RoomType.HczCrossRoomWater,
-        RoomType.HczArmory,
-    ];
+    // Rooms that can be seen through diagonally
+    public static readonly Dictionary<RoomType, Vector3Int[]> KnownDirectionsRooms = new()
+    {
+        [RoomType.HczCornerDeep] = [Vector3Int.back, Vector3Int.right],
+        [RoomType.HczNuke] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomType.HczCrossRoomWater] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right],
+        [RoomType.HczArmory] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomType.HczIntersectionJunk] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomType.Hcz079] = [Vector3Int.left],
+    };
 
-    public static readonly List<Vector3Int> Directions =
+    public static readonly Vector3Int[] Directions =
     [
         Vector3Int.forward,
         Vector3Int.right,
@@ -31,12 +33,14 @@ public class RoomVisibilityData
 
     RoomVisibilityData(Room room)
     {
-        Log.Info($"Generating visibility data for room {room.Type}");
+        Debug.Log($"Generating visibility data for room {room.Type}");
 
         Include(room);
+        
         Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);
+        Vector3Int[] directions = KnownDirectionsRooms.GetValueOrDefault(room.Type, Directions);
 
-        foreach (Vector3Int direction in Directions)
+        foreach (Vector3Int direction in directions)
         {
             IncludeDirection(roomCoords, direction);
         }
@@ -53,12 +57,14 @@ public class RoomVisibilityData
             Color color = Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
             Vector3 offset = Random.insideUnitSphere * 0.1f + Vector3.up * 0.3f;
 
+            Debug.DrawPoint(RoomIdUtils.CoordsToCenterPos(roomCoords) + offset, color, float.MaxValue);
+
             foreach (Vector3Int coords in _visibleCoords)
             {
                 Debug.DrawLine(RoomIdUtils.CoordsToCenterPos(roomCoords) + offset, RoomIdUtils.CoordsToCenterPos(coords) + offset, color, float.MaxValue);
             }
 
-            Log.Warn($"Generated visibility data for room {room.Type}. Total visible coords: {_visibleCoords.Count}");
+            Debug.Log($"Generated visibility data for room {room.Type}. Total visible coords: {_visibleCoords.Count}");
         }
     }
 
@@ -66,13 +72,14 @@ public class RoomVisibilityData
     {
         _visibleCoords.UnionWith(room.Identifier.OccupiedCoords);
 
-        if (ExtraVisibilityRooms.Contains(room.Type))
+        if (KnownDirectionsRooms.TryGetValue(room.Type, out var directions))
         {
             Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
 
-            foreach (Vector3Int direction in Directions)
+            foreach (Vector3Int direction in directions)
             {
-                _visibleCoords.Add(coords + direction);
+                Vector3Int neighbourCoords = coords + direction;
+                _visibleCoords.Add(neighbourCoords);
             }
         }
     }
@@ -82,11 +89,11 @@ public class RoomVisibilityData
         Vector3Int previousCoords = coords;
         coords += direction;
 
-        Log.Warn($"  Checking direction {direction}");
+        Debug.Log($"  Checking direction {direction}");
 
         while (RoomIdentifier.RoomsByCoordinates.TryGetValue(coords, out RoomIdentifier? roomIdentifier) && Room.Get(roomIdentifier) is Room room && CheckConnection(previousCoords, coords))
         {
-            Log.Warn($"    Adding {coords}");
+            Debug.Log($"    Adding {coords}");
             Include(room);
             previousCoords = coords;
             coords += direction;

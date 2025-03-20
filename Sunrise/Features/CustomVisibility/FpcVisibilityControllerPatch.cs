@@ -5,9 +5,11 @@ using Exiled.API.Extensions;
 using HarmonyLib;
 using JetBrains.Annotations;
 using MapGeneration;
+using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.Visibility;
 using Sunrise.Utility;
+using UnityEngine.ProBuilder;
 
 namespace Sunrise.Features.CustomVisibility;
 
@@ -31,7 +33,7 @@ public static class VisibilityPatch
         newInstructions.InsertRange(newInstructions.Count - 1,
         [
             new(OpCodes.Ldloc_1), // currentRole1 (observer)
-            new(OpCodes.Ldloc, 3), // position2 (owner)
+            new(OpCodes.Ldloc_2), // currentRole2 (target)
             new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
         ]);
 
@@ -39,43 +41,51 @@ public static class VisibilityPatch
     }
 
     public static bool Enabled = false;
-    public static float ForcedVisibilitySqrDistance = 12f * 12f;
+    public static float ForcedVisibilitySqrDistance = 10f * 10f;
+    public static float VisibilityLimit = 50f;
     static int counter;
+
+    static float GetForcedVisibilitySqrDistance(IFpcRole role) => role.FpcModule.Role.RoleTypeId switch
+    {
+        RoleTypeId.Scp939 or RoleTypeId.Scp173 => 5000,
+        RoleTypeId.Scp106 => 29 * 29,
+        _ => 12 * 12,
+    };
 
     /// <summary>
     ///     This method limits visibility diagonally when players are inside the facility.
     /// </summary>
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole role1, Vector3 position2)
+    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole role1, IFpcRole role2)
     {
         // players are out of range
         if (!Enabled || flags.HasFlagFast(InvisibilityFlags.OutOfRange))
             return flags;
 
         Vector3 position1 = role1.FpcModule.Position;
+        Vector3 position2 = role2.FpcModule.Position;
 
-        if (MathExtensions.SqrDistance(position1, position2) < ForcedVisibilitySqrDistance)
+        if (MathExtensions.SqrDistance(position1, position2) < GetForcedVisibilitySqrDistance(role2) || FpcNoclip.IsPermitted(role1.FpcModule.Hub))
             return flags;
+
+        if (Mathf.Abs(position1.y - position2.y) > VisibilityLimit)
+            return flags | InvisibilityFlags.OutOfRange;
 
         Vector3Int coords1 = RoomIdUtils.PositionToCoords(position1); // observer
-        Vector3Int coords2 = RoomIdUtils.PositionToCoords(position2); // other player
+        Vector3Int coords2 = RoomIdUtils.PositionToCoords(position2); // target
 
         if (RoomVisibilityData.Get(coords1) is not RoomVisibilityData visibilityData)
-        {
-            if (counter++ % 30 == 0)
-                Log.Warn($"Failed to get visibility data for room {coords1}. Cords2: {coords2}");
             return flags;
-        }
 
         if (!visibilityData.CheckVisibility(coords2))
         {
             if (counter++ % 30 == 0)
-                Log.Warn($"Player at {coords1} can't see player at {coords2}");
+                Debug.Log($"Player at {coords1} can't see player at {coords2}");
             return flags | InvisibilityFlags.OutOfRange;
         }
 
         if (counter++ % 30 == 0)
-            Log.Warn($"Player at {coords1} can see player at {coords2}");
+            Debug.Log($"Player at {coords1} can see player at {coords2}");
 
         return flags;
     }
