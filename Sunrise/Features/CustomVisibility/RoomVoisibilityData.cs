@@ -36,20 +36,20 @@ public class RoomVisibilityData
         Debug.Log($"Generating visibility data for room {room.Type}");
 
         Include(room);
-        
+
         Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);
-        Vector3Int[] directions = KnownDirectionsRooms.GetValueOrDefault(room.Type, Directions);
+        Vector3Int[]? directions = KnownDirectionsRooms.GetValueOrDefault(room.Type, Directions);
 
         foreach (Vector3Int direction in directions)
         {
-            IncludeDirection(roomCoords, direction);
+            CheckDirection(roomCoords, direction);
         }
 
         foreach (Room nearestRoom in room.NearestRooms)
         {
             Include(nearestRoom);
             Vector3Int nearestRoomCoords = RoomIdUtils.PositionToCoords(nearestRoom.Position);
-            IncludeDirection(nearestRoomCoords, roomCoords - nearestRoomCoords);
+            CheckDirection(nearestRoomCoords, roomCoords - nearestRoomCoords);
         }
 
         if (SunrisePlugin.Instance.Config.DebugPrimitives)
@@ -72,7 +72,7 @@ public class RoomVisibilityData
     {
         _visibleCoords.UnionWith(room.Identifier.OccupiedCoords);
 
-        if (KnownDirectionsRooms.TryGetValue(room.Type, out var directions))
+        if (KnownDirectionsRooms.TryGetValue(room.Type, out Vector3Int[]? directions))
         {
             Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
 
@@ -84,7 +84,7 @@ public class RoomVisibilityData
         }
     }
 
-    void IncludeDirection(Vector3Int coords, Vector3Int direction)
+    void CheckDirection(Vector3Int coords, Vector3Int direction)
     {
         Vector3Int previousCoords = coords;
         coords += direction;
@@ -122,18 +122,18 @@ public class RoomVisibilityData
 
     public static RoomVisibilityData? Get(Vector3Int coords)
     {
-        if (!RoomVisibilityCache.TryGetValue(coords, out RoomVisibilityData? data))
+        if (RoomVisibilityCache.TryGetValue(coords, out RoomVisibilityData? data))
+            return data;
+
+        Room room = Room.Get(RoomIdUtils.CoordsToCenterPos(coords));
+
+        if (room != null)
         {
-            Room room = Room.Get(RoomIdUtils.CoordsToCenterPos(coords));
+            data = new RoomVisibilityData(room);
 
-            if (room != null)
+            foreach (Vector3Int occupiedCoords in room.Identifier.OccupiedCoords)
             {
-                data = new RoomVisibilityData(room);
-
-                foreach (Vector3Int occupiedCoords in room.Identifier.OccupiedCoords)
-                {
-                    RoomVisibilityCache[occupiedCoords] = data;
-                }
+                RoomVisibilityCache[occupiedCoords] = data;
             }
         }
 

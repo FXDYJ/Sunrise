@@ -45,6 +45,7 @@ public static class VisibilityPatch
     public static float VisibilityLimit = 50f;
     static int counter;
 
+    // Some roles' footstep sounds can be heard from a distance higher than human 12m forced visibility distance
     static float GetForcedVisibilitySqrDistance(IFpcRole role) => role.FpcModule.Role.RoleTypeId switch
     {
         RoleTypeId.Scp939 or RoleTypeId.Scp173 => 5000,
