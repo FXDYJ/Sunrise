@@ -1,3 +1,4 @@
+using Sunrise.EntryPoint;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideBacktrack;
@@ -28,6 +29,9 @@ public class ServersideBacktrackModule : PluginModule
 
     static void OnUpdate()
     {
+        if (!SunrisePlugin.Instance.Config.ServersideBacktrack)
+            return;
+
         foreach (Player player in Player.Dictionary.Values)
         {
             BacktrackHistory history = BacktrackHistories.GetOrAdd(player, () => new(player));

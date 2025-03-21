@@ -14,8 +14,6 @@ namespace Sunrise.Features.ServersideBacktrack;
 [HarmonyPatch(typeof(ShotBacktrackData), nameof(ShotBacktrackData.ProcessShot))] [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public static class BacktrackOverridePatch
 {
-    public static bool Enabled { get; set; } = true;
-
     static Stopwatch sw = new();
     static double totalElapsed = 0;
     static int count = 0;
@@ -27,11 +25,11 @@ public static class BacktrackOverridePatch
 
     public static bool Prefix(BaseFirearm firearm, Action<ReferenceHub> processingMethod, ShotBacktrackData __instance)
     {
+        if (!SunrisePlugin.Instance.Config.ServersideBacktrack)
+            return true;
+
         if (SunrisePlugin.Instance.Config.Debug)
             sw.Restart();
-
-        if (!Enabled)
-            return true;
 
         ProcessShot(firearm, processingMethod, __instance);
         return false;
@@ -83,6 +81,7 @@ public static class BacktrackOverridePatch
         }
     }
 
+#if DEBUG
     public static void Postfix(BaseFirearm firearm, Action<ReferenceHub> processingMethod)
     {
         if (!SunrisePlugin.Instance.Config.Debug)
@@ -100,4 +99,5 @@ public static class BacktrackOverridePatch
 
         Debug.Log($"Backtrack took {sw.Elapsed.TotalMilliseconds:F3}ms. Total for {count} shots: {totalElapsed:F5}ms. Average: {totalElapsed / count:F7}ms. Per 1000 shots: {totalElapsed / count * 1000:F5}ms.");
     }
+#endif
 }

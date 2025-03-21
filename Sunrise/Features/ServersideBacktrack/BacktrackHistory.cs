@@ -10,7 +10,6 @@ public class BacktrackHistory(Player player)
 {
     public static readonly float AcceptedDistance = 0.02f;
     public static readonly float AcceptedAngle = 0.1f;
-    public static readonly int PlayerObstaclesLayerMask = 671432705; // Objects that can collide with players
 
     public readonly RingBuffer<BacktrackEntry> Entries = new((int)(HistoryLengthSeconds * 60));
 
@@ -45,7 +44,7 @@ public class BacktrackHistory(Player player)
         if (forecastDistance < AcceptedDistance)
             return;
 
-        if (forecastDistance > 0.4f && Physics.Raycast(player.Position, direction, out RaycastHit hit, forecastDistance, PlayerObstaclesLayerMask))
+        if (forecastDistance > 0.4f && Physics.Raycast(player.Position, direction, out RaycastHit hit, forecastDistance, (int)Mask.PlayerCollidable))
             forecastDistance = hit.distance - 0.4f;
 
         forecastDistance = Mathf.Clamp01(forecastDistance);

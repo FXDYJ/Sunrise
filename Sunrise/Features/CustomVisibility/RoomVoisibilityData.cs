@@ -1,6 +1,8 @@
+using System.Linq;
 using Exiled.API.Enums;
 using MapGeneration;
 using Sunrise.EntryPoint;
+using Sunrise.Utility;
 using Random = UnityEngine.Random;
 
 namespace Sunrise.Features.CustomVisibility;
@@ -26,7 +28,6 @@ public class RoomVisibilityData
         Vector3Int.left,
     ];
 
-    public static readonly int DefaultCollidersLayerMask = 1 << 0;
     static readonly Dictionary<Vector3Int, RoomVisibilityData> RoomVisibilityCache = new();
 
     readonly HashSet<Vector3Int> _visibleCoords = [];
@@ -38,18 +39,33 @@ public class RoomVisibilityData
         Include(room);
 
         Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);
-        Vector3Int[]? directions = KnownDirectionsRooms.GetValueOrDefault(room.Type, Directions);
+        bool knownDirections;
+
+        if (KnownDirectionsRooms.TryGetValue(room.Type, out Vector3Int[] directions))
+        {
+            directions = directions.Select(d =>
+            {
+                Vector3 direction = room.Rotation * d;
+                return new Vector3Int(Mathf.RoundToInt(direction.x), Mathf.RoundToInt(direction.y), Mathf.RoundToInt(direction.z));
+            }).ToArray();
+            knownDirections = true;
+        }
+        else
+        {
+            directions = Directions;
+            knownDirections = false;
+        }
 
         foreach (Vector3Int direction in directions)
         {
-            CheckDirection(roomCoords, direction);
+            CheckDirection(roomCoords, direction, knownDirections);
         }
 
         foreach (Room nearestRoom in room.NearestRooms)
         {
             Include(nearestRoom);
             Vector3Int nearestRoomCoords = RoomIdUtils.PositionToCoords(nearestRoom.Position);
-            CheckDirection(nearestRoomCoords, roomCoords - nearestRoomCoords);
+            CheckDirection(nearestRoomCoords, roomCoords - nearestRoomCoords, true);
         }
 
         if (SunrisePlugin.Instance.Config.DebugPrimitives)
@@ -84,15 +100,17 @@ public class RoomVisibilityData
         }
     }
 
-    void CheckDirection(Vector3Int coords, Vector3Int direction)
+    void CheckDirection(Vector3Int coords, Vector3Int direction, bool known)
     {
         Vector3Int previousCoords = coords;
         coords += direction;
 
         Debug.Log($"  Checking direction {direction}");
 
-        while (RoomIdentifier.RoomsByCoordinates.TryGetValue(coords, out RoomIdentifier? roomIdentifier) && Room.Get(roomIdentifier) is Room room && CheckConnection(previousCoords, coords))
+        while (RoomIdentifier.RoomsByCoordinates.TryGetValue(coords, out RoomIdentifier? roomIdentifier) && Room.Get(roomIdentifier) is Room room && (CheckConnection(previousCoords, coords) || known))
         {
+            known = false;
+
             Debug.Log($"    Adding {coords}");
             Include(room);
             previousCoords = coords;
@@ -111,10 +129,10 @@ public class RoomVisibilityData
         Vector3 posB = RoomIdUtils.CoordsToCenterPos(coordsB) + Vector3.up;
         Vector3 direction = (posB - posA).normalized;
 
-        if (!Physics.Linecast(posA, posB - direction * 7.4f, DefaultCollidersLayerMask))
+        if (!Physics.Linecast(posA, posB - direction * 7.4f, (int)Mask.DefaultColliders))
             return true;
 
-        if (!Physics.Linecast(posB, posA + direction * 7.4f, DefaultCollidersLayerMask))
+        if (!Physics.Linecast(posB, posA + direction * 7.4f, (int)Mask.DefaultColliders))
             return true;
 
         return false;

@@ -8,6 +8,17 @@ namespace Sunrise.Utility;
 
 public static class Debug
 {
+    public static void DrawCube(Vector3 position, Vector3 scale, Color color = default, float duration = 10f)
+    {
+        if (!SunrisePlugin.Instance.Config.DebugPrimitives)
+            return;
+
+        color = GetColor(color);
+
+        var cube = Primitive.Create(PrimitiveType.Cube, PrimitiveFlags.Visible, position, Vector3.zero, scale, true, color);
+        Timing.CallDelayed(duration, cube.Destroy);
+    }
+    
     [Conditional("DEBUG")]
     public static void DrawLine(Vector3 start, Vector3 end, Color color = default, float duration = 10f)
     {
