@@ -95,6 +95,8 @@ public class PickupValidationModule : PluginModule
 
     static bool IsObstructed(Vector3 a, Vector3 b, out RaycastHit hit) => Physics.Linecast(a, b, out hit, ObstacleLayerMask) && !CanIgnoreHit(hit);
 
+    static bool CanIgnoreHit(RaycastHit hit) => hit.collider?.gameObject.layer == (int)Layer.Doors && Door.Get(hit.collider.gameObject) is { IsKeycardDoor: false };
+
     static IEnumerable<Vector3> GetCorners(Bounds bounds)
     {
         Vector3 extents = bounds.extents;
@@ -111,6 +113,4 @@ public class PickupValidationModule : PluginModule
         yield return bounds.center + new Vector3(-extents.x, -extents.y, extents.z);
         yield return bounds.center + new Vector3(-extents.x, -extents.y, -extents.z);
     }
-
-    static bool CanIgnoreHit(RaycastHit hit) => hit.collider?.gameObject?.layer == (int)Layer.Doors && Door.Get(hit.collider.gameObject) is { IsKeycardDoor: false };
 }
