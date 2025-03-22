@@ -19,7 +19,6 @@ public class RoomVisibilityData
 
     RoomVisibilityData(Room room)
     {
-        Debug.Log($"Generating visibility data for room {room.Type}");
         Include(room);
 
         Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);

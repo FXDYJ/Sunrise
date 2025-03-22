@@ -1,6 +1,6 @@
-using System.Linq;
 using Exiled.API.Features.Doors;
 using Exiled.API.Features.Pickups;
+using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 using Sunrise.Utility;
 
@@ -8,7 +8,7 @@ namespace Sunrise.Features.PickupValidation;
 
 public class PickupValidationModule : PluginModule
 {
-    public const int ObstacleLayerMask = (int)Mask.HitregObstacles;
+    public const int ObstacleLayerMask = (int)Mask.PlayerObstacles;
 
     protected override void OnEnabled()
     {
@@ -22,7 +22,7 @@ public class PickupValidationModule : PluginModule
 
     void OnPickingUpItem(PickingUpItemEventArgs ev)
     {
-        if (!Config.Instance.PickupValidation || !ev.Player.IsConnected || !ev.Pickup.Base || ev.Player.IsNoclipPermitted)
+        if (!Config.Instance.PickupValidation || !ev.Player.IsConnected || !ev.Pickup.Base || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
             return;
 
         if (!CanPickUp(ev.Player, ev.Pickup))
@@ -34,7 +34,8 @@ public class PickupValidationModule : PluginModule
         if (CanPickUpSimple(player, pickup))
             return true;
 
-        Bounds bounds = pickup.Base.GetComponentInChildren<Collider>().bounds;
+        Bounds bounds = pickup.Base.GetComponentInChildren<Renderer>().bounds;
+
         Vector3 eyePos = player.CameraTransform.position;
 
         bool result = IsAccessibleFrom(eyePos, bounds);
@@ -44,31 +45,55 @@ public class PickupValidationModule : PluginModule
             var upRay = new Ray(eyePos, Vector3.up);
             var jumpHeight = 0.5f;
 
-            if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, (int)Mask.PlayerObstacles))
-                jumpHeight = hit.distance;
+            if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, ObstacleLayerMask))
+                jumpHeight = hit.distance - 0.05f;
 
             eyePos += Vector3.up * jumpHeight;
 
             result = IsAccessibleFrom(eyePos, bounds);
-        }
 
-        if (!result && Config.Instance.DebugPrimitives)
-        {
-            Debug.DrawCube(bounds.center, bounds.size, Colors.Red, 10f);
-            Debug.DrawPoint(eyePos, Colors.Green, 10f);
-
-            foreach (Vector3 point in GetCorners(bounds))
+            if (!result && Config.Instance.DebugPrimitives)
             {
-                Debug.DrawLine(eyePos, point, Colors.Red, 10f);
+                foreach (Vector3 point in GetCorners(bounds))
+                {
+                    Debug.DrawLine(eyePos, point, Colors.Red * 30, 10f);
+                }
+
+                eyePos -= Vector3.up * jumpHeight;
+
+                foreach (Vector3 point in GetCorners(bounds))
+                {
+                    Debug.DrawLine(eyePos, point, Colors.Red * 30, 10f);
+                }
             }
         }
+
+        Debug.DrawCube(bounds.center, bounds.size, result ? Colors.Green * 30 : Colors.Red * 30, 10f);
 
         return result;
     }
 
-    static bool CanPickUpSimple(Player player, Pickup pickup) => !Physics.Linecast(player.CameraTransform.position, pickup.Position, ObstacleLayerMask);
+    static bool CanPickUpSimple(Player player, Pickup pickup) => !IsObstructed(player.CameraTransform.position, pickup.Position, out _);
 
-    static bool IsAccessibleFrom(Vector3 point, Bounds bounds) => GetCorners(bounds).Any(corner => !Physics.Linecast(point, corner, out RaycastHit hit, ObstacleLayerMask) && !CanIgnoreHit(hit));
+    static bool IsAccessibleFrom(Vector3 camera, Bounds bounds)
+    {
+        foreach (Vector3 corner in GetCorners(bounds))
+        {
+            if (!IsObstructed(camera, corner, out RaycastHit hit) && !IsObstructed(corner, bounds.center, out _))
+            {
+                Debug.DrawLine(camera, corner, Colors.Green * 50, 10f);
+                return true;
+            }
+            else
+            {
+                Log.Warn($"Hit {hit.collider?.gameObject?.name} ({hit.collider?.gameObject?.layer:G}) at {hit.point}");
+            }
+        }
+
+        return false;
+    }
+
+    static bool IsObstructed(Vector3 a, Vector3 b, out RaycastHit hit) => Physics.Linecast(a, b, out hit, ObstacleLayerMask) && !CanIgnoreHit(hit);
 
     static IEnumerable<Vector3> GetCorners(Bounds bounds)
     {
