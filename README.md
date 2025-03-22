@@ -81,7 +81,7 @@ cheaters are supposed to suffer everywhere, not only on servers that can make th
 feel free to contribute to the project by implementing more features
 or researching new ways to prevent common exploits (see [Ideas](#planned-features) section).
 
-If you are willing to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3). See [CONTRIBUTE.md](./CONTRIBUTE.md) for more information.
+If you are willing to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3). See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
 
 # License
 
