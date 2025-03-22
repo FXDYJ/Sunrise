@@ -1,9 +1,7 @@
 # Sunrise
 
-A lightweight, open-source anti-cheat for SCP:SL servers.
-
-Sunrise is an anti-cheat plugin for SCP:SL servers, designed to prevent various forms of cheating and exploits.
-The project is in its early stages, with more features to come in the future.
+An SCP:SL anti-cheat plugin that actually works.
+Designed to prevent common exploits and add server authority in places where it lacks.
 
 # Features
 
