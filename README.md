@@ -24,7 +24,7 @@ ensuring that only legitimate shots, based on real past positions and rotations,
 
 ## Anti-Wallhack
 
-Effect: Reduces wallhack effective range to approximately 12 meters inside the facility.
+**Effect**: Reduces wallhack effective range to approximately 12 meters inside the facility.
 
 In the base game, server sends data about players from 36 meters away, regardless of walls or room boundaries.
 Sunrise significantly limits this by introducing a visibility system based on room layouts.
@@ -36,7 +36,7 @@ Edge cases like SCP abilities (e.g., SCP-049’s sense or SCP-939’s hearing) a
 
 ## Pickup Validation
 
-Effect: Prevents item pickups through walls.
+**Effect**: Prevents item pickups through walls.
 
 By default, the server does not perform any line-of-sight checks when a player attempts to pick up an item.
 This allows cheaters to pick up items through walls, doors, and other obstacles.
@@ -48,7 +48,7 @@ _If all checks fail, the pickup attempt is denied._
 
 ## Server-Side Tesla Damage
 
-Effect: Prevents cheaters from bypassing Tesla Gate damage.
+**Effect**: Prevents cheaters from bypassing Tesla Gate damage.
 
 In the base game, Tesla Gates rely on clients to report themselves getting hit. Cheaters can exploit this making them fully immune to Teslas.
 
@@ -66,7 +66,8 @@ If a player did not report the damage, the server forces Tesla damage to be appl
 Currently, the game is flooded with cheaters.
 Instead of keeping our tools private, we decided to make it open-source because we believe that
 cheaters are supposed to suffer everywhere, not only on servers that can make their own anti-cheat. If you support this idea,
-feel free to contribute to the project by implementing more features or researching new ways to prevent common exploits (see [Ideas](#ideas-not-implemented-yet) section).
+feel free to contribute to the project by implementing more features
+or researching new ways to prevent common exploits (see [Ideas](#ideas-not-implemented-yet) section).
 
 The project is mostly self-contained; all you need to do to build it yourself is clone the repo,
 and add the `EXILED_REFERENCES` environment variable pointing to `...\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed`.
