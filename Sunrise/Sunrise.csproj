@@ -481,6 +481,12 @@
         <Compile Include="Utility\CircularBuffer.cs" />
     </ItemGroup>
     <ItemGroup>
+        <Content Include="..\LICENSE.txt">
+          <Link>LICENSE.txt</Link>
+        </Content>
+        <Content Include="..\README.md">
+          <Link>README.md</Link>
+        </Content>
         <Content Include="..\_ProjectDependencies\0Harmony.dll">
             <Link>_ProjectDependencies\0Harmony.dll</Link>
         </Content>
@@ -928,6 +934,9 @@
         <Content Include="..\_ProjectDependencies\zxing.unity.dll">
             <Link>_ProjectDependencies\zxing.unity.dll</Link>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Features\PickupValidation\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
