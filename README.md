@@ -9,8 +9,8 @@ The project is in its early stages, with more features to come in the future.
 
 ## Server-Side Backtrack
 
-**Effect**: Silent aim doesn't aim, spinbots fire in random directions, fake rotation prevents aiming.
-Cheaters are forced to use aim lock, which is much easier to notice.
+> Silent aim doesn't aim, spinbots fire in random directions, fake rotation prevents aiming.
+> Cheaters are forced to use aim lock, which is much easier to notice.
 
 The default latency compensation system (Backtrack) in SCP:SL
 allows shooters to send their own and the target's position and rotation at the moment of firing.
@@ -24,7 +24,7 @@ ensuring that only legitimate shots, based on real past positions and rotations,
 
 ## Anti-Wallhack
 
-**Effect**: Reduces wallhack effective range to approximately 12 meters inside the facility.
+> Reduces wallhack effective range to approximately 12 meters inside the facility.
 
 In the base game, server sends data about players from 36 meters away, regardless of walls or room boundaries.
 Sunrise significantly limits this by introducing a visibility system based on room layouts.
@@ -36,7 +36,7 @@ Edge cases like SCP abilities (e.g., SCP-049’s sense or SCP-939’s hearing) a
 
 ## Pickup Validation
 
-**Effect**: Prevents item pickups through walls.
+> Prevents item pickups through walls.
 
 By default, the server does not perform any line-of-sight checks when a player attempts to pick up an item.
 This allows cheaters to pick up items through walls, doors, and other obstacles.
@@ -48,7 +48,7 @@ _If all checks fail, the pickup attempt is denied._
 
 ## Server-Side Tesla Damage
 
-**Effect**: Prevents cheaters from bypassing Tesla Gate damage.
+> Prevents cheaters from bypassing Tesla Gate damage.
 
 In the base game, Tesla Gates rely on clients to report themselves getting hit. Cheaters can exploit this making them fully immune to Teslas.
 
@@ -56,10 +56,22 @@ Sunrise adds a hybrid server-side system. The plugin simulates Tesla Gate bursts
 tracking players in the shock area while the server-side burst is active. After a short delay, it verifies if players reported the damage as expected.
 If a player did not report the damage, the server forces Tesla damage to be applied.
 
-## Ideas (not implemented yet)
+## Planned Features
 
-- **Door interaction validation**: Patch the exploit that allows cheaters to open doors without directly looking at them, while avoiding false positives.
-- **Pickup spoofing**: Send fake data about pickups far away from players to clutter ESP cheats.
+- **Door interaction validation**: Patch the exploit that allows cheaters to open doors without directly looking at them, while avoiding false positives. (In development)
+- **Pickup spoofing**: Send fake data about pickups far away from players to clutter ESP cheats. (More research needed)
+- **Movement exploits patch**: Prevent known movement exploits such as the one with [SCP-939 jump](https://youtu.be/NcMqxEu1_xM?si=cvDs1MIBTqQS7lI2&t=32).
+
+# Installation
+
+The only dependency is [EXILED](https://github.com/ExMod-Team/EXILED). To install the plugin, simply download the
+latest release from the [releases page](https://github.com/Banalny-Banan/Sunrise/releases) and put it in the `Plugins` folder.
+
+> ⚠️ **WARNING**: The project is in early development. While thoroughly tested on our servers, it may still contain bugs.
+> If you encounter any issues, please report them on the [Issues](https://github.com/Banalny-Banan/Sunrise/issues) page
+> or in the [Discord server](https://discord.gg/9nAaRVNCq3). You can also disable specific modules in the configuration file.
+> If you are a developer, feel free to investigate the issue yourself for which the debug logs and primitives visualizations might prove useful.
+> Thank you for supporting the project.
 
 # Community & Contributions
 
@@ -67,22 +79,13 @@ Currently, the game is flooded with cheaters.
 Instead of keeping our tools private, we decided to make it open-source because we believe that
 cheaters are supposed to suffer everywhere, not only on servers that can make their own anti-cheat. If you support this idea,
 feel free to contribute to the project by implementing more features
-or researching new ways to prevent common exploits (see [Ideas](#ideas-not-implemented-yet) section).
+or researching new ways to prevent common exploits (see [Ideas](#planned-features) section).
 
 The project is mostly self-contained; all you need to do to build it yourself is clone the repo,
 and add the `EXILED_REFERENCES` environment variable pointing to `...\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed`.
 We will be actively reviewing pull requests, but it’s better to discuss changes in the Discord server before starting to work on them.
 
 If you are willing to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3).
-
-# Installation
-
-The only dependency is [EXILED](https://github.com/ExMod-Team/EXILED). To install the plugin, simply download the
-latest release from the [releases page](https://github.com/Banalny-Banan/Sunrise/releases) and put it in the `Plugins` folder.
-
-**WARNING**: The plugin is in early development. While thoroughly tested on our servers, it may contain bugs.
-If you encounter any issues, please report them on the [Issues](https://github.com/Banalny-Banan/Sunrise/issues) page
-or in the [Discord server](https://discord.gg/9nAaRVNCq3).
 
 # License
 
