@@ -31,7 +31,7 @@ Currently, the game is overwhelmed with cheaters. Instead of keeping the solutio
 cheaters are supposed to suffer everywhere, not only on servers that can make their own anti-cheat. If you support this idea,  
 feel free to contribute to the project by implementing more features and researching new ways to prevent common exploits.
 
-The project is fully self-contained; all you need to do to build it yourself is clone the repo. We will be actively reviewing pull requests,  
+The project is mostly self-contained; all you need to do to build it yourself is clone the repo, and add the `EXILED_REFERENCES` environment variable pointing to `...\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed`. We will be actively reviewing pull requests,  
 but it’s better to discuss changes in the Discord server before starting to work on them.
 
 If you are willing to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3).
