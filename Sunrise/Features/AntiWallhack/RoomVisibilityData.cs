@@ -113,11 +113,17 @@ public class RoomVisibilityData
             Vector3 right = Vector3.Cross(direction, up);
             Vector3 offset = right * rightOffset;
 
-            if (!Physics.Linecast(posA + offset, posB + offset - direction * 7.4f, (int)Mask.DefaultColliders))
-                return true;
+            if (!Physics.Linecast(posA, posA + offset, (int)Mask.DefaultColliders))
+            {
+                if (!Physics.Linecast(posA + offset, posB + offset - direction * 7.4f, (int)Mask.DefaultColliders))
+                    return true;
+            }
 
-            if (!Physics.Linecast(posB + offset, posA + offset + direction * 7.4f, (int)Mask.DefaultColliders))
-                return true;
+            if (!Physics.Linecast(posB, posB + offset, (int)Mask.DefaultColliders))
+            {
+                if (!Physics.Linecast(posB + offset, posA + offset + direction * 7.4f, (int)Mask.DefaultColliders))
+                    return true;
+            }
         }
 
         return false;

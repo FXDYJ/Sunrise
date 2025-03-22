@@ -1,4 +1,5 @@
 ﻿using System;
+using Exiled.API.Enums;
 using HarmonyLib;
 using JetBrains.Annotations;
 
@@ -10,7 +11,8 @@ public class SunrisePlugin : Plugin<Config>
     public override string Name { get; } = "Sunrise";
     public override string Author { get; } = "BanalnyBanan";
     public override Version RequiredExiledVersion { get; } = new(9, 5, 1);
-    public override Version Version { get; } = new(2025, 2, 2);
+    public override Version Version { get; } = new(2025, 3, 1);
+    public override PluginPriority Priority { get; } = PluginPriority.Highest;
 
     public SunriseLoader Loader { get; } = new();
     public Harmony Harmony { get; } = new("Sunrise");

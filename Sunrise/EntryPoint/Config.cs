@@ -28,6 +28,9 @@ public class Config : IConfig
     [Description("Prevents cheaters from ignoring tesla damage. Performance impact negligible.")]
     public bool ServersideTeslaDamage { get; set; } = true;
 
+    [Description("Prevents cheaters from interacting with doors they're not looking at. Performance impact negligible.")]
+    public bool DoorInteractionValidation { get; set; } = true;
+
     #region Singleton
 
     public Config() => Instance = this;

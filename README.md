@@ -56,7 +56,16 @@ Sunrise adds a hybrid server-side system. The plugin simulates Tesla Gate bursts
 tracking players in the shock area while the server-side burst is active. After a short delay, it verifies if players reported the damage as expected.
 If a player did not report the damage, the server forces Tesla damage to be applied.
 
+## Door Interaction Validation
+
+> Prevents cheaters from interacting with doors without looking at them.
+
+By default, the server only performs a distance and a LOS check when a player interacts with a door. 
+Sunrise adds a FOV check to ensure that the player is looking at the door, preventing that cheat feature from working.
+
 ## Common Exploit Patches
+
+- **SCP-939 Lunge exploit**: Prevents the exploit that allows SCP-939 to speed-hack using lunge ability.
 
 ## Planned Features
 
