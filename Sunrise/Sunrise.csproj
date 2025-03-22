@@ -149,8 +149,8 @@
         <Compile Include="Utility\CircularBuffer.cs" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="..\CONTRIBUTE.md">
-          <Link>CONTRIBUTE.md</Link>
+        <Content Include="..\CONTRIBUTING.md">
+          <Link>CONTRIBUTING.md</Link>
         </Content>
         <Content Include="..\LICENSE">
             <Link>LICENSE</Link>
