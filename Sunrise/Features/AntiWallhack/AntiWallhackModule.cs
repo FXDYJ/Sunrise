@@ -2,14 +2,14 @@ using System;
 using MapGeneration;
 using Sunrise.Utility;
 
-namespace Sunrise.Features.CustomVisibility;
+namespace Sunrise.Features.AntiWallhack;
 
 /// <summary>
 ///     Wallhack nerf.
 ///     Works by only sending data about players in rooms that can be seen from the room the observer is currently in.
 ///     Reduces wallhack effective distance to around 12m (from 36m in base game)
 /// </summary>
-public class CustomVisibilityModule : PluginModule
+public class AntiWallhackModule : PluginModule
 {
     protected override void OnEnabled()
     {

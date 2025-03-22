@@ -74,7 +74,7 @@ public enum Mask
 
     HitregObstacles = Doors | DefaultColliders | Scp079CcTV | Glass,
 
-    PlayerCollidable = HitregObstacles | InvisibleWalls | ShootThroughWalls,
+    PlayerObstacles = HitregObstacles | InvisibleWalls | ShootThroughWalls,
 
     Hitreg = HitregObstacles | PlayerHitbox,
 }

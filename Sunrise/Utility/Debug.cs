@@ -2,7 +2,6 @@ using System.Diagnostics;
 using AdminToys;
 using Exiled.API.Features.Toys;
 using MEC;
-using Sunrise.EntryPoint;
 
 namespace Sunrise.Utility;
 

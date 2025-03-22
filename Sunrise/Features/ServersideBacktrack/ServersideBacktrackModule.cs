@@ -1,4 +1,3 @@
-using Sunrise.EntryPoint;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideBacktrack;

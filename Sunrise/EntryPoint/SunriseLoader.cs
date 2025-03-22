@@ -1,4 +1,5 @@
-using Sunrise.Features.CustomVisibility;
+using Sunrise.Features.AntiWallhack;
+using Sunrise.Features.PickupValidation;
 using Sunrise.Features.ServersideBacktrack;
 using Sunrise.Features.ServersideTeslaDamage;
 using Sunrise.Utility;
@@ -9,7 +10,8 @@ public class SunriseLoader : PluginModule
 {
     public override List<PluginModule> SubModules { get; } =
     [
-        new CustomVisibilityModule(),
+        new AntiWallhackModule(),
+        new PickupValidationModule(),
         new ServersideBacktrackModule(),
         new ServersideTeslaDamageModule(),
     ];

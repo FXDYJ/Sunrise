@@ -1,5 +1,4 @@
 using MEC;
-using Sunrise.EntryPoint;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideTeslaDamage;
@@ -17,9 +16,9 @@ public class ServersideTeslaHitreg(TeslaGate tesla)
 
     IEnumerator<float> BurstCoroutine()
     {
-        yield return Timing.WaitForSeconds(Config.Instance.AllowedLatencySeconds);
+        yield return Timing.WaitForSeconds(Config.Instance.AccountedLatencySeconds);
 
-        float remainingTime = ShockDuration - Config.Instance.AllowedLatencySeconds;
+        float remainingTime = ShockDuration - Config.Instance.AccountedLatencySeconds;
 
         Debug.DrawCube(_bounds.center, _bounds.size, Colors.Yellow * 30, remainingTime);
 

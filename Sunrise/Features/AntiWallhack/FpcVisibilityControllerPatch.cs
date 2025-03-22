@@ -9,10 +9,9 @@ using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp049;
 using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.Visibility;
-using Sunrise.EntryPoint;
 using Sunrise.Utility;
 
-namespace Sunrise.Features.CustomVisibility;
+namespace Sunrise.Features.AntiWallhack;
 
 /*
 InvisibilityFlags GetActiveFlags(ReferenceHub observer)
@@ -58,7 +57,7 @@ public static class VisibilityPatch
     static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole)
     {
         // Players are out of range
-        if (!Config.Instance.CustomVisibility || (flags & InvisibilityFlags.OutOfRange) != 0)
+        if (!Config.Instance.AntiWallhack || (flags & InvisibilityFlags.OutOfRange) != 0)
             return flags;
 
         Vector3 observerPosition = observerRole.FpcModule.Position;

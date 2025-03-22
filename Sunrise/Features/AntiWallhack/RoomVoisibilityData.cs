@@ -2,10 +2,9 @@ using System;
 using System.Linq;
 using Exiled.API.Enums;
 using MapGeneration;
-using Sunrise.EntryPoint;
 using Sunrise.Utility;
 
-namespace Sunrise.Features.CustomVisibility;
+namespace Sunrise.Features.AntiWallhack;
 
 /// <summary>
 ///     Represents a collection of all coordinates that should be visible to a player in a specific room
@@ -148,17 +147,17 @@ public class RoomVisibilityData
             }
         }
 
-        const float primitveDuration = 15;
+        const float PrimitveDuration = 15;
 
-        if (Config.Instance.DebugPrimitives && data is not null && data._lastPrimitiveSpawnTime + primitveDuration < Time.time)
+        if (Config.Instance.DebugPrimitives && data is not null && data._lastPrimitiveSpawnTime + PrimitveDuration < Time.time)
         {
             data._lastPrimitiveSpawnTime = Time.time;
 
             Vector3 offset = Random.insideUnitSphere * 0.1f + Vector3.up * 0.3f;
-            Debug.DrawPoint(RoomIdUtils.CoordsToCenterPos(coords) + offset, data._color, primitveDuration);
+            Debug.DrawPoint(RoomIdUtils.CoordsToCenterPos(coords) + offset, data._color, PrimitveDuration);
 
             foreach (Vector3Int visibleCoords in data._visibleCoords)
-                Debug.DrawLine(RoomIdUtils.CoordsToCenterPos(coords) + offset, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, data._color, primitveDuration);
+                Debug.DrawLine(RoomIdUtils.CoordsToCenterPos(coords) + offset, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, data._color, PrimitveDuration);
         }
 
         return data;

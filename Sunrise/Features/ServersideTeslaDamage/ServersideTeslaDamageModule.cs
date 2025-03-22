@@ -1,7 +1,6 @@
 using System;
 using Exiled.API.Enums;
 using Exiled.Events.EventArgs.Player;
-using Sunrise.EntryPoint;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideTeslaDamage;

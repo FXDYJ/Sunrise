@@ -1,4 +1,3 @@
-using Sunrise.EntryPoint;
 using Sunrise.Utility;
 using MathExtensions = Sunrise.Utility.MathExtensions;
 
@@ -12,7 +11,7 @@ public class BacktrackHistory(Player player)
     public const float AcceptedDistance = 0.02f;
     public const float AcceptedAngle = 0.1f;
 
-    public readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AllowedLatencySeconds * 60));
+    public readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AccountedLatencySeconds * 60));
 
     public void RecordEntry()
     {
@@ -35,7 +34,7 @@ public class BacktrackHistory(Player player)
         if (forecastDistance < AcceptedDistance)
             return;
 
-        if (forecastDistance > 0.4f && Physics.Raycast(player.Position, direction, out RaycastHit hit, forecastDistance, (int)Mask.PlayerCollidable))
+        if (forecastDistance > 0.4f && Physics.Raycast(player.Position, direction, out RaycastHit hit, forecastDistance, (int)Mask.PlayerObstacles))
             forecastDistance = hit.distance - 0.4f;
 
         forecastDistance = Mathf.Clamp01(forecastDistance);
