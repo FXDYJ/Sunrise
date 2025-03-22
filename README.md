@@ -24,7 +24,7 @@ ensuring that only legitimate shots, based on real past positions and rotations,
 
 ## Anti-Wallhack
 
-> Reduces wallhack effective range to approximately 12 meters inside the facility.
+> Reduces wallhack effective range to approximately 15 meters inside the facility.
 
 In the base game, server sends data about players from 36 meters away, regardless of walls or room boundaries.
 Sunrise significantly limits this by introducing a visibility system based on room layouts.
