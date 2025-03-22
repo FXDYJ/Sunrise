@@ -10,7 +10,7 @@ namespace Sunrise.Features.PickupValidation;
 
 public class PickupValidationModule : PluginModule
 {
-    public const int ObstacleLayerMask = (int)Mask.PlayerObstacles;
+    public const int ObstacleLayerMask = (int)Mask.HitregObstacles;
 
     static readonly Dictionary<Player, float> TemporaryBypass = new();
 
