@@ -2,6 +2,8 @@ using Exiled.API.Features.Doors;
 using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Scp914;
+using InventorySystem.Items.Usables.Scp1344;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.PickupValidation;
@@ -10,19 +12,31 @@ public class PickupValidationModule : PluginModule
 {
     public const int ObstacleLayerMask = (int)Mask.PlayerObstacles;
 
+    static readonly Dictionary<Player, float> TemporaryBypass = new();
+
     protected override void OnEnabled()
     {
         Handlers.Player.PickingUpItem += OnPickingUpItem;
+        Handlers.Scp914.UpgradingInventoryItem += OnScp914UpgradingInventoryItem;
     }
 
     protected override void OnDisabled()
     {
         Handlers.Player.PickingUpItem -= OnPickingUpItem;
+        Handlers.Scp914.UpgradingInventoryItem -= OnScp914UpgradingInventoryItem;
+    }
+
+    static void OnScp914UpgradingInventoryItem(UpgradingInventoryItemEventArgs ev)
+    {
+        TemporaryBypass[ev.Player] = Time.time + 0.01f;
     }
 
     void OnPickingUpItem(PickingUpItemEventArgs ev)
     {
         if (!Config.Instance.PickupValidation || !ev.Player.IsConnected || !ev.Pickup.Base || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
+            return;
+
+        if (TemporaryBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
             return;
 
         if (!CanPickUp(ev.Player, ev.Pickup))
