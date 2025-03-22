@@ -3,15 +3,16 @@ using System.Collections;
 
 namespace Sunrise.Utility;
 
+// Credits: https://github.com/joaoportela/CircularBuffer-CSharp
 /// <summary>
 ///     Circular buffer.
 ///     When writing to a full buffer:
-///     PushBack -> removes this[0] / Front()
-///     PushFront -> removes this[Size-1] / Back()
+///     PushBack → removes this[0] / Front()
+///     PushFront → removes this[Size-1] / Back()
 /// </summary>
 public class CircularBuffer<T> : IEnumerable<T>
 {
-    readonly T[] _buffer;
+    readonly T?[] _buffer;
 
     /// <summary>
     ///     The _end. Index after the last element in the buffer.
@@ -117,7 +118,7 @@ public class CircularBuffer<T> : IEnumerable<T>
             }
 
             int actualIndex = InternalIndex(index);
-            return _buffer[actualIndex];
+            return _buffer[actualIndex]!;
         }
         set
         {
@@ -148,14 +149,14 @@ public class CircularBuffer<T> : IEnumerable<T>
 
         for (var i = 0; i < arrayOne.Count; i++)
         {
-            yield return _buffer[arrayOne.Offset + i];
+            yield return _buffer[arrayOne.Offset + i]!;
         }
 
         ArraySegment<T> arrayTwo = ArrayTwo();
 
         for (var i = 0; i < arrayTwo.Count; i++)
         {
-            yield return _buffer[arrayTwo.Offset + i];
+            yield return _buffer[arrayTwo.Offset + i]!;
         }
     }
 
@@ -174,7 +175,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     public T Front()
     {
         ThrowIfEmpty();
-        return _buffer[_start];
+        return _buffer[_start]!;
     }
 
     /// <summary>
@@ -184,7 +185,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     public T Back()
     {
         ThrowIfEmpty();
-        return _buffer[(_end != 0 ? _end : Capacity) - 1];
+        return _buffer[(_end != 0 ? _end : Capacity) - 1]!;
     }
 
     /// <summary>
@@ -372,11 +373,11 @@ public class CircularBuffer<T> : IEnumerable<T>
         }
         else if (_start < _end)
         {
-            return new ArraySegment<T>(_buffer, _start, _end - _start);
+            return new ArraySegment<T>(_buffer!, _start, _end - _start);
         }
         else
         {
-            return new ArraySegment<T>(_buffer, _start, _buffer.Length - _start);
+            return new ArraySegment<T>(_buffer!, _start, _buffer.Length - _start);
         }
     }
 
@@ -388,11 +389,11 @@ public class CircularBuffer<T> : IEnumerable<T>
         }
         else if (_start < _end)
         {
-            return new ArraySegment<T>(_buffer, _end, 0);
+            return new ArraySegment<T>(_buffer!, _end, 0);
         }
         else
         {
-            return new ArraySegment<T>(_buffer, 0, _end);
+            return new ArraySegment<T>(_buffer!, 0, _end);
         }
     }
 
