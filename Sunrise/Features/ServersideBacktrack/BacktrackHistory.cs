@@ -9,12 +9,12 @@ namespace Sunrise.Features.ServersideBacktrack;
 /// </summary>
 public class BacktrackHistory(Player player)
 {
-    public static readonly float AcceptedDistance = 0.02f;
-    public static readonly float AcceptedAngle = 0.1f;
+    public const float AcceptedDistance = 0.02f;
+    public const float AcceptedAngle = 0.1f;
 
-    public readonly RingBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AllowedLatencySeconds * 60));
+    public readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AllowedLatencySeconds * 60));
 
-    public void RecordEntry() 
+    public void RecordEntry()
     {
         BacktrackEntry backtrackEntry = new(player);
         Entries.PushFront(backtrackEntry);
@@ -91,9 +91,11 @@ public class BacktrackHistory(Player player)
 
                 if (sqrDistance < minSqrDistance)
                 {
-                    best.Position = Vector3.MoveTowards(lerpedPosition, claimed.Position, 0.1f); // Allow for small error. Increases the accuracy without meaningfully harming the security
                     minSqrDistance = sqrDistance;
 
+                    // Add a little bit of client authority.
+                    // Increases the accuracy without meaningfully harming the security
+                    best.Position = Vector3.MoveTowards(lerpedPosition, claimed.Position, 0.1f);
                     best.Timestamp = Mathf.Lerp(newest.Timestamp, oldest.Timestamp, t);
 
                     if (minSqrDistance < AcceptedDistance)
@@ -112,8 +114,9 @@ public class BacktrackHistory(Player player)
 
                 if (angle < minAngle)
                 {
-                    best.Rotation = Quaternion.RotateTowards(newest.Rotation, claimed.Rotation, 1);
                     minAngle = angle;
+
+                    best.Rotation = Quaternion.RotateTowards(newest.Rotation, claimed.Rotation, 1);
 
                     if (minAngle < AcceptedAngle)
                     {
@@ -132,9 +135,12 @@ public class BacktrackHistory(Player player)
         {
             best.Restore(player);
 
-            Debug.Log($"Best entry found for {player.Nickname} " +
-                $"Difference: A:{Quaternion.Angle(best.Rotation, claimed.Rotation):F5}, P:{Vector3.Distance(best.Position, claimed.Position):F} " +
-                $"Age: {best.Age * 1000:F0}ms");
+            if (Config.Instance.Debug)
+            {
+                Debug.Log($"Best entry found for {player.Nickname} " +
+                    $"Difference: A:{Quaternion.Angle(best.Rotation, claimed.Rotation):F5}, P:{Vector3.Distance(best.Position, claimed.Position):F} " +
+                    $"Age: {best.Age * 1000:F0}ms");
+            }
         }
         else
         {

@@ -1,6 +1,4 @@
-using MapGeneration;
 using Sunrise.EntryPoint;
-using Sunrise.Features.CustomVisibility;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideBacktrack;

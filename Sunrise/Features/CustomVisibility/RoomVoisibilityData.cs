@@ -4,7 +4,6 @@ using Exiled.API.Enums;
 using MapGeneration;
 using Sunrise.EntryPoint;
 using Sunrise.Utility;
-using Random = UnityEngine.Random;
 
 namespace Sunrise.Features.CustomVisibility;
 
@@ -86,14 +85,11 @@ public class RoomVisibilityData
         Vector3Int previousCoords = coords;
         coords += direction;
 
-        Debug.Log($"  Checking direction {direction}");
-
         while (RoomIdentifier.RoomsByCoordinates.TryGetValue(coords, out RoomIdentifier? roomIdentifier) && Room.Get(roomIdentifier) is Room room && (CheckConnection(previousCoords, coords) || known))
         {
-            // when direction is known we always include the first room
+            // When direction is known we always include the first room
             known = false;
 
-            Debug.Log($"    Adding {coords}");
             Include(room);
             previousCoords = coords;
             coords += direction;
@@ -114,7 +110,7 @@ public class RoomVisibilityData
 
         foreach (float rightOffset in ConnectionCheckingOffsets)
         {
-            // translate the offset to local space of the direction
+            // Translate the offset to local space of the direction
             Vector3 up = Vector3.up;
             Vector3 right = Vector3.Cross(direction, up);
             Vector3 offset = right * rightOffset;

@@ -1,3 +1,4 @@
+using System;
 using Exiled.API.Enums;
 using Exiled.Events.EventArgs.Player;
 using Sunrise.EntryPoint;
@@ -20,13 +21,26 @@ public class ServersideTeslaDamageModule : PluginModule
         Handlers.Player.Hurt += OnPlayerHurt;
     }
 
+    protected override void OnDisabled()
+    {
+        TeslaGate.OnBursted -= OnTeslaGateBursted;
+        Handlers.Player.Hurt -= OnPlayerHurt;
+    }
+
     static void OnTeslaGateBursted(TeslaGate tesla)
     {
         if (!Config.Instance.ServersideTeslaDamage)
             return;
 
-        ServersideTeslaHitreg serversideTeslaHitreg = TeslaHitreg.GetOrAdd(tesla, () => new(tesla));
-        serversideTeslaHitreg.Burst();
+        try
+        {
+            ServersideTeslaHitreg serversideTeslaHitreg = TeslaHitreg.GetOrAdd(tesla, () => new(tesla));
+            serversideTeslaHitreg.Burst();
+        }
+        catch (Exception e)
+        {
+            Log.Error($"Error in {nameof(ServersideTeslaDamageModule)}.{nameof(OnTeslaGateBursted)}: {e}");
+        }
     }
 
     static void OnPlayerHurt(HurtEventArgs ev)

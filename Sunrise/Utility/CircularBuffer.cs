@@ -9,7 +9,7 @@ namespace Sunrise.Utility;
 ///     PushBack -> removes this[0] / Front()
 ///     PushFront -> removes this[Size-1] / Back()
 /// </summary>
-public class RingBuffer<T> : IEnumerable<T>
+public class CircularBuffer<T> : IEnumerable<T>
 {
     readonly T[] buffer;
 
@@ -24,16 +24,16 @@ public class RingBuffer<T> : IEnumerable<T>
     int start;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="RingBuffer{T}" /> class.
+    ///     Initializes a new instance of the <see cref="CircularBuffer{T}" /> class.
     /// </summary>
     /// <param name='capacity'>
     ///     Buffer capacity. Must be positive.
     /// </param>
-    public RingBuffer(int capacity)
+    public CircularBuffer(int capacity)
         : this(capacity, []) { }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="RingBuffer{T}" /> class.
+    ///     Initializes a new instance of the <see cref="CircularBuffer{T}" /> class.
     /// </summary>
     /// <param name='capacity'>
     ///     Buffer capacity. Must be positive.
@@ -43,7 +43,7 @@ public class RingBuffer<T> : IEnumerable<T>
     ///     Suggestion: use Skip(x).Take(y).ToArray() to build this argument from
     ///     any enumerable.
     /// </param>
-    public RingBuffer(int capacity, T[] items)
+    public CircularBuffer(int capacity, T[] items)
     {
         if (capacity < 1)
         {
@@ -262,7 +262,7 @@ public class RingBuffer<T> : IEnumerable<T>
     /// </summary>
     public void Clear()
     {
-        // to clear we just reset everything.
+        // To clear we just reset everything.
         start = 0;
         end = 0;
         Size = 0;

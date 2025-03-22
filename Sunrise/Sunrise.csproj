@@ -478,7 +478,7 @@
         <Compile Include="Features\ServersideBacktrack\ShotBacktrackDataPatch.cs"/>
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
-        <Compile Include="Utility\RingBuffer.cs"/>
+        <Compile Include="Utility\CircularBuffer.cs" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="..\_ProjectDependencies\0Harmony.dll">

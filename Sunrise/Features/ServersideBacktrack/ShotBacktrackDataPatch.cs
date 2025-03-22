@@ -19,10 +19,6 @@ public static class BacktrackOverridePatch
     static int count = 0;
     static bool first = true;
 
-    // [ServersideBacktrack = true] Total for 100 shots: 56.80070ms. Average: 0.5680070ms. Per 1000 shots: 568.00700ms.
-    // [ServersideBacktrack = false] Total for 100 shots: 119.02560ms. Average: 1.1902560ms. Per 1000 shots: 1190.25600ms.
-    // Sunrise backtrack results in 2x performance increase. (idk how lol nw code is baaaaaaaaad)
-
     public static bool Prefix(BaseFirearm firearm, Action<ReferenceHub> processingMethod, ShotBacktrackData __instance)
     {
         if (!Config.Instance.ServersideBacktrack)
@@ -98,6 +94,10 @@ public static class BacktrackOverridePatch
         totalElapsed += sw.Elapsed.TotalMilliseconds;
 
         Debug.Log($"Backtrack took {sw.Elapsed.TotalMilliseconds:F3}ms. Total for {count} shots: {totalElapsed:F5}ms. Average: {totalElapsed / count:F7}ms. Per 1000 shots: {totalElapsed / count * 1000:F5}ms.");
+
+        // [ServersideBacktrack = true] Total for 100 shots: 56.80070ms. Average: 0.5680070ms. Per 1000 shots: 568.00700ms.
+        // [ServersideBacktrack = false] Total for 100 shots: 119.02560ms. Average: 1.1902560ms. Per 1000 shots: 1190.25600ms.
+        // Sunrise backtrack results in 2x performance increase (idk how lol nw code is baaaaaaaaad). Ratios reproduced on 3 different machines.
     }
 #endif
 }

@@ -3,7 +3,7 @@ using System;
 namespace Sunrise.Features.ServersideBacktrack;
 
 /// <summary>
-///     A disposable struct that temporarily resets player's position to a backtracked one.
+///     A disposable struct that temporarily resets player's position to a backtracked one, then restores it back.
 /// </summary>
 public readonly struct BacktrackProcessor : IDisposable
 {

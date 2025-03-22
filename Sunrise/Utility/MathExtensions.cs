@@ -17,5 +17,6 @@ public static class MathExtensions
         return Mathf.Clamp01(t);
     }
 
+    // Sqr distance is faster cause sqrt is expensive
     public static float SqrDistance(Vector3 a, Vector3 b) => (a - b).sqrMagnitude;
 }

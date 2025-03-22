@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using JetBrains.Annotations;
 
 namespace Sunrise.EntryPoint;
@@ -8,6 +9,8 @@ public class SunrisePlugin : Plugin<Config>
 {
     public override string Name { get; } = "Sunrise";
     public override string Author { get; } = "BanalnyBanan";
+    public override Version RequiredExiledVersion { get; } = new(9, 5, 1);
+    public override Version Version { get; } = new(1, 0, 0);
 
     public SunriseLoader Loader { get; } = new();
     public Harmony Harmony { get; } = new("Sunrise");

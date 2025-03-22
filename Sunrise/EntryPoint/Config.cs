@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using Exiled.API.Interfaces;
+using JetBrains.Annotations;
 
 namespace Sunrise.EntryPoint;
 
+[UsedImplicitly]
 public class Config : IConfig
 {
     public bool IsEnabled { get; set; } = true;
@@ -25,5 +27,10 @@ public class Config : IConfig
     public bool ServersideBacktrack { get; set; } = true;
     public bool ServersideTeslaDamage { get; set; } = true;
 
-    public static Config Instance => Config.Instance;
+    #region Static access
+
+    public Config() => Instance = this;
+    public static Config Instance { get; private set; } = null!;
+
+    #endregion
 }

@@ -5,13 +5,20 @@ using Sunrise.Utility;
 namespace Sunrise.Features.CustomVisibility;
 
 /// <summary>
-///     Wallhack nerf. Works by only limiting player visibility to only places that they can see. Reduces wallhack effective distance to 12m from 36m
+///     Wallhack nerf.
+///     Works by only sending data about players in rooms that can be seen from the room the observer is currently in.
+///     Reduces wallhack effective distance to around 12m (from 36m in base game)
 /// </summary>
 public class CustomVisibilityModule : PluginModule
 {
     protected override void OnEnabled()
     {
         SeedSynchronizer.OnGenerationStage += OnMapGenerationStage;
+    }
+
+    protected override void OnDisabled()
+    {
+        SeedSynchronizer.OnGenerationStage -= OnMapGenerationStage;
     }
 
     void OnMapGenerationStage(MapGenerationPhase mapGenerationStage)
