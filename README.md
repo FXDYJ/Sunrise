@@ -80,7 +80,7 @@ Currently, the game is flooded with cheaters.
 Instead of keeping our tools private, we decided to make it open-source because we believe that
 cheaters are supposed to suffer everywhere, not only on servers that can make their own anti-cheat. If you support this idea,
 feel free to contribute to the project by implementing more features
-or researching new ways to prevent common exploits (see [Ideas](#planned-features) section).
+or researching new ways to prevent common exploits (see [Planned Features](#planned-features) section).
 
 If you want to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3). See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
 
