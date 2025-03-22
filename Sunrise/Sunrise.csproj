@@ -126,7 +126,7 @@
     <ItemGroup>
         <Compile Include="EntryPoint\SunriseLoader.cs"/>
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
-        <Compile Include="Features\AntiWallhack\RoomVoisibilityData.cs" />
+        <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
         <Compile Include="Features\ServersideBacktrack\EntryMatchFlags.cs" />
         <Compile Include="Features\AntiWallhack\FpcVisibilityControllerPatch.cs" />

@@ -3,6 +3,8 @@
 SCP:SL anti-cheat that actually works.
 Designed to prevent common exploits and add server authority in places where it lacks.
 
+**Defeated cheats**: Silent aim, spinbot, wallhack, item pickup through walls, Tesla Gate bypass.
+
 # Features
 
 ## Server-Side Backtrack
