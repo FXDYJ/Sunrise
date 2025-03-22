@@ -6,7 +6,6 @@ namespace Sunrise.Features.ServersideTeslaDamage;
 public class ServersideTeslaHitreg(TeslaGate tesla)
 {
     public const float ShockDuration = 0.5f;
-    public const float ShockDamageCooldown = 1f;
 
     readonly Bounds _bounds = new(tesla.transform.position + Vector3.up * (tesla.sizeOfKiller.y / 2f), tesla.transform.rotation * new Vector3(4f, 0.7f, 5f));
     readonly Collider[] _hitBuffer = new Collider[32];
@@ -30,7 +29,7 @@ public class ServersideTeslaHitreg(TeslaGate tesla)
         }
 
         // Here we give clients time to report the damage themselves to prevent dealing the damage twice
-        yield return Timing.WaitForSeconds(0.3f);
+        yield return Timing.WaitForSeconds(Config.Instance.AccountedLatencySeconds);
 
         ProcessHits();
     }
@@ -44,7 +43,9 @@ public class ServersideTeslaHitreg(TeslaGate tesla)
             Collider collider = _hitBuffer[i];
 
             if (Player.Get(collider) is Player player)
+            {
                 _hitPlayers.Add(player);
+            }
         }
     }
 
@@ -56,9 +57,9 @@ public class ServersideTeslaHitreg(TeslaGate tesla)
                 continue;
 
             // If the player have reported the damage themselves we don't want to deal it twice
-            if (ServersideTeslaDamageModule.ShockedPlayers.TryGetValue(player, out float shockTime) && Time.time - shockTime < ShockDamageCooldown)
+            if (ServersideTeslaDamageModule.ShockedPlayers.TryGetValue(player, out float shockTime) && Time.time - shockTime < ShockDuration)
                 return;
-
+            
             TeslaGateController.ServerReceiveMessage(player.Connection, new(tesla));
         }
 

@@ -128,6 +128,7 @@
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
+        <Compile Include="Features\CommonPatches\Scp939LungePatch.cs" />
         <Compile Include="Features\ServersideBacktrack\EntryMatchFlags.cs" />
         <Compile Include="Features\AntiWallhack\FpcVisibilityControllerPatch.cs" />
         <Compile Include="Features\ServersideTeslaDamage\ServersideTeslaDamageModule.cs" />

@@ -3,7 +3,7 @@
 SCP:SL anti-cheat that actually works.
 Designed to prevent common exploits and add server authority in places where it lacks.
 
-**Defeated cheats**: Silent aim, spinbot, wallhack, item pickup through walls, Tesla Gate bypass.
+**Defeated cheats**: Silent aim, Spinbot, Wallhack, Item pickup through walls, Tesla Gate bypass, SCP-939 Lunge exploit.
 
 # Features
 
@@ -56,11 +56,12 @@ Sunrise adds a hybrid server-side system. The plugin simulates Tesla Gate bursts
 tracking players in the shock area while the server-side burst is active. After a short delay, it verifies if players reported the damage as expected.
 If a player did not report the damage, the server forces Tesla damage to be applied.
 
+## Common Exploit Patches
+
 ## Planned Features
 
 - **Door interaction validation**: Patch the exploit that allows cheaters to open doors without directly looking at them, while avoiding false positives. (In development)
 - **Pickup spoofing**: Send fake data about pickups far away from players to clutter ESP cheats. (More research needed)
-- **Movement exploits patch**: Prevent known movement exploits such as the one with [SCP-939 jump](https://youtu.be/NcMqxEu1_xM?si=cvDs1MIBTqQS7lI2&t=32).
 
 # Installation
 
