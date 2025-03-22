@@ -3,7 +3,7 @@
 SCP:SL anti-cheat that actually works.
 Designed to prevent common exploits and add server authority in places where it lacks.
 
-**Defeated cheats**: Silent aim, Spinbot, Wallhack, Item pickup through walls, Tesla Gate bypass, SCP-939 Lunge exploit.
+**Defeated cheats**: Silent aim, Spinbot, Wallhack (partially), Item pickup through walls, Tesla Gate bypass, SCP-939 Lunge exploit.
 
 # Features
 
@@ -82,7 +82,7 @@ cheaters are supposed to suffer everywhere, not only on servers that can make th
 feel free to contribute to the project by implementing more features
 or researching new ways to prevent common exploits (see [Ideas](#planned-features) section).
 
-If you are willing to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3). See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
+If you want to contribute, or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3). See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
 
 # License
 
