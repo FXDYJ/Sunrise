@@ -1,6 +1,6 @@
 # Sunrise
 
-An SCP:SL anti-cheat plugin that actually works.
+SCP:SL anti-cheat that actually works.
 Designed to prevent common exploits and add server authority in places where it lacks.
 
 # Features
