@@ -5,6 +5,10 @@ using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideTeslaDamage;
 
+/// <summary>
+///     Makes tesla gates deal damage on server side after a short delay to account for latency.
+///     In base game, clients are expected to report themselves getting damaged, which cheaters can exploit.
+/// </summary>
 public class ServersideTeslaDamageModule : PluginModule
 {
     public static readonly Dictionary<TeslaGate, ServersideTeslaHitreg> TeslaHitreg = new();
@@ -12,15 +16,15 @@ public class ServersideTeslaDamageModule : PluginModule
 
     protected override void OnEnabled()
     {
-        if (!SunrisePlugin.Instance.Config.ServersideTeslaDamage)
-            return;
-
         TeslaGate.OnBursted += OnTeslaGateBursted;
         Handlers.Player.Hurt += OnPlayerHurt;
     }
 
     static void OnTeslaGateBursted(TeslaGate tesla)
     {
+        if (!Config.Instance.ServersideTeslaDamage)
+            return;
+
         ServersideTeslaHitreg serversideTeslaHitreg = TeslaHitreg.GetOrAdd(tesla, () => new(tesla));
         serversideTeslaHitreg.Burst();
     }

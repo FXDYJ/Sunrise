@@ -19,16 +19,16 @@ public static class BacktrackOverridePatch
     static int count = 0;
     static bool first = true;
 
-    // [Enabled = true] Total for 100 shots: 56.80070ms. Average: 0.5680070ms. Per 1000 shots: 568.00700ms.
-    // [Enabled = false] Total for 100 shots: 119.02560ms. Average: 1.1902560ms. Per 1000 shots: 1190.25600ms.
-    // Sunrise backtrack results in 2x performance increase.
+    // [ServersideBacktrack = true] Total for 100 shots: 56.80070ms. Average: 0.5680070ms. Per 1000 shots: 568.00700ms.
+    // [ServersideBacktrack = false] Total for 100 shots: 119.02560ms. Average: 1.1902560ms. Per 1000 shots: 1190.25600ms.
+    // Sunrise backtrack results in 2x performance increase. (idk how lol nw code is baaaaaaaaad)
 
     public static bool Prefix(BaseFirearm firearm, Action<ReferenceHub> processingMethod, ShotBacktrackData __instance)
     {
-        if (!SunrisePlugin.Instance.Config.ServersideBacktrack)
+        if (!Config.Instance.ServersideBacktrack)
             return true;
 
-        if (SunrisePlugin.Instance.Config.Debug)
+        if (Config.Instance.Debug)
             sw.Restart();
 
         ProcessShot(firearm, processingMethod, __instance);
@@ -45,7 +45,7 @@ public static class BacktrackOverridePatch
         Quaternion worldspaceRotation = wp.GetWorldspaceRotation(backtrackData.RelativeOwnerRotation);
         BacktrackEntry ownerClaimed = new(worldspacePosition, worldspaceRotation);
 
-        if (SunrisePlugin.Instance.Config.Debug) // The red line shows the claimed position
+        if (Config.Instance.Debug) // The red line shows the claimed position
         {
             BacktrackEntry prev = new(player);
             ownerClaimed.Restore(player);
@@ -55,7 +55,7 @@ public static class BacktrackOverridePatch
 
         using BacktrackProcessor attackerProcessor = new(player, ownerClaimed, true);
 
-        // The green line shows the found position. For normal players they match
+        // The green line shows the found position. For normal players they should match most of the time.
         Debug.DrawLine(player.CameraTransform.position, player.CameraTransform.position + player.CameraTransform.forward * 100f, Colors.Green * 50, 15);
 
         if (backtrackData.HasPrimaryTarget)
@@ -84,7 +84,7 @@ public static class BacktrackOverridePatch
 #if DEBUG
     public static void Postfix(BaseFirearm firearm, Action<ReferenceHub> processingMethod)
     {
-        if (!SunrisePlugin.Instance.Config.Debug)
+        if (!Config.Instance.Debug)
             return;
 
         if (first)

@@ -59,7 +59,7 @@ public static class VisibilityPatch
     static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole role1, IFpcRole role2)
     {
         // players are out of range
-        if (!SunrisePlugin.Instance.Config.CustomVisibility || (flags & InvisibilityFlags.OutOfRange) != 0)
+        if (!Config.Instance.CustomVisibility || (flags & InvisibilityFlags.OutOfRange) != 0)
             return flags;
 
         Vector3 position1 = role1.FpcModule.Position;

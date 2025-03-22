@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Exiled.API.Enums;
 using MapGeneration;
@@ -7,50 +8,16 @@ using Random = UnityEngine.Random;
 
 namespace Sunrise.Features.CustomVisibility;
 
+/// <summary>
+///     Represents a collection of all coordinates that should be visible to a player in a specific room
+/// </summary>
 public class RoomVisibilityData
 {
-    // Rooms that have known connection directions
-    public static readonly Dictionary<RoomType, Vector3Int[]> KnownDirectionsRooms = new()
-    {
-        [RoomType.HczCornerDeep] = [Vector3Int.back, Vector3Int.right],
-        [RoomType.HczNuke] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-        [RoomType.HczCrossRoomWater] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right],
-        [RoomType.HczArmory] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-        [RoomType.HczIntersectionJunk] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-
-        [RoomType.Hcz079] = [Vector3Int.left],
-        [RoomType.HczIntersection] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-        [RoomType.HczHid] = [Vector3Int.left, Vector3Int.right],
-    };
-
-    public static readonly HashSet<RoomType> DiagonalVisibilityRooms =
-    [
-        RoomType.HczCornerDeep,
-        RoomType.HczNuke,
-        RoomType.HczCrossRoomWater,
-        RoomType.HczArmory,
-        RoomType.HczIntersectionJunk,
-    ];
-
-    public static readonly Vector3Int[] Directions =
-    [
-        Vector3Int.forward,
-        Vector3Int.right,
-        Vector3Int.back,
-        Vector3Int.left,
-    ];
-
     static readonly Dictionary<Vector3Int, RoomVisibilityData> RoomVisibilityCache = new();
 
-    static readonly float[] ConnectionCheckingOffsets =
-    [
-        -1,
-        0,
-        1,
-    ];
-
     readonly HashSet<Vector3Int> _visibleCoords = [];
-    float _lastPrimitiveTime = Time.time;
+    readonly Color _color = Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
+    float _lastPrimitiveSpawnTime = Time.time;
 
     RoomVisibilityData(Room room)
     {
@@ -62,17 +29,17 @@ public class RoomVisibilityData
 
         foreach (Vector3Int direction in directions)
         {
-            CheckDirection(roomCoords, direction, known);
+            IncludeDirection(roomCoords, direction, known);
         }
 
         foreach (Room nearestRoom in room.NearestRooms)
         {
             Include(nearestRoom);
             Vector3Int nearestRoomCoords = RoomIdUtils.PositionToCoords(nearestRoom.Position);
-            CheckDirection(nearestRoomCoords, roomCoords - nearestRoomCoords, true);
+            IncludeDirection(nearestRoomCoords, roomCoords - nearestRoomCoords, true);
         }
 
-        Debug.Log($"Generated visibility data for room {room?.Type}. Total visible coords: {_visibleCoords.Count}");
+        Debug.Log($"Generated visibility data for room {room.Type}. Total visible coords: {_visibleCoords.Count}");
     }
 
     void Include(Room room)
@@ -110,8 +77,12 @@ public class RoomVisibilityData
         }
     }
 
-    void CheckDirection(Vector3Int coords, Vector3Int direction, bool known)
+    // Includes all rooms in a specified direction
+    void IncludeDirection(Vector3Int coords, Vector3Int direction, bool known)
     {
+        if (direction.sqrMagnitude != 1)
+            throw new ArgumentException("Direction must be normalized");
+
         Vector3Int previousCoords = coords;
         coords += direction;
 
@@ -119,6 +90,7 @@ public class RoomVisibilityData
 
         while (RoomIdentifier.RoomsByCoordinates.TryGetValue(coords, out RoomIdentifier? roomIdentifier) && Room.Get(roomIdentifier) is Room room && (CheckConnection(previousCoords, coords) || known))
         {
+            // when direction is known we always include the first room
             known = false;
 
             Debug.Log($"    Adding {coords}");
@@ -130,6 +102,7 @@ public class RoomVisibilityData
 
     public bool CheckVisibility(Vector3Int coords) => _visibleCoords.Contains(coords);
 
+    // Rooms get added into 'NearestRooms' only when there is a door between them, so we need a manual way of checking room connections
     static bool CheckConnection(Vector3Int coordsA, Vector3Int coordsB)
     {
         if (Vector3Int.Distance(coordsA, coordsB) > 1)
@@ -156,6 +129,7 @@ public class RoomVisibilityData
         return false;
     }
 
+    // Gets cached visibility data or creates a new one
     public static RoomVisibilityData? Get(Vector3Int coords)
     {
         if (!RoomVisibilityCache.TryGetValue(coords, out RoomVisibilityData? data))
@@ -164,27 +138,75 @@ public class RoomVisibilityData
 
             if (room != null)
             {
-                data = new RoomVisibilityData(room);
+                try
+                {
+                    data = new RoomVisibilityData(room);
 
-                foreach (Vector3Int occupiedCoords in room.Identifier.OccupiedCoords)
-                    RoomVisibilityCache[occupiedCoords] = data;
+                    foreach (Vector3Int occupiedCoords in room.Identifier.OccupiedCoords)
+                        RoomVisibilityCache[occupiedCoords] = data;
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Failed to generate visibility data for room {room.Type}: {e}");
+                }
             }
         }
 
         const float primitveDuration = 15;
 
-        if (SunrisePlugin.Instance.Config.DebugPrimitives && data is not null && data._lastPrimitiveTime + primitveDuration < Time.time)
+        if (Config.Instance.DebugPrimitives && data is not null && data._lastPrimitiveSpawnTime + primitveDuration < Time.time)
         {
-            data._lastPrimitiveTime = Time.time;
+            data._lastPrimitiveSpawnTime = Time.time;
 
-            Color color = Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
             Vector3 offset = Random.insideUnitSphere * 0.1f + Vector3.up * 0.3f;
-            Debug.DrawPoint(RoomIdUtils.CoordsToCenterPos(coords) + offset, color, primitveDuration);
+            Debug.DrawPoint(RoomIdUtils.CoordsToCenterPos(coords) + offset, data._color, primitveDuration);
 
             foreach (Vector3Int visibleCoords in data._visibleCoords)
-                Debug.DrawLine(RoomIdUtils.CoordsToCenterPos(coords) + offset, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, color, primitveDuration);
+                Debug.DrawLine(RoomIdUtils.CoordsToCenterPos(coords) + offset, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, data._color, primitveDuration);
         }
 
         return data;
     }
+
+    #region Hardcoded stuff
+
+    // Rooms that have known connection directions
+    public static readonly Dictionary<RoomType, Vector3Int[]> KnownDirectionsRooms = new()
+    {
+        [RoomType.HczCornerDeep] = [Vector3Int.back, Vector3Int.right],
+        [RoomType.HczNuke] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomType.HczCrossRoomWater] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right],
+        [RoomType.HczArmory] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomType.HczIntersectionJunk] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+
+        [RoomType.Hcz079] = [Vector3Int.left],
+        [RoomType.HczIntersection] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomType.HczHid] = [Vector3Int.left, Vector3Int.right],
+    };
+
+    public static readonly HashSet<RoomType> DiagonalVisibilityRooms =
+    [
+        RoomType.HczCornerDeep,
+        RoomType.HczNuke,
+        RoomType.HczCrossRoomWater,
+        RoomType.HczArmory,
+        RoomType.HczIntersectionJunk,
+    ];
+
+    public static readonly Vector3Int[] Directions =
+    [
+        Vector3Int.forward,
+        Vector3Int.right,
+        Vector3Int.back,
+        Vector3Int.left,
+    ];
+
+    static readonly float[] ConnectionCheckingOffsets =
+    [
+        0,
+        -1,
+        1,
+    ];
+
+    #endregion
 }

@@ -17,11 +17,13 @@ public class ServersideBacktrackModule : PluginModule
     protected override void OnEnabled()
     {
         StaticUnityMethods.OnUpdate += OnUpdate;
+        Handlers.Server.ReloadedConfigs += OnReset;
     }
 
     protected override void OnDisabled()
     {
         StaticUnityMethods.OnUpdate -= OnUpdate;
+        Handlers.Server.ReloadedConfigs -= OnReset;
     }
 
     protected override void OnReset()
@@ -31,7 +33,7 @@ public class ServersideBacktrackModule : PluginModule
 
     static void OnUpdate()
     {
-        if (!SunrisePlugin.Instance.Config.ServersideBacktrack)
+        if (!Config.Instance.ServersideBacktrack)
             return;
 
         foreach (Player player in Player.Dictionary.Values)

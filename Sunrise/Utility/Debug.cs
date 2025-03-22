@@ -10,7 +10,7 @@ public static class Debug
 {
     public static void DrawCube(Vector3 position, Vector3 scale, Color color = default, float duration = 10f)
     {
-        if (!SunrisePlugin.Instance.Config.DebugPrimitives)
+        if (!Config.Instance.DebugPrimitives)
             return;
 
         color = GetColor(color);
@@ -22,7 +22,7 @@ public static class Debug
     [Conditional("DEBUG")]
     public static void DrawLine(Vector3 start, Vector3 end, Color color = default, float duration = 10f)
     {
-        if (!SunrisePlugin.Instance.Config.DebugPrimitives)
+        if (!Config.Instance.DebugPrimitives)
             return;
 
         color = GetColor(color);
@@ -35,7 +35,7 @@ public static class Debug
     [Conditional("DEBUG")]
     public static void DrawPoint(Vector3 position, Color color = default, float duration = 10f)
     {
-        if (!SunrisePlugin.Instance.Config.DebugPrimitives)
+        if (!Config.Instance.DebugPrimitives)
             return;
 
         color = GetColor(color);

@@ -1,3 +1,4 @@
+using Sunrise.EntryPoint;
 using Sunrise.Utility;
 using MathExtensions = Sunrise.Utility.MathExtensions;
 
@@ -11,19 +12,9 @@ public class BacktrackHistory(Player player)
     public static readonly float AcceptedDistance = 0.02f;
     public static readonly float AcceptedAngle = 0.1f;
 
-    public readonly RingBuffer<BacktrackEntry> Entries = new((int)(HistoryLengthSeconds * 60));
+    public readonly RingBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AllowedLatencySeconds * 60));
 
-    public static float HistoryLengthSeconds
-    {
-        get;
-        set
-        {
-            field = value;
-            ServersideBacktrackModule.BacktrackHistories.Clear();
-        }
-    } = 0.3f;
-
-    public void RecordEntry()
+    public void RecordEntry() 
     {
         BacktrackEntry backtrackEntry = new(player);
         Entries.PushFront(backtrackEntry);
