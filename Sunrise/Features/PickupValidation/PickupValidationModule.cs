@@ -86,7 +86,7 @@ public class PickupValidationModule : PluginModule
             }
             else
             {
-                Log.Warn($"Hit {hit.collider?.gameObject?.name} ({hit.collider?.gameObject?.layer:G}) at {hit.point}");
+                Debug.Log($"Hit {hit.collider?.gameObject?.name} ({hit.collider?.gameObject?.layer:G}) at {hit.point}");
             }
         }
 
