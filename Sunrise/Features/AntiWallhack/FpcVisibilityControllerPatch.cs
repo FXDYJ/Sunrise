@@ -41,6 +41,8 @@ public static class VisibilityPatch
             new(OpCodes.Ldarg_0),
             new(OpCodes.Ldfld, Field(typeof(FpcVisibilityController), nameof(FpcVisibilityController._scp1344Effect))), // this._scp1344Effect
 
+            new(OpCodes.Ldloc_S, 5), // V_5 (sqr distance)
+
             new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
         ]);
 
@@ -65,7 +67,7 @@ public static class VisibilityPatch
     ///     This method limits visibility diagonally when players are inside the facility.
     /// </summary>
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Scp1344 scp1344Effect)
+    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Scp1344 scp1344Effect, float sqrDistance)
     {
         // Players are out of range
         if (!Config.Instance.AntiWallhack || (flags & InvisibilityFlags.OutOfRange) != 0)
@@ -74,14 +76,11 @@ public static class VisibilityPatch
         if (IsExceptionalCase(observerRole, targetRole))
             return flags;
 
-        Vector3 observerPosition = observerRole.FpcModule.Position;
-        Vector3 targetPosition = targetRole.FpcModule.Position;
-
-        if (MathExtensions.SqrDistance(observerPosition, targetPosition) < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
+        if (sqrDistance < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
             return flags;
 
-        Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerPosition);
-        Vector3Int targetCoords = RoomIdUtils.PositionToCoords(targetPosition);
+        Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
+        Vector3Int targetCoords = RoomIdUtils.PositionToCoords(targetRole.FpcModule.Position);
 
         if (RoomVisibilityData.Get(observerCoords) is not RoomVisibilityData visibilityData || visibilityData.CheckVisibility(targetCoords))
             return flags;
