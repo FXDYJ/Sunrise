@@ -13,7 +13,7 @@ public static class FpcVisibilityControllerIgnoredFlagsPatch
     {
         CodeMatcher matcher = new(instructions);
 
-        //replace ldc.i4.7 with ldc.i4.6, removing OutOfRange flag from SCP-1344
+        //replace ldc.i4.7 with ldc.i4.6, removing OutOfRange flag immunity from SCP-1344
         matcher
             .MatchStartForward(new CodeMatch(OpCodes.Ldc_I4_7))
             .ThrowIfInvalid("Failed to find Ldc_I4_7")
