@@ -25,11 +25,9 @@ public class BacktrackHistory(Player player)
     /// </summary>
     public void ForecastEntry()
     {
-        const float ForecastTime = 0.3f;
-
         float speed = player.Velocity.magnitude;
         Vector3 direction = player.Velocity / speed;
-        float forecastDistance = speed * ForecastTime;
+        float forecastDistance = speed * Config.Instance.AccountedLatencySeconds;
 
         if (forecastDistance < AcceptedDistance)
             return;
@@ -43,7 +41,7 @@ public class BacktrackHistory(Player player)
 
         BacktrackEntry forecastEntry = new(forecastPosition, player.Rotation)
         {
-            Timestamp = Time.time + ForecastTime,
+            Timestamp = Time.time + Config.Instance.AccountedLatencySeconds,
         };
         Entries.PushFront(forecastEntry);
 
