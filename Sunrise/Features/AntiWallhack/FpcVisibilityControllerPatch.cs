@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
+using CustomPlayerEffects;
 using HarmonyLib;
 using JetBrains.Annotations;
 using MapGeneration;
@@ -36,6 +37,10 @@ public static class VisibilityPatch
             // activeFlags are already on the stack ready to be returned
             new(OpCodes.Ldloc_1), // currentRole1 (observer)
             new(OpCodes.Ldloc_2), // currentRole2 (target)
+
+            new(OpCodes.Ldarg_0),
+            new(OpCodes.Ldfld, Field(typeof(FpcVisibilityController), nameof(FpcVisibilityController._scp1344Effect))), // this._scp1344Effect
+
             new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
         ]);
 
@@ -43,30 +48,36 @@ public static class VisibilityPatch
     }
 
     // Some roles' footstep sounds can be heard from a distance higher than human 12m forced visibility distance
-    static float GetForcedVisibilitySqrDistance(IFpcRole role) => role.FpcModule.Role.RoleTypeId switch
+    static float GetForcedVisibilitySqrDistance(IFpcRole targetRole, Scp1344 scp1344Effect)
     {
-        RoleTypeId.Scp939 or RoleTypeId.Scp173 => 5000,
-        RoleTypeId.Scp106 => 29 * 29,
-        _ => 12 * 12,
-    };
+        int targetForcedVisibility = targetRole.FpcModule.Role.RoleTypeId switch
+        {
+            RoleTypeId.Scp939 or RoleTypeId.Scp173 => 5000,
+            RoleTypeId.Scp106 => 29 * 29,
+            _ when scp1344Effect.IsEnabled => 24 * 24,
+            _ => 12 * 12,
+        };
+
+        return targetForcedVisibility;
+    }
 
     /// <summary>
     ///     This method limits visibility diagonally when players are inside the facility.
     /// </summary>
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole)
+    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Scp1344 scp1344Effect)
     {
         // Players are out of range
         if (!Config.Instance.AntiWallhack || (flags & InvisibilityFlags.OutOfRange) != 0)
             return flags;
 
-        Vector3 observerPosition = observerRole.FpcModule.Position;
-        Vector3 targetPosition = targetRole.FpcModule.Position;
-
         if (IsExceptionalCase(observerRole, targetRole))
             return flags;
 
-        if (MathExtensions.SqrDistance(observerPosition, targetPosition) < GetForcedVisibilitySqrDistance(targetRole))
+        Vector3 observerPosition = observerRole.FpcModule.Position;
+        Vector3 targetPosition = targetRole.FpcModule.Position;
+
+        if (MathExtensions.SqrDistance(observerPosition, targetPosition) < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
             return flags;
 
         Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerPosition);

@@ -125,6 +125,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="EntryPoint\SunriseLoader.cs"/>
+        <Compile Include="Features\AntiWallhack\FpcVisibilityControllerIgnoredFlagsPatch.cs" />
         <Compile Include="Features\DoorInteractionValidation\DoorInteractionValidationModule.cs" />
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
