@@ -134,9 +134,9 @@
         <Compile Include="Features\DoorInteractionValidation\DoorInteractionValidationModule.cs" />
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
-        <Compile Include="Features\PickupEspClutter\PhantomItem.cs" />
-        <Compile Include="Features\PickupEspClutter\PhantomItemSpawner.cs" />
-        <Compile Include="Features\PickupEspClutter\PickupEspClutterModule.cs" />
+        <Compile Include="Features\PickupEspClutter\PhantomPickup.cs" />
+        <Compile Include="Features\PickupEspClutter\PhantomPickupSpawner.cs" />
+        <Compile Include="Features\PickupEspClutter\PhantomPickupsModule.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
         <Compile Include="Features\CommonPatches\Scp939LungePatch.cs" />
         <Compile Include="Features\ServersideBacktrack\EntryMatchFlags.cs" />

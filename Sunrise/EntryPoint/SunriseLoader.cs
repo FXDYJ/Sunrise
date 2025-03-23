@@ -16,6 +16,6 @@ public class SunriseLoader : PluginModule
         new ServersideBacktrackModule(),
         new ServersideTeslaDamageModule(),
         new AntiDoorManipulatorModule(),
-        new PickupEspClutterModule(),
+        new PhantomPickupsModule(),
     ];
 }

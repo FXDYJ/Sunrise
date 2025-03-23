@@ -25,7 +25,7 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 [5] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 V_5
 */
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly]
-public static class VisibilityPatch
+public static class FpcVisibilityControllerPatch
 {
     [UsedImplicitly]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -43,7 +43,7 @@ public static class VisibilityPatch
 
             new(OpCodes.Ldloc_S, 5), // V_5 (position difference)
 
-            new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
+            new(OpCodes.Call, Method(typeof(FpcVisibilityControllerPatch), nameof(AddCustomVisibility))),
         ]);
 
         return newInstructions;

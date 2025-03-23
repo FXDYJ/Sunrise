@@ -14,10 +14,12 @@ public class RoomVisibilityData
 
     readonly HashSet<Vector3Int> _visibleCoords = [];
     readonly Color _color = Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
+    readonly Room _room;
     float _lastPrimitiveSpawnTime = Time.time;
 
     RoomVisibilityData(Room room)
     {
+        _room = room;
         Include(room);
 
         Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);
@@ -129,7 +131,7 @@ public class RoomVisibilityData
     }
 
     public static RoomVisibilityData Get(Room room) => Get(RoomIdUtils.PositionToCoords(room.Position))!;
-    
+
     // Gets cached visibility data or creates a new one
     public static RoomVisibilityData? Get(Vector3Int coords)
     {
@@ -160,10 +162,18 @@ public class RoomVisibilityData
             data._lastPrimitiveSpawnTime = Time.time;
 
             Vector3 offset = Random.insideUnitSphere * 0.1f + Vector3.up * 0.3f;
-            Debug.DrawPoint(RoomIdUtils.CoordsToCenterPos(coords) + offset, data._color, PrimitveDuration);
+            Vector3 origin = RoomIdUtils.CoordsToCenterPos(coords) + offset;
+            Debug.DrawPoint(origin, data._color, PrimitveDuration);
 
             foreach (Vector3Int visibleCoords in data._visibleCoords)
-                Debug.DrawLine(RoomIdUtils.CoordsToCenterPos(coords) + offset, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, data._color, PrimitveDuration);
+                Debug.DrawLine(origin, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, data._color, PrimitveDuration);
+            
+            origin += Vector3.up * 0.05f;
+            
+            Transform transform = data._room.transform;
+            Debug.DrawLine(origin, origin + transform.right, Colors.Red, PrimitveDuration);
+            Debug.DrawLine(origin, origin + transform.forward, Colors.Blue, PrimitveDuration);
+            Debug.DrawLine(origin, origin + transform.up, Colors.Green, PrimitveDuration);
         }
 
         return data;
@@ -183,6 +193,9 @@ public class RoomVisibilityData
         [RoomType.Hcz079] = [Vector3Int.left],
         [RoomType.HczIntersection] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
         [RoomType.HczHid] = [Vector3Int.left, Vector3Int.right],
+        
+        [RoomType.EzSmallrooms] = [Vector3Int.forward, Vector3Int.back],
+        [RoomType.EzIntercom] = [Vector3Int.left, Vector3Int.back],
     };
 
     public static readonly HashSet<RoomType> DiagonalVisibilityRooms =
