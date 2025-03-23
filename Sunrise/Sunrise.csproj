@@ -135,6 +135,7 @@
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
         <Compile Include="Features\PickupEspClutter\PhantomItem.cs" />
+        <Compile Include="Features\PickupEspClutter\PhantomItemSpawner.cs" />
         <Compile Include="Features\PickupEspClutter\PickupEspClutterModule.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
         <Compile Include="Features\CommonPatches\Scp939LungePatch.cs" />
