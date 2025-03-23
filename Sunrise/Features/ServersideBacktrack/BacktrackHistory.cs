@@ -1,3 +1,7 @@
+using Exiled.API.Features.Roles;
+using Exiled.Events.Commands.Hub;
+using InventorySystem.Items.Firearms.Modules;
+using PlayerRoles.FirstPersonControl;
 using MathExtensions = Sunrise.Utility.MathExtensions;
 
 namespace Sunrise.Features.ServersideBacktrack;
@@ -53,6 +57,8 @@ public class BacktrackHistory(Player player)
     /// </summary>
     public void RestoreClosestEntry(BacktrackEntry claimed, bool forecast)
     {
+        RecordEntry();
+        
         if (forecast)
             ForecastEntry();
 

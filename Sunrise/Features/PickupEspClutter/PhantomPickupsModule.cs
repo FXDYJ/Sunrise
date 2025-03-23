@@ -1,4 +1,5 @@
 using Exiled.Events.EventArgs.Server;
+using PlayerRoles.FirstPersonControl;
 
 namespace Sunrise.Features.PickupEspClutter;
 
@@ -16,7 +17,7 @@ public class PhantomPickupsModule : PluginModule
     protected override void OnEnabled()
     {
         return; // BUG: Triggers collide with players pushing them off the map
-        
+
         if (!Config.Instance.PhantomPickups)
             return;
 
