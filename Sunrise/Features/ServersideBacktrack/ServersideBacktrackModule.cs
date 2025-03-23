@@ -7,34 +7,18 @@ namespace Sunrise.Features.ServersideBacktrack;
 /// </summary>
 public class ServersideBacktrackModule : PluginModule
 {
-    public static readonly Dictionary<Player, BacktrackHistory> BacktrackHistories = new();
-
     protected override void OnEnabled()
     {
-        StaticUnityMethods.OnUpdate += OnUpdate;
         Handlers.Server.ReloadedConfigs += OnReset;
     }
 
     protected override void OnDisabled()
     {
-        StaticUnityMethods.OnUpdate -= OnUpdate;
         Handlers.Server.ReloadedConfigs -= OnReset;
     }
 
     protected override void OnReset()
     {
-        BacktrackHistories.Clear();
-    }
-
-    static void OnUpdate()
-    {
-        if (!Config.Instance.ServersideBacktrack)
-            return;
-
-        foreach (Player player in Player.Dictionary.Values)
-        {
-            BacktrackHistory history = BacktrackHistories.GetOrAdd(player, () => new(player));
-            history.RecordEntry();
-        }
+        BacktrackHistory.Dictionary.Clear();
     }
 }

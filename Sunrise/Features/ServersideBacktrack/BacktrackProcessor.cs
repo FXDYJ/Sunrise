@@ -1,5 +1,4 @@
 using System;
-
 namespace Sunrise.Features.ServersideBacktrack;
 
 /// <summary>
@@ -14,12 +13,12 @@ public readonly struct BacktrackProcessor : IDisposable
     {
         _player = player;
         _previous = new(_player);
-
-        if (ServersideBacktrackModule.BacktrackHistories.TryGetValue(player, out BacktrackHistory history))
-            history.RestoreClosestEntry(claimed, forecast);
+        
+        BacktrackHistory.Get(player)
+            .RestoreClosestEntry(claimed, forecast); 
     }
 
-    public void Dispose()
+    public void Dispose() // BUG: Prevents teleports inside OnShooting from working if player dies. is it possible by default tho?
     {
         _previous.Restore(_player);
     }

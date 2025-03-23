@@ -1,7 +1,3 @@
-using Exiled.API.Features.Roles;
-using Exiled.Events.Commands.Hub;
-using InventorySystem.Items.Firearms.Modules;
-using PlayerRoles.FirstPersonControl;
 using MathExtensions = Sunrise.Utility.MathExtensions;
 
 namespace Sunrise.Features.ServersideBacktrack;
@@ -14,12 +10,13 @@ public class BacktrackHistory(Player player)
     public const float AcceptedDistance = 0.02f;
     public const float AcceptedAngle = 0.1f;
 
+    public static readonly Dictionary<ReferenceHub, BacktrackHistory> Dictionary = new();
+
     public readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AccountedLatencySeconds * 60));
 
-    public void RecordEntry()
+    public void RecordEntry(Vector3 position, Quaternion rotation)
     {
-        BacktrackEntry backtrackEntry = new(player);
-        Entries.PushFront(backtrackEntry);
+        Entries.PushFront(new(position, rotation));
     }
 
     /// <summary>
@@ -57,8 +54,6 @@ public class BacktrackHistory(Player player)
     /// </summary>
     public void RestoreClosestEntry(BacktrackEntry claimed, bool forecast)
     {
-        RecordEntry();
-        
         if (forecast)
             ForecastEntry();
 
@@ -148,5 +143,15 @@ public class BacktrackHistory(Player player)
         {
             Debug.Log($"No suitable entry found for {player.Nickname}");
         }
+    }
+
+    public static BacktrackHistory Get(Player player)
+    {
+        return Dictionary.GetOrAdd(player.ReferenceHub, () => new(player));
+    }
+
+    public static BacktrackHistory Get(ReferenceHub hub)
+    {
+        return Dictionary.GetOrAdd(hub, () => new(Player.Get(hub)));
     }
 }

@@ -11,17 +11,7 @@ public struct BacktrackEntry
     public BacktrackEntry(Player player)
     {
         Position = player.Position;
-
-        if (player.Role is not FpcRole fpcRole)
-        {
-            Log.Warn($"Player {player.Nickname} is not a FpcRole");
-            Rotation = player.CameraTransform.rotation;
-            return;
-        }
-
-        FpcMouseLook mouseLook = fpcRole.FirstPersonController.FpcModule.MouseLook;
-        /*Rotation = Quaternion.Euler(mouseLook._prevSyncV, mouseLook._prevSyncH, 0);*/
-        Rotation = ConvertToQuaternion(mouseLook._prevSyncH, mouseLook._prevSyncV);
+        Rotation = player.CameraTransform.rotation;
     }
 
     /// <summary>
@@ -43,16 +33,5 @@ public struct BacktrackEntry
     {
         player.Transform.position = Position;
         player.CameraTransform.rotation = Rotation;
-    }
-
-    public static Quaternion ConvertToQuaternion(ushort horizontal, ushort vertical)
-    {
-        float hAngle = Mathf.Lerp(0f, 360, (float)horizontal / ushort.MaxValue);
-        float vAngle = Mathf.Lerp(-88, 88, (float)vertical / ushort.MaxValue);
-
-        Quaternion hRot = Quaternion.Euler(Vector3.up * hAngle).normalized;
-        Quaternion vRot = Quaternion.Euler(Vector3.left * vAngle).normalized;
-
-        return (hRot * vRot).normalized;
     }
 }
