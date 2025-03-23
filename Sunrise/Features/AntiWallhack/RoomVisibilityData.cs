@@ -128,6 +128,8 @@ public class RoomVisibilityData
         return false;
     }
 
+    public static RoomVisibilityData Get(Room room) => Get(RoomIdUtils.PositionToCoords(room.Position))!;
+    
     // Gets cached visibility data or creates a new one
     public static RoomVisibilityData? Get(Vector3Int coords)
     {

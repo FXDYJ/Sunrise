@@ -73,7 +73,7 @@
             <HintPath>..\_ProjectDependencies\Exiled.Permissions.dll</HintPath>
         </Reference>
         <Reference Include="Mirror">
-            <HintPath>..\_ProjectDependencies\Mirror.dll</HintPath>
+          <HintPath>..\_ProjectDependencies\Mirror-Publicized.dll</HintPath>
         </Reference>
         <Reference Include="Mono.Security">
             <HintPath>..\_ProjectDependencies\Mono.Security.dll</HintPath>
@@ -134,6 +134,7 @@
         <Compile Include="Features\DoorInteractionValidation\DoorInteractionValidationModule.cs" />
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
+        <Compile Include="Features\PickupEspClutter\PhantomItem.cs" />
         <Compile Include="Features\PickupEspClutter\PickupEspClutterModule.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
         <Compile Include="Features\CommonPatches\Scp939LungePatch.cs" />
@@ -145,6 +146,7 @@
         <Compile Include="Utility\Debug.cs" />
         <Compile Include="Utility\Layers.cs" />
         <Compile Include="Utility\MathExtensions.cs" />
+        <Compile Include="Utility\PlayerExtensions.cs" />
         <Compile Include="Utility\PluginModule.cs" />
         <Compile Include="EntryPoint\Config.cs" />
         <Compile Include="EntryPoint\SunrisePlugin.cs" />
