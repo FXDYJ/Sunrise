@@ -3,7 +3,6 @@ using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Scp914;
-using Sunrise.Utility;
 
 namespace Sunrise.Features.PickupValidation;
 

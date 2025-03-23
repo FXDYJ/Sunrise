@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Exiled.API.Enums;
 using MapGeneration;
-using Sunrise.Utility;
 
 namespace Sunrise.Features.AntiWallhack;
 

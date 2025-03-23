@@ -1,9 +1,9 @@
 using Sunrise.Features.AntiWallhack;
 using Sunrise.Features.DoorInteractionValidation;
+using Sunrise.Features.PickupEspClutter;
 using Sunrise.Features.PickupValidation;
 using Sunrise.Features.ServersideBacktrack;
 using Sunrise.Features.ServersideTeslaDamage;
-using Sunrise.Utility;
 
 namespace Sunrise.EntryPoint;
 
@@ -16,5 +16,6 @@ public class SunriseLoader : PluginModule
         new ServersideBacktrackModule(),
         new ServersideTeslaDamageModule(),
         new AntiDoorManipulatorModule(),
+        new PickupEspClutterModule(),
     ];
 }

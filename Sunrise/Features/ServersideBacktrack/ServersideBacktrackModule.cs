@@ -1,5 +1,3 @@
-using Sunrise.Utility;
-
 namespace Sunrise.Features.ServersideBacktrack;
 
 /// <summary>

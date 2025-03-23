@@ -36,6 +36,11 @@
         <WarningLevel>4</WarningLevel>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
+    <PropertyGroup>
+        <PostBuildEvent>
+            copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).dll" "$(AppData)\EXILED\Plugins\$(AssemblyName).dll"
+        </PostBuildEvent> 
+    </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony">
             <HintPath>..\_ProjectDependencies\0Harmony.dll</HintPath>
@@ -129,6 +134,7 @@
         <Compile Include="Features\DoorInteractionValidation\DoorInteractionValidationModule.cs" />
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\RoomVisibilityData.cs" />
+        <Compile Include="Features\PickupEspClutter\PickupEspClutterModule.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
         <Compile Include="Features\CommonPatches\Scp939LungePatch.cs" />
         <Compile Include="Features\ServersideBacktrack\EntryMatchFlags.cs" />

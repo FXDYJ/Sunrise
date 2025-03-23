@@ -1,5 +1,4 @@
 using MEC;
-using Sunrise.Utility;
 
 namespace Sunrise.Features.ServersideTeslaDamage;
 

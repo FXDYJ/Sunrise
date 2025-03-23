@@ -1,4 +1,3 @@
-using Sunrise.Utility;
 using MathExtensions = Sunrise.Utility.MathExtensions;
 
 namespace Sunrise.Features.ServersideBacktrack;

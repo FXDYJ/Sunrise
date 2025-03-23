@@ -3,6 +3,7 @@
 global using System.Collections.Generic;
 global using Exiled.API.Features;
 global using Sunrise.EntryPoint;
+global using Sunrise.Utility;
 global using UnityEngine;
 global using static HarmonyLib.AccessTools;
 global using Debug = Sunrise.Utility.Debug;

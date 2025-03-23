@@ -1,6 +1,5 @@
 using System;
 using MapGeneration;
-using Sunrise.Utility;
 
 namespace Sunrise.Features.AntiWallhack;
 

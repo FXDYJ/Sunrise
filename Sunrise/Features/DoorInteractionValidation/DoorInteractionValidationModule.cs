@@ -1,6 +1,5 @@
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
-using Sunrise.Utility;
 
 namespace Sunrise.Features.DoorInteractionValidation;
 
@@ -45,7 +44,7 @@ public class AntiDoorManipulatorModule : PluginModule
 
         Ray ray = new(player.CameraTransform.position, player.CameraTransform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Doors | Mask.DoorButtons)))
+        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Doors | Mask.DoorButtons | Mask.Glass)))
         {
             Debug.DrawLine(ray.origin, hit.point, Colors.Yellow * 50, 15);
             return true;

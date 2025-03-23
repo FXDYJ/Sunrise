@@ -5,7 +5,6 @@ using HarmonyLib;
 using InventorySystem.Items.Firearms.Modules.Misc;
 using JetBrains.Annotations;
 using RelativePositioning;
-using Sunrise.Utility;
 using BaseFirearm = InventorySystem.Items.Firearms.Firearm;
 
 namespace Sunrise.Features.ServersideBacktrack;

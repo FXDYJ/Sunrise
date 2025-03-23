@@ -41,7 +41,7 @@ public static class VisibilityPatch
             new(OpCodes.Ldarg_0),
             new(OpCodes.Ldfld, Field(typeof(FpcVisibilityController), nameof(FpcVisibilityController._scp1344Effect))), // this._scp1344Effect
 
-            new(OpCodes.Ldloc_S, 5), // V_5 (sqr distance)
+            new(OpCodes.Ldloc_S, 5), // V_5 (position difference)
 
             new(OpCodes.Call, Method(typeof(VisibilityPatch), nameof(AddCustomVisibility))),
         ]);
@@ -67,7 +67,7 @@ public static class VisibilityPatch
     ///     This method limits visibility diagonally when players are inside the facility.
     /// </summary>
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Scp1344 scp1344Effect, float sqrDistance)
+    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Scp1344 scp1344Effect, Vector3 positionDifference)
     {
         // Players are out of range
         if (!Config.Instance.AntiWallhack || (flags & InvisibilityFlags.OutOfRange) != 0)
@@ -76,7 +76,7 @@ public static class VisibilityPatch
         if (IsExceptionalCase(observerRole, targetRole))
             return flags;
 
-        if (sqrDistance < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
+        if (positionDifference.sqrMagnitude < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
             return flags;
 
         Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
