@@ -93,7 +93,7 @@ public class PickupValidationModule : PluginModule
     {
         var ray = new Ray(player.CameraTransform.position, player.CameraTransform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Pickups | Mask.HitregObstacles | Mask.InvisibleWalls)))
+        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Pickups | Mask.HitregObstacles)))
         {
             if (hit.collider.gameObject == pickup.GameObject)
             {
