@@ -3,7 +3,6 @@ using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Scp914;
-using InventorySystem.Items.Usables.Scp1344;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.PickupValidation;
@@ -93,7 +92,7 @@ public class PickupValidationModule : PluginModule
     {
         var ray = new Ray(player.CameraTransform.position, player.CameraTransform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Pickups | Mask.HitregObstacles | Mask.InvisibleWalls)))
+        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Pickups | Mask.HitregObstacles)))
         {
             if (hit.collider.gameObject == pickup.GameObject)
             {
