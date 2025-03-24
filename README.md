@@ -1,9 +1,12 @@
-# Sunrise ![GitHub all releases](https://img.shields.io/github/downloads/Banalny-Banan/Sunrise/total?label=Downloads)
+# Sunrise
 
 SCP:SL anti-cheat that actually works.
 Designed to prevent common exploits and add server authority in places where it lacks.
 
 **Defeated cheats**: Silent aim, Spinbot, Wallhack (partially), Item pickup through walls, Tesla Gate bypass, SCP-939 Lunge exploit.
+
+![GitHub all releases](https://img.shields.io/github/downloads/Banalny-Banan/Sunrise/total?label=Downloads&color=333333)
+[![Discord](https://img.shields.io/discord/1277301350828478525?color=5865F2&label=Discord&logo=discord&logoColor=white)](https://discord.gg/9nAaRVNCq3)
 
 # Features
 
@@ -60,7 +63,7 @@ If a player did not report the damage, the server forces Tesla damage to be appl
 
 > Prevents cheaters from interacting with doors without looking at them.
 
-By default, the server only performs a distance and a LOS check when a player interacts with a door. 
+By default, the server only performs a distance and a LOS check when a player interacts with a door.
 Sunrise adds a FOV check to ensure that the player is looking at the door, preventing that cheat feature from working.
 
 ## Common Exploit Patches
