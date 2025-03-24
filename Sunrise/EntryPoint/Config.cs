@@ -31,8 +31,9 @@ public class Config : IConfig
     [Description("Prevents cheaters from interacting with doors they're not looking at. Performance impact negligible.")]
     public bool DoorInteractionValidation { get; set; } = true;
     
-    [Description("Clutters ESP cheats with phantom pickups that disappear when players get close. Performance impact minimal.")]
-    public bool PhantomPickups { get; set; } = true;
+    // TODO fix
+    /*[Description("Clutters ESP cheats with phantom pickups that disappear when players get close. Performance impact minimal.")]
+    public bool PhantomPickups { get; set; } = true;*/
 
     #region Singleton
 

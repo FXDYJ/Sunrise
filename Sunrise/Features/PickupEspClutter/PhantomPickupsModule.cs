@@ -16,13 +16,13 @@ public class PhantomPickupsModule : PluginModule
 
     protected override void OnEnabled()
     {
-        return; // BUG: Triggers collide with players pushing them off the map
+        // BUG: Triggers collide with players pushing them off the map
 
-        if (!Config.Instance.PhantomPickups)
+        /*if (!Config.Instance.PhantomPickups)
             return;
 
         Handlers.Server.RoundStarted += OnRoundStarted;
-        Handlers.Server.RoundEnded += OnRoundEnded;
+        Handlers.Server.RoundEnded += OnRoundEnded;*/
     }
 
     protected override void OnDisabled()

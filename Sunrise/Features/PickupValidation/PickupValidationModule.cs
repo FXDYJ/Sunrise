@@ -1,14 +1,16 @@
+using Exiled.API.Extensions;
 using Exiled.API.Features.Doors;
 using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Scp914;
+using InventorySystem.Items.Pickups;
 
 namespace Sunrise.Features.PickupValidation;
 
 public class PickupValidationModule : PluginModule
 {
-    static readonly Dictionary<Player, float> TemporaryBypass = new();
+    static readonly Dictionary<Player, float> TemporaryPlayerBypass = new();
 
     protected override void OnEnabled()
     {
@@ -24,7 +26,7 @@ public class PickupValidationModule : PluginModule
 
     static void OnScp914UpgradingInventoryItem(UpgradingInventoryItemEventArgs ev)
     {
-        TemporaryBypass[ev.Player] = Time.time + 0.01f;
+        TemporaryPlayerBypass[ev.Player] = Time.time + 0.01f;
     }
 
     void OnPickingUpItem(PickingUpItemEventArgs ev)
@@ -32,7 +34,11 @@ public class PickupValidationModule : PluginModule
         if (!Config.Instance.PickupValidation || !ev.Pickup.Base || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
             return;
 
-        if (TemporaryBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
+        if (TemporaryPlayerBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
+            return;
+
+        // Exiled bug - armor pickups become permanently locked if the event is denied
+        if (ev.Pickup is BodyArmorPickup)
             return;
 
         if (!CanPickUp(ev.Player, ev.Pickup))
@@ -41,27 +47,23 @@ public class PickupValidationModule : PluginModule
 
     static bool CanPickUp(Player player, Pickup pickup)
     {
-        if (CanPickUpSimple(player, pickup))
-            return true;
-
-        if (CanPickUpDirect(player, pickup))
+        if (!IsObstructed(player.CameraTransform.position, pickup.Position, out _))
             return true;
 
         Bounds bounds = pickup.Base.GetComponentInChildren<Renderer>().bounds;
         Vector3 eyePos = player.CameraTransform.position;
-        bool result = IsAccessibleFrom(eyePos, bounds);
+        Vector3 direction = player.CameraTransform.forward;
+
+        if (CanPickUpDirect(eyePos, direction, pickup))
+            return true;
+
+        bool result = CanPickupBounds(eyePos, bounds);
 
         if (!result)
         {
-            var upRay = new Ray(eyePos, Vector3.up);
-            var jumpHeight = 0.5f; //BUG: likely set too low
+            Vector3 jumpEyePos = GetJumpEyePos(eyePos);
 
-            if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, (int)Mask.PlayerObstacles))
-                jumpHeight = hit.distance - 0.05f;
-
-            eyePos += Vector3.up * jumpHeight;
-
-            result = IsAccessibleFrom(eyePos, bounds);
+            result = CanPickupBounds(jumpEyePos, bounds) || CanPickUpDirect(jumpEyePos, direction, pickup);
 
             if (!result && Config.Instance.DebugPrimitives)
             {
@@ -70,11 +72,9 @@ public class PickupValidationModule : PluginModule
                     Debug.DrawLine(eyePos, point, Colors.Red * 30, 10f);
                 }
 
-                eyePos -= Vector3.up * jumpHeight;
-
                 foreach (Vector3 point in GetCorners(bounds))
                 {
-                    Debug.DrawLine(eyePos, point, Colors.Red * 30, 10f);
+                    Debug.DrawLine(jumpEyePos, point, Colors.Red * 30, 10f);
                 }
             }
         }
@@ -84,32 +84,28 @@ public class PickupValidationModule : PluginModule
         return result;
     }
 
-    static bool CanPickUpSimple(Player player, Pickup pickup)
-        => !IsObstructed(player.CameraTransform.position, pickup.Position, out _);
-
-    static bool CanPickUpDirect(Player player, Pickup pickup)
+    static bool CanPickUpDirect(Vector3 eyePos, Vector3 direction, Pickup pickup)
     {
-        var ray = new Ray(player.CameraTransform.position, player.CameraTransform.forward);
+        var ray = new Ray(eyePos, direction);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Pickups | Mask.HitregObstacles)))
-        {
-            if (hit.collider.gameObject == pickup.GameObject)
-            {
-                Debug.DrawLine(ray.origin, hit.point, Colors.Yellow * 50, 15);
-                return true;
-            }
-        }
+        if (!Physics.Raycast(ray, out RaycastHit pickupHit, 3, (int)(Mask.HitregObstacles | Mask.Pickups)))
+            return false;
 
-        return false;
+        if (pickupHit.collider.gameObject.layer != (int)Layer.Pickups)
+            return false;
+
+        if (pickupHit.collider.GetComponentInParent<ItemPickupBase>() != pickup.Base)
+            return false;
+
+        Debug.DrawLine(ray.origin, pickupHit.point, Colors.Blue * 50, 15);
+        return true;
     }
 
-    static bool IsAccessibleFrom(Vector3 position, Bounds bounds)
+    static bool CanPickupBounds(Vector3 position, Bounds bounds)
     {
-        bool largeBounds = bounds.size.magnitude > 0.5f;
-
         foreach (Vector3 corner in GetCorners(bounds))
         {
-            if (!IsObstructed(position, corner, out RaycastHit hit) && (!largeBounds || !IsObstructed(corner, bounds.center, out _)))
+            if (!IsObstructed(position, corner, out RaycastHit hit))
             {
                 Debug.DrawLine(position, corner, Colors.Green * 50, 10f);
                 return true;
@@ -121,6 +117,17 @@ public class PickupValidationModule : PluginModule
         }
 
         return false;
+    }
+
+    static Vector3 GetJumpEyePos(Vector3 eyePos)
+    {
+        var upRay = new Ray(eyePos, Vector3.up);
+        var jumpHeight = 0.75f;
+
+        if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, (int)Mask.PlayerObstacles))
+            jumpHeight = hit.distance - 0.05f;
+
+        return upRay.GetPoint(jumpHeight);
     }
 
     static bool IsObstructed(Vector3 a, Vector3 b, out RaycastHit hit) => Physics.Linecast(a, b, out hit, (int)Mask.HitregObstacles) && !CanIgnoreHit(hit);
@@ -139,18 +146,19 @@ public class PickupValidationModule : PluginModule
 
     static IEnumerable<Vector3> GetCorners(Bounds bounds)
     {
+        Vector3 center = bounds.center;
         Vector3 extents = bounds.extents;
 
-        yield return bounds.center;
+        yield return center;
 
-        yield return bounds.center + new Vector3(extents.x, extents.y, extents.z);
-        yield return bounds.center + new Vector3(extents.x, extents.y, -extents.z);
-        yield return bounds.center + new Vector3(extents.x, -extents.y, extents.z);
-        yield return bounds.center + new Vector3(extents.x, -extents.y, -extents.z);
+        yield return center + new Vector3(extents.x, extents.y, extents.z);
+        yield return center + new Vector3(extents.x, extents.y, -extents.z);
+        yield return center + new Vector3(extents.x, -extents.y, extents.z);
+        yield return center + new Vector3(extents.x, -extents.y, -extents.z);
 
-        yield return bounds.center + new Vector3(-extents.x, extents.y, extents.z);
-        yield return bounds.center + new Vector3(-extents.x, extents.y, -extents.z);
-        yield return bounds.center + new Vector3(-extents.x, -extents.y, extents.z);
-        yield return bounds.center + new Vector3(-extents.x, -extents.y, -extents.z);
+        yield return center + new Vector3(-extents.x, extents.y, extents.z);
+        yield return center + new Vector3(-extents.x, extents.y, -extents.z);
+        yield return center + new Vector3(-extents.x, -extents.y, extents.z);
+        yield return center + new Vector3(-extents.x, -extents.y, -extents.z);
     }
 }
