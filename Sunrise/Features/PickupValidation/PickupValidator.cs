@@ -1,4 +1,3 @@
-using Exiled.API.Features.Doors;
 using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
@@ -10,9 +9,9 @@ namespace Sunrise.Features.PickupValidation;
 
 public static class PickupValidator
 {
-    public static readonly Dictionary<Player, float> TemporaryPlayerBypass = new();
-    public static readonly Dictionary<LockerChamber, float> LockerLastInteraction = new();
-    public static readonly Dictionary<DoorVariant, float> DoorLastInteraction = new();
+    internal static readonly Dictionary<Player, float> TemporaryPlayerBypass = new();
+    internal static readonly Dictionary<LockerChamber, float> LockerLastInteraction = new();
+    internal static readonly Dictionary<DoorVariant, float> DoorLastInteraction = new();
 
     public static void OnPickingUpItem(PickingUpItemEventArgs ev)
     {
