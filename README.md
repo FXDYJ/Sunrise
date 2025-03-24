@@ -1,4 +1,4 @@
-# Sunrise
+# Sunrise ![GitHub all releases](https://img.shields.io/github/downloads/Banalny-Banan/Sunrise/total?label=Downloads)
 
 SCP:SL anti-cheat that actually works.
 Designed to prevent common exploits and add server authority in places where it lacks.
