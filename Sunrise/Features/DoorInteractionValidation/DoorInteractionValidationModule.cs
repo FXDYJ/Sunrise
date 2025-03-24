@@ -20,6 +20,9 @@ public class AntiDoorManipulatorModule : PluginModule
         if (!Config.Instance.DoorInteractionValidation || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
             return;
 
+        if (ev is not { Door: not null, Collider: not null, Player: not null })
+            return;
+
         if (!CanInteract(ev.Player, ev))
         {
             if (Config.Instance.Debug)
@@ -31,9 +34,9 @@ public class AntiDoorManipulatorModule : PluginModule
 
     static bool CanInteract(Player player, InteractingDoorEventArgs ev)
     {
-        Vector3 evColliderPos = ev.Collider.transform.position + ev.Collider.transform.TransformDirection(ev.Collider.VerificationOffset);
+        Vector3 colliderPos = ev.Collider.transform.position + ev.Collider.transform.TransformDirection(ev.Collider.VerificationOffset);
 
-        if (CanInteractWithCollider(player, evColliderPos))
+        if (CanInteractWithCollider(player, colliderPos))
             return true;
 
         foreach (BoxCollider collider in ev.Door.Base._colliders)
@@ -50,7 +53,7 @@ public class AntiDoorManipulatorModule : PluginModule
             return true;
         }
 
-        Debug.Log($"Door interaction blocked. Player: {player.Nickname}, Door: {ev.Door.Position}, Collider: {evColliderPos}");
+        Debug.Log($"Door interaction blocked. Player: {player.Nickname}, Door: {ev.Door.Position}, Collider: {colliderPos}");
         return false;
     }
 
