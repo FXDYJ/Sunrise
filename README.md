@@ -125,6 +125,6 @@ Sunrise is licensed under the MIT License with the Commons Clause condition.
 
 - You are free to use, modify, and include this project (or parts of it) in private or commercial projects.
 - However, you may not sell or distribute Sunrise or derivative works as a standalone commercial product.
-- This restriction is in place to prevent the development of for-profit anti-cheat services based on our work, which we consider unethical.
+- This restriction is in place to prevent the development of for-profit anti-cheats based on our work, which we consider unethical.
 
 See [LICENSE](./LICENSE) for full legal terms.
