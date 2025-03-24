@@ -54,7 +54,7 @@ public class PickupValidationModule : PluginModule
         if (!result)
         {
             var upRay = new Ray(eyePos, Vector3.up);
-            var jumpHeight = 0.5f;
+            var jumpHeight = 0.5f; //BUG: likely set too low
 
             if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, (int)Mask.PlayerObstacles))
                 jumpHeight = hit.distance - 0.05f;
@@ -125,7 +125,17 @@ public class PickupValidationModule : PluginModule
 
     static bool IsObstructed(Vector3 a, Vector3 b, out RaycastHit hit) => Physics.Linecast(a, b, out hit, (int)Mask.HitregObstacles) && !CanIgnoreHit(hit);
 
-    static bool CanIgnoreHit(RaycastHit hit) => hit.collider?.gameObject.layer == (int)Layer.Doors && Door.Get(hit.collider.gameObject) is { IsKeycardDoor: false };
+    static bool CanIgnoreHit(RaycastHit hit)
+    {
+        // Non-keycard doors
+        int layer = hit.collider.gameObject.layer;
+
+        if (layer == (int)Layer.Doors && Door.Get(hit.collider.gameObject) is { IsKeycardDoor: false })
+            return true;
+
+        /*if (layer == (int)Layer.Glass && hit.collider.TryGetComponent<PedestalScpLocker>(out PedestalScpLocker? locker) && locker.)*/ //BUG: PedestalScpLocker doors can block legit pickups after moving
+        return false;
+    }
 
     static IEnumerable<Vector3> GetCorners(Bounds bounds)
     {
