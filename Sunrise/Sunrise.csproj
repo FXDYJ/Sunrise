@@ -139,6 +139,7 @@
         <Compile Include="Features\PickupEspClutter\PhantomPickupsModule.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs" />
         <Compile Include="Features\CommonPatches\Scp939LungePatch.cs" />
+        <Compile Include="Features\PickupValidation\PickupValidator.cs" />
         <Compile Include="Features\ServersideBacktrack\EntryMatchFlags.cs" />
         <Compile Include="Features\AntiWallhack\FpcVisibilityControllerPatch.cs" />
         <Compile Include="Features\ServersideBacktrack\FpcMouseLookPatch.cs" />
