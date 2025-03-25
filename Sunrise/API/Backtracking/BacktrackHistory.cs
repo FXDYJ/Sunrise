@@ -1,20 +1,20 @@
 using MathExtensions = Sunrise.Utility.MathExtensions;
 
-namespace Sunrise.Features.ServersideBacktrack;
+namespace Sunrise.API.Backtracking;
 
 /// <summary>
 ///     Records a history of player's positions and rotations for later use.
 /// </summary>
-public class BacktrackHistory(Player player)
+internal class BacktrackHistory(Player player)
 {
-    public const float AcceptedDistance = 0.02f;
-    public const float AcceptedAngle = 0.1f;
+    internal const float AcceptedDistance = 0.02f;
+    internal const float AcceptedAngle = 0.1f;
 
     internal static readonly Dictionary<ReferenceHub, BacktrackHistory> Dictionary = new();
 
     internal readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AccountedLatencySeconds * 60));
 
-    public void RecordEntry(Vector3 position, Quaternion rotation)
+    internal void RecordEntry(Vector3 position, Quaternion rotation)
     {
         Entries.PushFront(new(position, rotation));
     }
@@ -52,7 +52,7 @@ public class BacktrackHistory(Player player)
     ///     Finds the closest position and rotation to the claimed entry that were present in history.
     ///     This prevents clients from being able to shoot in directions they are not looking at.
     /// </summary>
-    public void RestoreClosestEntry(BacktrackEntry claimed, bool forecast)
+    internal void RestoreClosestEntry(BacktrackEntry claimed, bool forecast)
     {
         if (forecast)
             ForecastEntry();
@@ -76,7 +76,7 @@ public class BacktrackHistory(Player player)
         }
     }
 
-    public BacktrackEntry GetClosest(float timestamp)
+    internal BacktrackEntry GetClosest(float timestamp)
     {
         // Entries are ordered from newest to oldest
         foreach (BacktrackEntry entry in Entries)
@@ -88,7 +88,7 @@ public class BacktrackHistory(Player player)
         return Entries.Back();
     }
 
-    public BacktrackEntry GetClosest(BacktrackEntry claimed)
+    internal BacktrackEntry GetClosest(BacktrackEntry claimed)
     {
         BacktrackEntry best = default;
         var minSqrDistance = float.MaxValue;
@@ -164,12 +164,12 @@ public class BacktrackHistory(Player player)
         return best;
     }
 
-    public static BacktrackHistory Get(Player player)
+    internal static BacktrackHistory Get(Player player)
     {
         return Dictionary.GetOrAdd(player.ReferenceHub, () => new(player));
     }
 
-    public static BacktrackHistory Get(ReferenceHub hub)
+    internal static BacktrackHistory Get(ReferenceHub hub)
     {
         return Dictionary.GetOrAdd(hub, () => new(Player.Get(hub)));
     }

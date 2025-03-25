@@ -1,13 +1,13 @@
 using System.Linq;
 using MapGeneration;
 
-namespace Sunrise.API.Visibility;
+namespace Sunrise.API.Visibility.Generation;
 
 internal static class RoomConnectionChecker
 {
     static readonly float[] ConnectionCheckingOffsets = [0, -1, 1];
 
-    public static bool AreConnected(Vector3Int coordsA, Vector3Int coordsB)
+    internal static bool AreConnected(Vector3Int coordsA, Vector3Int coordsB)
     {
         if (Vector3Int.Distance(coordsA, coordsB) > 1)
             return false;

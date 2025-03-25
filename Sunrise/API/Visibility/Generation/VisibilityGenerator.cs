@@ -1,11 +1,11 @@
 using System;
 using MapGeneration;
 
-namespace Sunrise.API.Visibility;
+namespace Sunrise.API.Visibility.Generation;
 
-public static class VisibilityGenerator
+internal static class VisibilityGenerator
 {
-    public static void AddRoomAndNeighbors(HashSet<Vector3Int> visibleCoords, Room room)
+    internal static void AddRoomAndNeighbors(HashSet<Vector3Int> visibleCoords, Room room)
     {
         if (room is null)
             throw new ArgumentNullException(nameof(room));

@@ -1,15 +1,16 @@
 using System;
-namespace Sunrise.Features.ServersideBacktrack;
+
+namespace Sunrise.API.Backtracking;
 
 /// <summary>
 ///     A disposable struct that temporarily resets player's position to a backtracked one, then restores it back.
 /// </summary>
-public readonly struct BacktrackProcessor : IDisposable
+internal readonly struct BacktrackProcessor : IDisposable
 {
     readonly BacktrackEntry _previous;
     readonly Player _player;
 
-    public BacktrackProcessor(Player player, BacktrackEntry claimed, bool forecast)
+    internal BacktrackProcessor(Player player, BacktrackEntry claimed, bool forecast)
     {
         _player = player;
         _previous = new(_player);

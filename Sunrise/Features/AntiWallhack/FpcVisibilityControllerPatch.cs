@@ -24,6 +24,12 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 [4] float32 num,
 [5] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 V_5
 */
+
+/// <summary>
+///     Wallhack nerf.
+///     Works by only sending data about players in rooms that can be seen from the room the observer is currently in.
+///     Reduces wallhack effective distance to around 12m (from 36m in base game)
+/// </summary>
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags)), UsedImplicitly]
 internal static class FpcVisibilityControllerPatch
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Sunrise.Features.ServersideBacktrack;
+namespace Sunrise.API.Backtracking;
 
 [Flags]
 internal enum EntryMatchFlags : byte

@@ -1,6 +1,6 @@
 using Exiled.API.Enums;
 
-namespace Sunrise.API.Visibility;
+namespace Sunrise.API.Visibility.Generation;
 
 internal static class RoomVisibilityConfig
 {

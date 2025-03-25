@@ -2,7 +2,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using PlayerRoles.FirstPersonControl;
 
-namespace Sunrise.Features.ServersideBacktrack;
+namespace Sunrise.API.Backtracking;
 
 [HarmonyPatch(typeof(FpcMouseLook), nameof(FpcMouseLook.ApplySyncValues))] [UsedImplicitly]
 internal static class FpcMouseLookPatch

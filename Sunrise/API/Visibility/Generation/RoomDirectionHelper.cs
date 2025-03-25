@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using MapGeneration;
 
-namespace Sunrise.API.Visibility;
+namespace Sunrise.API.Visibility.Generation;
 
-public static class RoomDirectionHelper
+internal static class RoomDirectionHelper
 {
-    public static Vector3Int[] GetSearchDirections(Room room, out bool known)
+    internal static Vector3Int[] GetSearchDirections(Room room, out bool known)
     {
         if (RoomVisibilityConfig.KnownDirectionsRooms.TryGetValue(room.Type, out Vector3Int[]? directions))
         {
@@ -32,7 +32,7 @@ public static class RoomDirectionHelper
         }).ToArray();
     }
 
-    public static void IncludeDirection(Vector3Int startCoords, Vector3Int direction, bool known, HashSet<Vector3Int> visibleCoords)
+    internal static void IncludeDirection(Vector3Int startCoords, Vector3Int direction, bool known, HashSet<Vector3Int> visibleCoords)
     {
         if (direction.sqrMagnitude != 1)
             throw new ArgumentException("Direction must be normalized");

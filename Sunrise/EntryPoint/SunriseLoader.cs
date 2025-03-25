@@ -1,3 +1,5 @@
+using Sunrise.API.Backtracking;
+using Sunrise.API.Visibility;
 using Sunrise.Features.AntiWallhack;
 using Sunrise.Features.DoorInteractionValidation;
 using Sunrise.Features.PickupEspClutter;
@@ -11,9 +13,12 @@ public class SunriseLoader : PluginModule
 {
     protected override List<PluginModule> SubModules { get; } =
     [
+        // API
+        new BacktrackingModule(),
         new AntiWallhackModule(),
+        
+        // Features
         new PickupValidationModule(),
-        new ServersideBacktrackModule(),
         new ServersideTeslaDamageModule(),
         new AntiDoorManipulatorModule(),
         new PhantomPickupsModule(),
