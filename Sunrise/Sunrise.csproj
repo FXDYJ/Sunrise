@@ -85,6 +85,7 @@
         <Compile Include="API\Visibility\VisibilityDataModule.cs" />
         <Compile Include="EntryPoint\SunriseLoader.cs" />
         <Compile Include="Features\AntiWallhack\FpcVisibilityControllerIgnoredFlagsPatch.cs" />
+        <Compile Include="Features\AntiWallhack\RaycastVisibilityChecker.cs" />
         <Compile Include="Features\DoorInteractionValidation\DoorInteractionValidationModule.cs" />
         <Compile Include="Features\PickupEspClutter\PhantomPickup.cs" />
         <Compile Include="Features\PickupEspClutter\PhantomPickupSpawner.cs" />

@@ -36,7 +36,7 @@ public class VisibilityData
 
     public static VisibilityData Get(Room room, bool allowDebug = true)
     {
-        if (room is null)
+        if (room == null)
             throw new ArgumentNullException(nameof(room));
 
         Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
@@ -60,11 +60,15 @@ public class VisibilityData
         return data;
     }
 
-    public static VisibilityData Get(Vector3Int coords, bool allowDebug = true)
+    public static VisibilityData? Get(Vector3Int coords, bool allowDebug = true)
     {
         if (!Cache.TryGetValue(coords, out VisibilityData? data))
         {
             Room room = Room.Get(coords);
+
+            if (room == null)
+                return null;
+
             data = new(room);
 
             foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
@@ -77,5 +81,5 @@ public class VisibilityData
         return data;
     }
 
-    public static VisibilityData Get(Vector3 position, bool allowDebug = true) => Get(RoomIdUtils.PositionToCoords(position), allowDebug);
+    public static VisibilityData? Get(Vector3 position, bool allowDebug = true) => Get(RoomIdUtils.PositionToCoords(position), allowDebug);
 }

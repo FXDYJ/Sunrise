@@ -94,8 +94,8 @@ internal class PhantomPickup : MonoBehaviour
 
     void UpdateVisibility()
     {
-        VisibilityData visibilityData = VisibilityData.Get(transform.position, false);
-
+        VisibilityData? visibilityData = VisibilityData.Get(transform.position, false);
+        
         foreach (Player player in Player.Dictionary.Values)
             SetVisibility(player, !IsObserving(player, visibilityData));
     }
