@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using MapGeneration;
 using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
+using PlayerRoles.PlayableScps;
 using PlayerRoles.PlayableScps.Scp049;
 using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.Visibility;
@@ -93,8 +94,8 @@ internal static class FpcVisibilityControllerPatch
         if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
             return flags | InvisibilityFlags.OutOfRange;
 
-        /*if (sqrDistance < RaycastVisibilityChecker.SqrRange && !RaycastVisibilityChecker.IsVisible(/*...#1#))
-            return flags | InvisibilityFlags.OutOfRange;*/
+        if (sqrDistance < RaycastVisibilityChecker.SqrRange && !RaycastVisibilityChecker.IsVisible(observerRole, Player.Get(targetRole.FpcModule.Hub)))
+            return flags | InvisibilityFlags.OutOfRange;
 
         return flags;
     }
@@ -119,13 +120,34 @@ internal static class FpcVisibilityControllerPatch
     }
 }
 
-/*internal static class RaycastVisibilityChecker
+internal static class RaycastVisibilityChecker
 {
-    public const float SqrRange = 20f * 20f;
+    public const float SqrRange = 400f; // 20 * 20
 
-    public static bool IsVisible(Player observer, Player target)
+    static readonly Vector2[] VisibilityReferencePoints = 
+    [
+        new(0f, 0f),
+        new(0f, 1.08f),
+        new(0f, -0.86f),
+        new(0f, 0.68f),
+        new(0.53f, 0.56f),
+        new(-0.53f, 0.56f),
+    ];
+    
+    public static bool IsVisible(IFpcRole observerRole, Player target)
     {
-        const float ForecastAmount = 0.3f;
-        Vector3 forecastPoint = target.Position + target.Velocity * ForecastAmount;
+        const float widthMultiplier = 3f;
+        Vector3 originPosition = observerRole.FpcModule.Position;
+        Vector3 cameraPosition = target.CameraTransform.position;
+        Vector3 cameraRightDirection = target.CameraTransform.TransformDirection(Vector3.right);
+        foreach (Vector2 vector in VisibilityReferencePoints)
+        {
+            if (!Physics.Linecast(originPosition + vector.x * widthMultiplier * cameraRightDirection + Vector3.up * vector.y, cameraPosition, VisionInformation.VisionLayerMask))
+            {
+                Debug.DrawLine(originPosition + vector.x * widthMultiplier * cameraRightDirection + Vector3.up * vector.y, cameraPosition, Colors.Green * 50, 10f);
+                return true;
+            }
+        }
+        return false;
     }
-}*/
+}
