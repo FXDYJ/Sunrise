@@ -3,17 +3,17 @@ using MEC;
 
 namespace Sunrise.Features.PickupEspClutter;
 
-public static class PhantomItemSpawner
+internal static class PhantomItemSpawner
 {
     static CoroutineHandle coroutineHandle;
 
-    public static void Start()
+    internal static void Start()
     {
         Timing.KillCoroutines(coroutineHandle);
         coroutineHandle = Timing.RunCoroutine(PhantomItemSpawnerCoroutine());
     }
 
-    public static void Stop()
+    internal static void Stop()
     {
         Timing.KillCoroutines(coroutineHandle);
     }
@@ -22,6 +22,11 @@ public static class PhantomItemSpawner
     {
         const int Count = 100;
         var sw = Stopwatch.StartNew();
+
+        foreach (PhantomPickup phantomPickup in PhantomPickup.List)
+        {
+            phantomPickup.Destroy();
+        }
 
         for (var i = 0; i < Count; i++)
         {
@@ -33,7 +38,6 @@ public static class PhantomItemSpawner
 
         sw.Stop();
         Debug.Log($"Spawned {Count} phantom pickups in {sw.Elapsed.TotalMilliseconds:F5}ms");
-        
 
         while (true)
         {

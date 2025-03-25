@@ -9,7 +9,7 @@ namespace Sunrise.Features.AntiWallhack;
 ///     Works by only sending data about players in rooms that can be seen from the room the observer is currently in.
 ///     Reduces wallhack effective distance to around 12m (from 36m in base game)
 /// </summary>
-public class AntiWallhackModule : PluginModule
+internal class AntiWallhackModule : PluginModule
 {
     protected override void OnEnabled()
     {

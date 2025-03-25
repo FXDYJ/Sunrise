@@ -5,7 +5,7 @@ using Sunrise.API.Visibility;
 
 namespace Sunrise.Features.PickupEspClutter;
 
-public static class PhantomPickupSynchronizer
+internal static class PhantomPickupSynchronizer
 {
     static readonly HashSet<RoomType> ExcludedRooms =
     [
@@ -25,7 +25,7 @@ public static class PhantomPickupSynchronizer
 
     static int index;
 
-    public static void GetNextPosition(out Vector3 position, out VisibilityData visibilityData)
+    internal static void GetNextPosition(out Vector3 position, out VisibilityData visibilityData)
     {
         Room room = Rooms[index];
 

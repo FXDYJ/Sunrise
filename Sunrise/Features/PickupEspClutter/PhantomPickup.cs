@@ -7,9 +7,9 @@ using Sunrise.API.Visibility;
 
 namespace Sunrise.Features.PickupEspClutter;
 
-public class PhantomPickup : MonoBehaviour
+internal class PhantomPickup : MonoBehaviour
 {
-    [UsedImplicitly] public static bool DebugMode = false;
+    [UsedImplicitly] public static bool DebugMode;
 
     readonly HashSet<Player> _hiddenFor = HashSetPool<Player>.Shared.Rent();
     NetworkIdentity _netIdentity = null!;
@@ -26,6 +26,8 @@ public class PhantomPickup : MonoBehaviour
         _pickup = Pickup.Get(gameObject);
         _netIdentity = _pickup.Base.netIdentity;
 
+        Pickups.Add(_pickup);
+
         Timing.RunCoroutine(Coroutine());
     }
 
@@ -34,6 +36,11 @@ public class PhantomPickup : MonoBehaviour
         List.Remove(_node);
         _pickup.Destroy();
         HashSetPool<Player>.Shared.Return(_hiddenFor);
+    }
+
+    public void Destroy()
+    {
+        _pickup.Destroy();
     }
 
     IEnumerator<float> Coroutine()
@@ -52,7 +59,7 @@ public class PhantomPickup : MonoBehaviour
                 SetVisibility(player, !IsObserving(roomVisibilityData, player));
 
             // Lay on the ground for some time
-            yield return Timing.WaitForSeconds(Random.Range(2f, 5f));
+            yield return Timing.WaitForSeconds(Random.Range(1f, 2f));
         }
     }
 
@@ -81,7 +88,7 @@ public class PhantomPickup : MonoBehaviour
     public static void DestroyOldest()
     {
         if (List.Count > 0)
-            Destroy(List.First.Value);
+            List.First.Value.Destroy();
     }
 
     public static void Create()

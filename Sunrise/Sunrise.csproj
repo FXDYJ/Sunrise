@@ -69,7 +69,6 @@
         <Reference Include="UnityEngine.AudioModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.AudioModule.dll" Private="false"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="API\OldRoomVisibilityData.cs" />
         <Compile Include="API\Visibility\VisibilityData.cs" />
         <Compile Include="API\Visibility\RoomConnectionChecker.cs" />
         <Compile Include="API\Visibility\RoomDirectionHelper.cs" />
@@ -96,7 +95,6 @@
         <Compile Include="Utility\Debug.cs" />
         <Compile Include="Utility\Layers.cs" />
         <Compile Include="Utility\MathExtensions.cs" />
-        <Compile Include="Utility\PlayerExtensions.cs" />
         <Compile Include="Utility\PluginModule.cs" />
         <Compile Include="EntryPoint\Config.cs" />
         <Compile Include="EntryPoint\SunrisePlugin.cs" />

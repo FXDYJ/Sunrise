@@ -10,9 +10,7 @@ using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp049;
 using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.Visibility;
-using Sunrise.API;
 using Sunrise.API.Visibility;
-using Sunrise.Utility;
 
 namespace Sunrise.Features.AntiWallhack;
 
@@ -27,7 +25,7 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 [5] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 V_5
 */
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly]
-public static class FpcVisibilityControllerPatch
+internal static class FpcVisibilityControllerPatch
 {
     [UsedImplicitly]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

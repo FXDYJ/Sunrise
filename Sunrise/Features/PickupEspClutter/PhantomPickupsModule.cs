@@ -3,7 +3,7 @@ using Exiled.Events.EventArgs.Server;
 
 namespace Sunrise.Features.PickupEspClutter;
 
-public class PhantomPickupsModule : PluginModule
+internal class PhantomPickupsModule : PluginModule
 {
     public static readonly List<ItemType> PhantomItemTypes =
     [
@@ -26,6 +26,11 @@ public class PhantomPickupsModule : PluginModule
         Handlers.Server.RoundStarted -= OnRoundStarted;
         Handlers.Server.RoundEnded -= OnRoundEnded;
         Handlers.Player.PickingUpItem -= OnPickingUpItem;
+    }
+
+    protected override void OnReset()
+    {
+        PhantomPickup.Pickups.Clear();
     }
 
     static void OnRoundStarted()
