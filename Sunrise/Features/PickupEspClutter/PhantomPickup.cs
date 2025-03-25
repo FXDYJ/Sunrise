@@ -51,12 +51,16 @@ internal class PhantomPickup : MonoBehaviour
     {
         while (true)
         {
+            HideForEveryone();
+            
+            yield return Timing.WaitForSeconds(Random.Range(0.4f, 0.5f));
+            
             // Choose a new position for the item
             PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
             _pickup.Position = position;
-
+            
             // Wait for the item to change position to one where it wont be noticed by legit players immediately, so we can safely update visibility
-            yield return Timing.WaitForSeconds(Random.Range(0.2f, 0.3f));
+            yield return Timing.WaitForSeconds(Random.Range(0.4f, 0.5f));
 
             // Lay on the ground for some time
             float idleTime = Random.Range(5f, 15f);
@@ -80,6 +84,12 @@ internal class PhantomPickup : MonoBehaviour
             in ~30 seconds, 529 cycles took 118.7201ms. This means the average MSPT is (1000/60)*(118.72/30000) = 0.065955
             */
         }
+    }
+
+    void HideForEveryone()
+    {
+        foreach (Player player in Player.Dictionary.Values)
+            SetVisibility(player, false);
     }
 
     void UpdateVisibility()
