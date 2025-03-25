@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
+using Exiled.API.Enums;
 using Exiled.API.Interfaces;
+using HarmonyLib;
 using MapGeneration;
 using Sunrise.API.Visibility.Generation;
 
@@ -42,12 +45,17 @@ public class VisibilityData
         {
             data = new(room);
 
+            if (room.Type == RoomType.Surface)
+            {
+                Log.Warn($"Surface occupied coords: {room.Identifier.OccupiedCoords.Length}, {room.Identifier.OccupiedCoords.Select(c => c.ToString()).Join()}");
+            }
+            
             foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
                 Cache[occupiedCoord] = data;
         }
         
         if (Config.Instance.DebugPrimitives && allowDebug)
-            RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data, coords);
+            RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
         
         return data;
     }
@@ -56,7 +64,7 @@ public class VisibilityData
     {
         if (!Cache.TryGetValue(coords, out VisibilityData? data))
         {
-            Room? room = Room.Get(coords);
+            Room room = Room.Get(coords);
             data = new(room);
 
             foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
@@ -64,7 +72,7 @@ public class VisibilityData
         }
 
         if (Config.Instance.DebugPrimitives && allowDebug)
-            RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data, coords);
+            RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
 
         return data;
     }

@@ -8,8 +8,10 @@ internal static class RoomVisibilityDataDebugVisualizer
     static readonly Dictionary<Vector3Int, float> LastPrimitiveSpawnTimes = new();
     static readonly Dictionary<Vector3Int, Color> RoomColors = new();
 
-    public static void DrawDebugPrimitives(VisibilityData data, Vector3Int coords)
+    public static void DrawDebugPrimitives(VisibilityData data)
     {
+        Vector3Int coords = RoomIdUtils.PositionToCoords(data.Room.Position);
+
         if (Time.time < LastPrimitiveSpawnTimes.GetValueOrDefault(coords) + PrimitiveDuration)
             return;
 

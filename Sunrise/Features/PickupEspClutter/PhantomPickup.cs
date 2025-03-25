@@ -12,15 +12,12 @@ internal class PhantomPickup : MonoBehaviour
 {
     [UsedImplicitly] public static bool DebugMode;
 
-    static readonly Stopwatch SW = new();
-    static int cycleCount = 0;
-
     readonly HashSet<Player> _hiddenFor = HashSetPool<Player>.Shared.Rent();
+    CoroutineHandle _coroutine;
     NetworkIdentity _netIdentity = null!;
 
     LinkedListNode<PhantomPickup> _node = null!;
     Pickup _pickup = null!;
-    CoroutineHandle _coroutine;
 
     internal static LinkedList<PhantomPickup> List { get; } = [];
     internal static HashSet<Pickup> Pickups { get; } = [];
@@ -54,18 +51,12 @@ internal class PhantomPickup : MonoBehaviour
     {
         while (true)
         {
-            SW.Start();
-
             // Choose a new position for the item
             PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
             _pickup.Position = position;
 
-            SW.Stop();
-
             // Wait for the item to change position to one where it wont be noticed by legit players immediately, so we can safely update visibility
             yield return Timing.WaitForSeconds(Random.Range(0.2f, 0.3f));
-
-            SW.Start();
 
             // Lay on the ground for some time
             float idleTime = Random.Range(5f, 15f);
@@ -78,16 +69,11 @@ internal class PhantomPickup : MonoBehaviour
                 float waitTime = Random.Range(1f, 2f);
                 idleTime -= waitTime;
 
-                SW.Stop();
                 yield return Timing.WaitForSeconds(waitTime);
-                SW.Start();
             }
 
-            SW.Stop();
-            cycleCount++;
-
-            Debug.Log($"{cycleCount} PhantomPickup cycles took {SW.Elapsed.TotalMilliseconds:F5}ms");
             /*
+            Debug.Log($"{cycleCount} PhantomPickup cycles took {SW.Elapsed.TotalMilliseconds:F5}ms");
             Tested with 30 players and 200 phantom pickups
             [2025-03-25 19:19:00.027 +02:00] [DEBUG] [Sunrise] 271 PhantomPickup cycles took 93.61230ms
             [2025-03-25 19:19:29.977 +02:00] [DEBUG] [Sunrise] 800 PhantomPickup cycles took 212.33240ms
