@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using Exiled.API.Features.Pickups;
 using JetBrains.Annotations;
+using MapGeneration;
 using MEC;
 using Mirror;
 using NorthwoodLib.Pools;
@@ -11,11 +13,15 @@ internal class PhantomPickup : MonoBehaviour
 {
     [UsedImplicitly] public static bool DebugMode;
 
+    static readonly Stopwatch SW = new();
+    static int cycleCount = 0;
+
     readonly HashSet<Player> _hiddenFor = HashSetPool<Player>.Shared.Rent();
     NetworkIdentity _netIdentity = null!;
 
     LinkedListNode<PhantomPickup> _node = null!;
     Pickup _pickup = null!;
+    CoroutineHandle _coroutine;
 
     internal static LinkedList<PhantomPickup> List { get; } = [];
     internal static HashSet<Pickup> Pickups { get; } = [];
@@ -28,13 +34,15 @@ internal class PhantomPickup : MonoBehaviour
 
         Pickups.Add(_pickup);
 
-        Timing.RunCoroutine(Coroutine());
+        _coroutine = Timing.RunCoroutine(Coroutine());
     }
 
     void OnDestroy()
     {
-        List.Remove(_node);
+        Timing.KillCoroutines(_coroutine);
         _pickup.Destroy();
+
+        List.Remove(_node);
         HashSetPool<Player>.Shared.Return(_hiddenFor);
     }
 
@@ -47,20 +55,54 @@ internal class PhantomPickup : MonoBehaviour
     {
         while (true)
         {
+            SW.Start();
+
             // Choose a new position for the item
-            PhantomPickupSynchronizer.GetNextPosition(out Vector3 position, out VisibilityData roomVisibilityData);
+            PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
             _pickup.Position = position;
+
+            SW.Stop();
 
             // Wait for the item to change position to one where it wont be noticed by legit players immediately, so we can safely update visibility
             yield return Timing.WaitForSeconds(Random.Range(0.2f, 0.3f));
 
-            // Update visibility for all players
-            foreach (Player player in Player.List)
-                SetVisibility(player, !IsObserving(roomVisibilityData, player));
+            SW.Start();
 
             // Lay on the ground for some time
-            yield return Timing.WaitForSeconds(Random.Range(1f, 2f));
+            float idleTime = Random.Range(5f, 15f);
+
+            while (idleTime > 0)
+            {
+                // Update visibility for all players
+                UpdateVisibility();
+
+                float waitTime = Random.Range(1f, 2f);
+                idleTime -= waitTime;
+
+                SW.Stop();
+                yield return Timing.WaitForSeconds(waitTime);
+                SW.Start();
+            }
+
+            SW.Stop();
+            cycleCount++;
+
+            Debug.Log($"{cycleCount} PhantomPickup cycles took {SW.Elapsed.TotalMilliseconds:F5}ms");
+            /*
+            Tested with 30 players and 200 phantom pickups
+            [2025-03-25 19:19:00.027 +02:00] [DEBUG] [Sunrise] 271 PhantomPickup cycles took 93.61230ms
+            [2025-03-25 19:19:29.977 +02:00] [DEBUG] [Sunrise] 800 PhantomPickup cycles took 212.33240ms
+            in ~30 seconds, 529 cycles took 118.7201ms. This means the average MSPT is (1000/60)*(118.72/30000) = 0.065955
+            */
         }
+    }
+
+    void UpdateVisibility()
+    {
+        VisibilityData visibilityData = VisibilityData.Get(transform.position, false);
+
+        foreach (Player player in Player.Dictionary.Values)
+            SetVisibility(player, !IsObserving(player, visibilityData));
     }
 
     void SetVisibility(Player player, bool visibility)
@@ -77,7 +119,7 @@ internal class PhantomPickup : MonoBehaviour
     }
 
     // Whether the player will be able to see the item
-    static bool IsObserving(VisibilityData visibilityData, Player player)
+    static bool IsObserving(Player player, VisibilityData visibilityData)
     {
         if (DebugMode)
             return MathExtensions.SqrDistance(player.Position, visibilityData.Room.Position) < 1.5f * 1.5f;
@@ -93,7 +135,7 @@ internal class PhantomPickup : MonoBehaviour
 
     internal static void Create()
     {
-        PhantomPickupSynchronizer.GetNextPosition(out Vector3 position, out _);
+        PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
         ItemType type = PhantomPickupsModule.PhantomItemTypes.RandomItem();
         var pickup = Pickup.CreateAndSpawn(type, position, Random.rotation);
         pickup.GameObject.AddComponent<PhantomPickup>();

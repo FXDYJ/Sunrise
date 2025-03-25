@@ -87,8 +87,8 @@ internal static class FpcVisibilityControllerPatch
         if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
             return flags | InvisibilityFlags.OutOfRange;
 
-        if (sqrDistance < RaycastVisibilityChecker.SqrRange && !RaycastVisibilityChecker.IsVisible(/*...*/))
-            return flags | InvisibilityFlags.OutOfRange;
+        /*if (sqrDistance < RaycastVisibilityChecker.SqrRange && !RaycastVisibilityChecker.IsVisible(/*...#1#))
+            return flags | InvisibilityFlags.OutOfRange;*/
 
         return flags;
     }
@@ -113,7 +113,7 @@ internal static class FpcVisibilityControllerPatch
     }
 }
 
-internal static class RaycastVisibilityChecker
+/*internal static class RaycastVisibilityChecker
 {
     public const float SqrRange = 20f * 20f;
 
@@ -122,4 +122,4 @@ internal static class RaycastVisibilityChecker
         const float ForecastAmount = 0.3f;
         Vector3 forecastPoint = target.Position + target.Velocity * ForecastAmount;
     }
-}
+}*/

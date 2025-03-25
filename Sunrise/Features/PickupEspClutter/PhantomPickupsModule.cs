@@ -9,9 +9,10 @@ internal class PhantomPickupsModule : PluginModule
     [
         ItemType.SCP500,
         ItemType.Adrenaline,
-        ItemType.KeycardO5,
-        ItemType.KeycardFacilityManager,
-        ItemType.KeycardChaosInsurgency,
+        ItemType.ParticleDisruptor,
+        ItemType.MicroHID, 
+        ItemType.Jailbird,
+        ItemType.SCP1344,
     ];
 
     protected override void OnEnabled()

@@ -67,4 +67,6 @@ public class VisibilityData
 
         return data;
     }
+    
+    public static VisibilityData Get(Vector3 position, bool allowDebug = true) => Get(RoomIdUtils.PositionToCoords(position), allowDebug);
 }

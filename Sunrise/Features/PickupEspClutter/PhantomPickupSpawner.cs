@@ -20,7 +20,7 @@ internal static class PhantomItemSpawner
 
     static IEnumerator<float> PhantomItemSpawnerCoroutine()
     {
-        const int Count = 100;
+        const int Count = 200;
         var sw = Stopwatch.StartNew();
 
         foreach (PhantomPickup phantomPickup in PhantomPickup.List)

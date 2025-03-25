@@ -25,13 +25,12 @@ internal static class PhantomPickupSynchronizer
 
     static int index;
 
-    internal static void GetNextPosition(out Vector3 position, out VisibilityData visibilityData)
+    internal static void GetNextPosition(out Vector3 position)
     {
         Room room = Rooms[index];
 
         const float RandomOffset = 1.5f; //todo increase
         position = room.Position + (Random.insideUnitSphere * RandomOffset) with { y = Random.Range(10, 15) };
-        visibilityData = VisibilityData.Get(room, false);
 
         index = (index + 1) % Rooms.Count;
     }
