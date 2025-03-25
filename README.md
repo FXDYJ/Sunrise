@@ -8,14 +8,14 @@ Designed to prevent common exploits and add server authority in places where it 
 
 ---
 
-<p style="text-align: center;">
+<div align="center">
     <a href="https://github.com/Banalny-Banan/Sunrise/releases/latest">
         <img src="https://img.shields.io/github/downloads/Banalny-Banan/Sunrise/total?label=Downloads&color=333333&style=for-the-badge" alt="Downloads: Unknown">
     </a>
     <a href="https://discord.gg/9nAaRVNCq3">
         <img src="https://img.shields.io/discord/1277301350828478525?style=for-the-badge&logo=discord&logoColor=f9f9f9&label=Discord&color=5865f2" alt="Discord">
     </a>
-</p>
+</div>
 
 ---
 
