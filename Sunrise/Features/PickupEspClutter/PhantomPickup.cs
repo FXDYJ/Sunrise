@@ -17,8 +17,8 @@ internal class PhantomPickup : MonoBehaviour
     LinkedListNode<PhantomPickup> _node = null!;
     Pickup _pickup = null!;
 
-    public static LinkedList<PhantomPickup> List { get; } = [];
-    public static HashSet<Pickup> Pickups { get; } = [];
+    internal static LinkedList<PhantomPickup> List { get; } = [];
+    internal static HashSet<Pickup> Pickups { get; } = [];
 
     void Start()
     {
@@ -85,13 +85,13 @@ internal class PhantomPickup : MonoBehaviour
         return visibilityData.IsVisible(player);
     }
 
-    public static void DestroyOldest()
+    internal static void DestroyOldest()
     {
         if (List.Count > 0)
             List.First.Value.Destroy();
     }
 
-    public static void Create()
+    internal static void Create()
     {
         PhantomPickupSynchronizer.GetNextPosition(out Vector3 position, out _);
         ItemType type = PhantomPickupsModule.PhantomItemTypes.RandomItem();
