@@ -36,11 +36,11 @@ public class VisibilityData
 
     public static VisibilityData Get(Room room, bool allowDebug = true)
     {
-        if (room == null)
+        if (room is null)
             throw new ArgumentNullException(nameof(room));
 
         Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
-        
+
         if (!Cache.TryGetValue(coords, out VisibilityData? data))
         {
             data = new(room);
@@ -49,14 +49,14 @@ public class VisibilityData
             {
                 Log.Warn($"Surface occupied coords: {room.Identifier.OccupiedCoords.Length}, {room.Identifier.OccupiedCoords.Select(c => c.ToString()).Join()}");
             }
-            
+
             foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
                 Cache[occupiedCoord] = data;
         }
-        
+
         if (Config.Instance.DebugPrimitives && allowDebug)
             RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
-        
+
         return data;
     }
 
@@ -76,6 +76,6 @@ public class VisibilityData
 
         return data;
     }
-    
+
     public static VisibilityData Get(Vector3 position, bool allowDebug = true) => Get(RoomIdUtils.PositionToCoords(position), allowDebug);
 }
