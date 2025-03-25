@@ -123,28 +123,37 @@ internal static class FpcVisibilityControllerPatch
 internal static class RaycastVisibilityChecker
 {
     public const float SqrRange = 400f; // 20 * 20
-
-    static readonly Vector2[] VisibilityReferencePoints = 
+    const float WidthMultiplier = 3f;
+    const float ForecastAmount = 0.3f;
+    
+    public static readonly Vector2[] VisibilityReferencePoints = 
     [
-        new(0f, 0f),
-        new(0f, 1.08f),
-        new(0f, -0.86f),
-        new(0f, 0.68f),
-        new(0.53f, 0.56f),
-        new(-0.53f, 0.56f),
+        
     ];
     
     public static bool IsVisible(IFpcRole observerRole, Player target)
     {
-        const float widthMultiplier = 3f;
-        Vector3 originPosition = observerRole.FpcModule.Position;
-        Vector3 cameraPosition = target.CameraTransform.position;
+        Player observer = Player.Get(observerRole.FpcModule.Hub);
+        Vector3 originPosition = observerRole.FpcModule.Position + observer.Velocity * ForecastAmount;
+        Vector3 cameraPosition = observer.CameraTransform.position;
         Vector3 cameraRightDirection = target.CameraTransform.TransformDirection(Vector3.right);
-        foreach (Vector2 vector in VisibilityReferencePoints)
+
+        if (!CanPlayerPoints(originPosition, cameraPosition, cameraRightDirection))
         {
-            if (!Physics.Linecast(originPosition + vector.x * widthMultiplier * cameraRightDirection + Vector3.up * vector.y, cameraPosition, VisionInformation.VisionLayerMask))
+            originPosition = observerRole.FpcModule.Position + observer.Velocity * ForecastAmount;
+            return CanPlayerPoints(originPosition, cameraPosition, cameraRightDirection);
+        }
+        
+        return true;
+    }
+
+    static bool CanPlayerPoints(Vector3 originPosition, Vector3 cameraPosition, Vector3 cameraRightDirection)
+    {
+        foreach (Vector2 point in VisibilityReferencePoints)
+        {
+            if (!Physics.Linecast(originPosition + point.x * WidthMultiplier * cameraRightDirection + Vector3.up * point.y, cameraPosition, VisionInformation.VisionLayerMask))
             {
-                Debug.DrawLine(originPosition + vector.x * widthMultiplier * cameraRightDirection + Vector3.up * vector.y, cameraPosition, Colors.Green * 50, 10f);
+                Debug.DrawLine(originPosition + point.x * WidthMultiplier * cameraRightDirection + Vector3.up * point.y, cameraPosition, Colors.Green * 50, 10f);
                 return true;
             }
         }
