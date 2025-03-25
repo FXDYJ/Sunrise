@@ -13,25 +13,29 @@ internal static class PickupValidator
     internal static readonly Dictionary<LockerChamber, float> LockerLastInteraction = new();
     internal static readonly Dictionary<DoorVariant, float> DoorLastInteraction = new();
 
-    internal static void OnPickingUpItem(PickingUpItemEventArgs ev)
+    internal static bool ValidateSearchStart(Player player, ItemPickupBase pickupBase)
     {
-        if (!Config.Instance.PickupValidation || !ev.Pickup.Base || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
-            return;
+        if (!Config.Instance.PickupValidation || !pickupBase || player.Role is FpcRole { IsNoclipEnabled: true })
+            return true;
 
-        if (TemporaryPlayerBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
-            return;
+        if (TemporaryPlayerBypass.TryGetValue(player, out float time) && time > Time.time)
+            return true;
+
+        Pickup? pickup = Pickup.Get(pickupBase);
 
         // Exiled bug - armor pickups become permanently locked if the event is denied
-        if (ev.Pickup is BodyArmorPickup)
-            return;
+        if (pickup is BodyArmorPickup)
+            return true;
 
-        if (!CanPickUp(ev.Player, ev.Pickup))
-            ev.IsAllowed = false;
+        if (!CanPickUp(player, pickup))
+            return false;
+        
+        return true;
     }
 
     static bool CanPickUp(Player player, Pickup pickup)
     {
-        var bypassTime = pickup.PickupTimeForPlayer(player) + 1f;
+        float bypassTime = pickup.PickupTimeForPlayer(player) + 1f;
 
         if (!IsObstructed(player.CameraTransform.position, pickup.Position, out _, bypassTime))
             return true;
