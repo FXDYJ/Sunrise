@@ -3,7 +3,6 @@ using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 using Interactables.Interobjects.DoorUtils;
 using InventorySystem.Items.Pickups;
-using InventorySystem.Searching;
 using JetBrains.Annotations;
 using MapGeneration.Distributors;
 

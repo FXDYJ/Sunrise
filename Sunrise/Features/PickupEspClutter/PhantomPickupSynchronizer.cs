@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Exiled.API.Enums;
-using Sunrise.API.Visibility;
 
 namespace Sunrise.Features.PickupEspClutter;
 
