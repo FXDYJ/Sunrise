@@ -24,7 +24,7 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 [4] float32 num,
 [5] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 V_5
 */
-[HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly]
+[HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags)), UsedImplicitly]
 internal static class FpcVisibilityControllerPatch
 {
     [UsedImplicitly]
@@ -76,16 +76,21 @@ internal static class FpcVisibilityControllerPatch
         if (IsExceptionalCase(observerRole, targetRole))
             return flags;
 
-        if (positionDifference.sqrMagnitude < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
+        float sqrDistance = positionDifference.sqrMagnitude;
+
+        if (sqrDistance < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
             return flags;
 
         Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
         Vector3Int targetCoords = RoomIdUtils.PositionToCoords(targetRole.FpcModule.Position);
 
-        if (VisibilityData.Get(observerCoords) is not VisibilityData observerVisibility || observerVisibility.IsVisible(targetCoords))
-            return flags;
+        if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
+            return flags | InvisibilityFlags.OutOfRange;
 
-        return flags | InvisibilityFlags.OutOfRange;
+        if (sqrDistance < RaycastVisibilityChecker.SqrRange && !RaycastVisibilityChecker.IsVisible(/*...*/))
+            return flags | InvisibilityFlags.OutOfRange;
+
+        return flags;
     }
 
     static bool IsExceptionalCase(IFpcRole observerRole, IFpcRole targetRole)
@@ -105,5 +110,16 @@ internal static class FpcVisibilityControllerPatch
         // Scp096 ignores OutOfRange flag when enraged
 
         return false;
+    }
+}
+
+internal static class RaycastVisibilityChecker
+{
+    public const float SqrRange = 20f * 20f;
+
+    public static bool IsVisible(Player observer, Player target)
+    {
+        const float ForecastAmount = 0.3f;
+        Vector3 forecastPoint = target.Position + target.Velocity * ForecastAmount;
     }
 }

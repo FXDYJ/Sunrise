@@ -39,6 +39,7 @@
     <PropertyGroup>
         <PostBuildEvent>
             copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).dll" "$(AppData)\EXILED\Plugins\$(AssemblyName).dll"
+            copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).pdb" "$(AppData)\EXILED\Plugins\$(AssemblyName).pdb"
         </PostBuildEvent>
     </PropertyGroup>
     <ItemGroup>
@@ -83,7 +84,6 @@
         <Compile Include="Features\PickupEspClutter\PhantomPickupSpawner.cs"/>
         <Compile Include="Features\PickupEspClutter\PhantomPickupsModule.cs"/>
         <Compile Include="Features\PickupEspClutter\PhantomPickupSynchronizer.cs"/>
-        <Compile Include="Features\PickupValidation\SearchCompletorPatch.cs" />
         <Compile Include="Features\PickupValidation\PickupValidationModule.cs"/>
         <Compile Include="Features\CommonPatches\Scp939LungePatch.cs"/>
         <Compile Include="Features\PickupValidation\PickupValidator.cs"/>

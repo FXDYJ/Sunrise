@@ -57,6 +57,39 @@ public class BacktrackHistory(Player player)
         if (forecast)
             ForecastEntry();
 
+        BacktrackEntry best = GetClosest(claimed);
+
+        if (best.Timestamp != 0) // Null check struct edition
+        {
+            best.Restore(player);
+
+            if (Config.Instance.Debug)
+            {
+                Debug.Log($"Best entry found for {player.Nickname} " +
+                    $"Difference: A:{Quaternion.Angle(best.Rotation, claimed.Rotation):F5}, P:{Vector3.Distance(best.Position, claimed.Position):F} " +
+                    $"Age: {best.Age * 1000:F0}ms");
+            }
+        }
+        else
+        {
+            Debug.Log($"No suitable entry found for {player.Nickname}");
+        }
+    }
+
+    public BacktrackEntry GetClosest(float timestamp)
+    {
+        // Entries are ordered from newest to oldest
+        foreach (BacktrackEntry entry in Entries)
+        {
+            if (entry.Timestamp <= timestamp)
+                return entry;
+        }
+
+        return Entries.Back();
+    }
+
+    public BacktrackEntry GetClosest(BacktrackEntry claimed)
+    {
         BacktrackEntry best = default;
         var minSqrDistance = float.MaxValue;
         var minAngle = float.MaxValue;
@@ -128,21 +161,7 @@ public class BacktrackHistory(Player player)
             newest = oldest;
         }
 
-        if (best.Timestamp != 0) // Null check struct edition
-        {
-            best.Restore(player);
-
-            if (Config.Instance.Debug)
-            {
-                Debug.Log($"Best entry found for {player.Nickname} " +
-                    $"Difference: A:{Quaternion.Angle(best.Rotation, claimed.Rotation):F5}, P:{Vector3.Distance(best.Position, claimed.Position):F} " +
-                    $"Age: {best.Age * 1000:F0}ms");
-            }
-        }
-        else
-        {
-            Debug.Log($"No suitable entry found for {player.Nickname}");
-        }
+        return best;
     }
 
     public static BacktrackHistory Get(Player player)

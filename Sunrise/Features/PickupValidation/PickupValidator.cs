@@ -3,6 +3,8 @@ using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 using Interactables.Interobjects.DoorUtils;
 using InventorySystem.Items.Pickups;
+using InventorySystem.Searching;
+using JetBrains.Annotations;
 using MapGeneration.Distributors;
 
 namespace Sunrise.Features.PickupValidation;
@@ -13,24 +15,23 @@ internal static class PickupValidator
     internal static readonly Dictionary<LockerChamber, float> LockerLastInteraction = new();
     internal static readonly Dictionary<DoorVariant, float> DoorLastInteraction = new();
 
-    internal static bool ValidateSearchStart(Player player, ItemPickupBase pickupBase)
+    [UsedImplicitly] public static bool AlwaysBlock;
+
+    internal static void OnPickingUpItem(PickingUpItemEventArgs ev)
     {
-        if (!Config.Instance.PickupValidation || !pickupBase || player.Role is FpcRole { IsNoclipEnabled: true })
-            return true;
+        if (!Config.Instance.PickupValidation || !ev.Pickup.Base || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
+            return;
 
-        if (TemporaryPlayerBypass.TryGetValue(player, out float time) && time > Time.time)
-            return true;
-
-        Pickup? pickup = Pickup.Get(pickupBase);
-
-        // Exiled bug - armor pickups become permanently locked if the event is denied
-        if (pickup is BodyArmorPickup)
-            return true;
-
-        if (!CanPickUp(player, pickup))
-            return false;
+        if (TemporaryPlayerBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
+            return ;
         
-        return true;
+        if (ev.Pickup is BodyArmorPickup)
+            return;
+
+        if (AlwaysBlock || !CanPickUp(ev.Player, ev.Pickup))
+        {
+            ev.IsAllowed = false;
+        }
     }
 
     static bool CanPickUp(Player player, Pickup pickup)

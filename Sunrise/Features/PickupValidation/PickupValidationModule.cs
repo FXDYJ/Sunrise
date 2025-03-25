@@ -10,6 +10,8 @@ internal class PickupValidationModule : PluginModule
         Handlers.Scp914.UpgradingInventoryItem += OnScp914UpgradingInventoryItem;
         Handlers.Player.InteractingLocker += OnInteractingLocker;
         Handlers.Player.InteractingDoor += OnInteractingDoor;
+        
+        Handlers.Player.PickingUpItem += PickupValidator.OnPickingUpItem;
     }
 
     protected override void OnDisabled()
@@ -17,6 +19,8 @@ internal class PickupValidationModule : PluginModule
         Handlers.Scp914.UpgradingInventoryItem -= OnScp914UpgradingInventoryItem;
         Handlers.Player.InteractingLocker -= OnInteractingLocker;
         Handlers.Player.InteractingDoor -= OnInteractingDoor;
+        
+        Handlers.Player.PickingUpItem -= PickupValidator.OnPickingUpItem;
     }
 
     protected override void OnReset()
