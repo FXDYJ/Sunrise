@@ -82,7 +82,7 @@ Sunrise adds a field-of-view (FOV) check to ensure that the player is looking at
 | Feature                                   | Status         |
 |-------------------------------------------|----------------|
 | Pickup spoofing (anti-ESP noise)          | In development |
-| Raycast based anti-wh for close distances | Research       |
+| Raycast based anti-wh for close distances | In development |
 
 ---
 
