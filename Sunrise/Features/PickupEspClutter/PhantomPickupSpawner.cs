@@ -20,36 +20,27 @@ public static class PhantomItemSpawner
 
     static IEnumerator<float> PhantomItemSpawnerCoroutine()
     {
-        List<Room> rooms = new(Room.List);
-        const int CountPerRoom = 5;
+        const int Count = 100;
+        var sw = Stopwatch.StartNew();
 
-        foreach (Room room in rooms)
+        for (var i = 0; i < Count; i++)
         {
-            for (var i = 0; i < CountPerRoom; i++)
-            {
-                PhantomItem.SpawnNew(room);
-                yield return Timing.WaitForSeconds(Random.Range(0.05f, 0.1f));
-            }
+            sw.Start();
+            PhantomPickup.Create();
+            sw.Stop();
+            yield return Timing.WaitForOneFrame;
         }
+
+        sw.Stop();
+        Debug.Log($"Spawned {Count} phantom pickups in {sw.Elapsed.TotalMilliseconds:F5}ms");
+        
 
         while (true)
         {
-            rooms.ShuffleList();
-            var sw = Stopwatch.StartNew();
-
-            foreach (Room room in rooms)
-            {
-                sw.Start();
-                PhantomItem.DestroyOldest();
-                PhantomItem.SpawnNew(room);
-                sw.Stop();
-
-                yield return Timing.WaitForSeconds(Random.Range(0.1f, 0.3f));
-            }
-            
-            Log.Warn($"Phantom item destruction and spawn for {rooms.Count} rooms took {sw.Elapsed.TotalMilliseconds:F7}ms");
-
-            yield return Timing.WaitForSeconds(0.5f);
+            PhantomPickup.DestroyOldest();
+            yield return Timing.WaitForSeconds(Random.Range(1, 2f));
+            PhantomPickup.Create();
+            yield return Timing.WaitForSeconds(Random.Range(1, 2f));
         }
     }
 }

@@ -1,25 +1,24 @@
-using System;
+/*using System;
 using System.Linq;
 using Exiled.API.Enums;
 using MapGeneration;
 
-namespace Sunrise.Features.AntiWallhack;
+namespace Sunrise.API;
 
 /// <summary>
 ///     Represents a collection of all coordinates that should be visible to a player in a specific room
 /// </summary>
-public class RoomVisibilityData
+public class OldRoomVisibilityData
 {
     static readonly Dictionary<Vector3Int, RoomVisibilityData> RoomVisibilityCache = new();
 
     readonly HashSet<Vector3Int> _visibleCoords = [];
     readonly Color _color = Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
-    readonly Room _room;
-    float _lastPrimitiveSpawnTime = Time.time;
+    float _lastPrimitiveSpawnTime;
 
     RoomVisibilityData(Room room)
     {
-        _room = room;
+        Room = room;
         Include(room);
 
         Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);
@@ -39,6 +38,8 @@ public class RoomVisibilityData
 
         Debug.Log($"Generated visibility data for room {room.Type}. Total visible coords: {_visibleCoords.Count}");
     }
+
+    public Room Room { get; }
 
     void Include(Room room)
     {
@@ -167,10 +168,10 @@ public class RoomVisibilityData
 
             foreach (Vector3Int visibleCoords in data._visibleCoords)
                 Debug.DrawLine(origin, RoomIdUtils.CoordsToCenterPos(visibleCoords) + offset, data._color, PrimitveDuration);
-            
+
             origin += Vector3.up * 0.05f;
-            
-            Transform transform = data._room.transform;
+
+            Transform transform = data.Room.transform;
             Debug.DrawLine(origin, origin + transform.right, Colors.Red, PrimitveDuration);
             Debug.DrawLine(origin, origin + transform.forward, Colors.Blue, PrimitveDuration);
             Debug.DrawLine(origin, origin + transform.up, Colors.Green, PrimitveDuration);
@@ -182,7 +183,7 @@ public class RoomVisibilityData
     #region Hardcoded stuff
 
     // Rooms that have known connection directions
-    public static readonly Dictionary<RoomType, Vector3Int[]> KnownDirectionsRooms = new()
+    static readonly Dictionary<RoomType, Vector3Int[]> KnownDirectionsRooms = new()
     {
         [RoomType.HczCornerDeep] = [Vector3Int.back, Vector3Int.right],
         [RoomType.HczNuke] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
@@ -193,12 +194,12 @@ public class RoomVisibilityData
         [RoomType.Hcz079] = [Vector3Int.left],
         [RoomType.HczIntersection] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
         [RoomType.HczHid] = [Vector3Int.left, Vector3Int.right],
-        
+
         [RoomType.EzSmallrooms] = [Vector3Int.forward, Vector3Int.back],
         [RoomType.EzIntercom] = [Vector3Int.left, Vector3Int.back],
     };
 
-    public static readonly HashSet<RoomType> DiagonalVisibilityRooms =
+    static readonly HashSet<RoomType> DiagonalVisibilityRooms =
     [
         RoomType.HczCornerDeep,
         RoomType.HczNuke,
@@ -207,7 +208,7 @@ public class RoomVisibilityData
         RoomType.HczIntersectionJunk,
     ];
 
-    public static readonly Vector3Int[] Directions =
+    static readonly Vector3Int[] Directions =
     [
         Vector3Int.forward,
         Vector3Int.right,
@@ -223,4 +224,4 @@ public class RoomVisibilityData
     ];
 
     #endregion
-}
+}*/

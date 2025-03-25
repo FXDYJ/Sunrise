@@ -10,6 +10,8 @@ using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp049;
 using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.Visibility;
+using Sunrise.API;
+using Sunrise.API.Visibility;
 using Sunrise.Utility;
 
 namespace Sunrise.Features.AntiWallhack;
@@ -82,7 +84,7 @@ public static class FpcVisibilityControllerPatch
         Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
         Vector3Int targetCoords = RoomIdUtils.PositionToCoords(targetRole.FpcModule.Position);
 
-        if (RoomVisibilityData.Get(observerCoords) is not RoomVisibilityData visibilityData || visibilityData.CheckVisibility(targetCoords))
+        if (VisibilityData.Get(observerCoords) is not VisibilityData observerVisibility || observerVisibility.IsVisible(targetCoords))
             return flags;
 
         return flags | InvisibilityFlags.OutOfRange;

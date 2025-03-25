@@ -1,5 +1,6 @@
 using System;
 using MapGeneration;
+using Sunrise.API.Visibility;
 
 namespace Sunrise.Features.AntiWallhack;
 
@@ -28,7 +29,7 @@ public class AntiWallhackModule : PluginModule
             {
                 try
                 {
-                    RoomVisibilityData.Get(RoomIdUtils.PositionToCoords(room.Position));
+                    VisibilityData.Get(room);
                 }
                 catch (Exception e)
                 {
