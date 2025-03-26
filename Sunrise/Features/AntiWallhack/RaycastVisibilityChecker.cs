@@ -15,16 +15,16 @@ internal static class RaycastVisibilityChecker
     [
         new(0, 0), // камера
 
-        new(0.5f, -0.13f), // правое плечо (дальняя)
-        new(-0.5f, -0.13f), // левое плечо (дальняя)
+        new(0.65f, -0.13f), // правое плечо (дальняя)
+        new(-0.65f, -0.13f), // левое плечо (дальняя)
 
         new(0.3f, -1.03f), // правое колено (дальняя)
         new(-0.3f, -1.03f), // левое колено (дальняя)
 
         new(0f, 0.57f), // над головой
 
-        new(0.2f, -1.43f), // около ног справа
-        new(-0.2f, -1.43f), // около ног слева
+        new(0.27f, -1.43f), // около ног справа
+        new(-0.27f, -1.43f), // около ног слева
 
         new(0.07f, -0.13f), // правое плечо
         new(-0.07f, -0.13f), // левое плечо
@@ -55,7 +55,7 @@ internal static class RaycastVisibilityChecker
 
         Vector3 directionToObserver = (observerPosition - targetPosition).normalized;
 
-        var widthMultiplier = Mathf.Clamp(target.Velocity.magnitude, 1f, 3.5f);
+        var widthMultiplier = Mathf.Clamp(target.Velocity.magnitude * 0.5f, 1f, 3.5f);
         SetVisibilityPoints(targetPosition, Vector3.Cross(directionToObserver, Vector3.up), Vector3.up, widthMultiplier);
 
         foreach (Vector3 point in VisibilityPointsBuffer)

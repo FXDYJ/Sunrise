@@ -16,10 +16,14 @@ public class Config : IConfig
     [Description("The maximum latency for which the server has to account. Higher values give more authority to clients, lower values may decrease gameplay quality for players with higher latency.")]
     public float AccountedLatencySeconds { get; set; } = 0.3f;
 
-    [Description("Toggle features separately:\nSignificantly reduces wallhack usefulness. Performance impact negligible.")]
+    [Description("Toggle features separately:\nSignificantly reduces wallhack usefulness using per-room visibility maps. Performance impact negligible.")]
     public bool AntiWallhack { get; set; } = true;
 
-    [Description("Completely cuts off wallhack past 12m range using precise line-of-sight checks. Performance impact minimal: ~1.3% of server time consumed with 30 players in worst case positions.")]
+    [Description(
+        "Completely cuts off wallhack past 12m range using precise line-of-sight checks." +
+        "Performance impact possible: ~1.3% of server time consumed with 30 players in close proximity." +
+        "May cause issues with custom maps if transparent objects are using the default layer (0) instead of glass layer (14)"
+    )]
     public bool RaycastVisibilityValidation { get; set; } = true;
 
     [Description("Prevents picking up items through walls. Performance impact negligible.")]
