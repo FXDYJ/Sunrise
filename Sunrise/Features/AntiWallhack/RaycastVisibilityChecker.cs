@@ -38,17 +38,11 @@ internal static class RaycastVisibilityChecker
     {
         int key = RaycastVisibilityCache.GetKey(playerA.Id, playerB.Id);
 
-        if (RaycastVisibilityCache.TryGet(key, out bool value, out bool shouldRenew))
-        {
-            if (shouldRenew && CheckAnyVisibility(playerA, playerB))
-                RaycastVisibilityCache.Save(key, true);
-
+        if (RaycastVisibilityCache.TryGet(key, out bool value))
             return value;
-        }
 
         bool result = CheckAnyVisibility(playerA, playerB);
         RaycastVisibilityCache.Save(key, result);
-
         return result;
     }
 
@@ -94,7 +88,6 @@ internal static class RaycastVisibilityChecker
 
 internal static class RaycastVisibilityCache
 {
-    const float RenewTime = 0.1f;
     const float NotVisibleCacheTime = 0.1f;
     const float VisibleCacheTime = 0.5f;
 
@@ -106,28 +99,30 @@ internal static class RaycastVisibilityCache
         CachedVisibility[key] = (Time.time + cacheTime, value);
     }
 
-    internal static bool TryGet(int key, out bool value, out bool shouldRenew)
+    internal static bool TryGet(int key, out bool value)
     {
         if (CachedVisibility.TryGetValue(key, out (float Expiration, bool Value) cache))
         {
             if (cache.Expiration - Time.time > 0)
             {
                 value = cache.Value;
-                shouldRenew = cache.Value && cache.Expiration < Time.time + RenewTime;
                 return true;
             }
         }
 
         value = false;
-        shouldRenew = false;
         return false;
     }
 
+    /// <summary>
+    ///     Creates a unique order independent key for two player IDs.
+    ///     Will start having collisions after 65535 players, which is way more than practical numbers.
+    /// </summary>
     public static int GetKey(int a, int b)
     {
         if (a > b)
-            return a * 10000 + b;
+            return (a << 16) | b;
         else
-            return b * 10000 + a;
+            return (b << 16) | a;
     }
 }
