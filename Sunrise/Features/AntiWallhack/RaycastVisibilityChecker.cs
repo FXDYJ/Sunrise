@@ -52,25 +52,22 @@ internal static class RaycastVisibilityChecker
     {
         Vector3 observerPosition = observer.CameraTransform.position;
         Vector3 targetPosition = target.CameraTransform.position;
-        Vector3 directionToObserver = (observerPosition - targetPosition).normalized;
-        float rayLength = Vector3.Distance(targetPosition, observerPosition) - 1; // Allow the ray to not fully reach the target
 
-        // The faster the target moves, the wider the points are
-        float widthMultiplier = Mathf.Clamp(target.Velocity.magnitude, 1f, 3.5f);
-        Vector3 right = Vector3.Cross(directionToObserver, Vector3.up);
-        SetVisibilityPoints(targetPosition, right, Vector3.up, widthMultiplier);
+        Vector3 directionToObserver = (observerPosition - targetPosition).normalized;
+
+        var widthMultiplier = Mathf.Clamp(target.Velocity.magnitude, 1f, 3.5f);
+        SetVisibilityPoints(targetPosition, Vector3.Cross(directionToObserver, Vector3.up), Vector3.up, widthMultiplier);
 
         foreach (Vector3 point in VisibilityPointsBuffer)
         {
-            Ray ray = new(point + directionToObserver, directionToObserver);
-
-            Debug.DrawPoint(ray.origin, Colors.Orange * 50, 0.11f);
-
-            if (!Physics.Raycast(ray, rayLength, VisionInformation.VisionLayerMask))
+            if (Physics.Linecast(observerPosition, point, VisionInformation.VisionLayerMask))
             {
-                Debug.DrawLine(ray.origin, ray.GetPoint(rayLength), Colors.Blue * 50, 0.11f);
-                return true;
+                Debug.DrawPoint(point, Colors.Orange * 50, 0.11f);
+                continue;
             }
+
+            Debug.DrawLine(observerPosition, point, Colors.Blue * 50, 0.11f);
+            return true;
         }
 
         return false;
