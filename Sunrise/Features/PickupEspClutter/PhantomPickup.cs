@@ -59,6 +59,8 @@ internal class PhantomPickup : MonoBehaviour
             PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
             _pickup.Position = position;
             
+            // BUG: flickering
+            
             // Wait for the item to change position to one where it wont be noticed by legit players immediately, so we can safely update visibility
             yield return Timing.WaitForSeconds(Random.Range(0.4f, 0.5f));
 
@@ -95,7 +97,13 @@ internal class PhantomPickup : MonoBehaviour
     void UpdateVisibility()
     {
         VisibilityData? visibilityData = VisibilityData.Get(transform.position, false);
-        
+
+        if (visibilityData == null)
+        {
+            HideForEveryone();
+            return;
+        }
+
         foreach (Player player in Player.Dictionary.Values)
             SetVisibility(player, !IsObserving(player, visibilityData));
     }

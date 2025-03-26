@@ -45,11 +45,6 @@ public class VisibilityData
         {
             data = new(room);
 
-            if (room.Type == RoomType.Surface)
-            {
-                Log.Warn($"Surface occupied coords: {room.Identifier.OccupiedCoords.Length}, {room.Identifier.OccupiedCoords.Select(c => c.ToString()).Join()}");
-            }
-
             foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
                 Cache[occupiedCoord] = data;
         }

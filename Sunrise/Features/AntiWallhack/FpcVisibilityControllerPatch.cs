@@ -93,7 +93,7 @@ internal static class FpcVisibilityControllerPatch
         if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
             return flags | InvisibilityFlags.OutOfRange;
 
-        if (!RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
+        if (Config.Instance.RaycastVisibilityValidation && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
             return flags | InvisibilityFlags.OutOfRange;
 
         return flags;

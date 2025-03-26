@@ -16,8 +16,11 @@ public class Config : IConfig
     [Description("The maximum latency for which the server has to account. Higher values give more authority to clients, lower values may decrease gameplay quality for players with higher latency.")]
     public float AccountedLatencySeconds { get; set; } = 0.3f;
 
-    [Description("Toggle features separately:\nSignificantly reduces wallhack usefulness. Performance impact not yet measured.")]
+    [Description("Toggle features separately:\nSignificantly reduces wallhack usefulness. Performance impact negligible.")]
     public bool AntiWallhack { get; set; } = true;
+
+    [Description("Completely cuts off wallhack past 12m range using precise line-of-sight checks. Performance impact minimal: ~1.3% of server time consumed with 30 players in worst case positions.")]
+    public bool RaycastVisibilityValidation { get; set; } = true;
 
     [Description("Prevents picking up items through walls. Performance impact negligible.")]
     public bool PickupValidation { get; set; } = true;
@@ -30,7 +33,7 @@ public class Config : IConfig
 
     [Description("Prevents cheaters from interacting with doors they're not looking at. Performance impact negligible.")]
     public bool DoorInteractionValidation { get; set; } = true;
-    
+
     // TODO fix
     /*[Description("Clutters ESP cheats with phantom pickups that disappear when players get close. Performance impact minimal.")]
     public bool PhantomPickups { get; set; } = true;*/

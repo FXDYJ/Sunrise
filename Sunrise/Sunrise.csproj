@@ -108,6 +108,7 @@
         <Compile Include="GlobalUsings.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Utility\CircularBuffer.cs" />
+        <Compile Include="Utility\AutoBenchmark.cs" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="..\CONTRIBUTING.md">
