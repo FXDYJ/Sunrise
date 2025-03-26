@@ -59,10 +59,12 @@ public class AntiDoorManipulatorModule : PluginModule
 
     static bool CanInteractWithCollider(Player player, Vector3 colliderPos)
     {
+        const float AllowedAngle = 30;
+
         Vector3 direction = (colliderPos - player.CameraTransform.position).normalized;
         float angle = Vector3.Angle(player.CameraTransform.forward with { y = direction.y }, direction);
 
-        if (angle < 45)
+        if (angle < AllowedAngle)
             return true;
 
         return false;
