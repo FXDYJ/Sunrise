@@ -10,6 +10,7 @@ using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp049;
 using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.Visibility;
+using PlayerRoles.Voice;
 using Sunrise.API.Visibility;
 
 namespace Sunrise.Features.AntiWallhack;
@@ -65,6 +66,10 @@ internal static class FpcVisibilityControllerPatch
             _ when scp1344Effect.IsEnabled => 24 * 24,
             _ => 12 * 12,
         };
+
+        // Voice chat can be heard from a distance of 22m
+        if (targetRole is IVoiceRole vr && vr.VoiceModule.ServerIsSending)
+            targetForcedVisibility = Mathf.Max(targetForcedVisibility, 22 * 22);
 
         return targetForcedVisibility;
     }

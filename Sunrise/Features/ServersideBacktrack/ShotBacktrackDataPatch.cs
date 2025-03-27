@@ -10,21 +10,17 @@ using BaseFirearm = InventorySystem.Items.Firearms.Firearm;
 
 namespace Sunrise.Features.ServersideBacktrack;
 
-[HarmonyPatch(typeof(ShotBacktrackData), nameof(ShotBacktrackData.ProcessShot))] [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+[HarmonyPatch(typeof(ShotBacktrackData), nameof(ShotBacktrackData.ProcessShot)), UsedImplicitly(ImplicitUseTargetFlags.WithMembers)] 
 internal static class BacktrackOverridePatch
 {
-    static Stopwatch sw = new();
-    static double totalElapsed = 0;
-    static int count = 0;
-    static bool first = true;
+    static readonly AutoBenchmark Benchmark = new("Server-Side Backtrack");
 
     static bool Prefix(BaseFirearm firearm, Action<ReferenceHub> processingMethod, ShotBacktrackData __instance)
     {
         if (!Config.Instance.ServersideBacktrack)
             return true;
 
-        if (Config.Instance.Debug)
-            sw.Restart();
+        Benchmark.Start();
 
         ProcessShot(firearm, processingMethod, __instance);
         return false;
@@ -79,21 +75,8 @@ internal static class BacktrackOverridePatch
 #if DEBUG
     public static void Postfix(BaseFirearm firearm, Action<ReferenceHub> processingMethod)
     {
-        if (!Config.Instance.Debug)
-            return;
-
-        if (first)
-        {
-            first = false;
-            return;
-        }
-
-        sw.Stop();
-        count++;
-        totalElapsed += sw.Elapsed.TotalMilliseconds;
-
-        Debug.Log($"Backtrack took {sw.Elapsed.TotalMilliseconds:F3}ms. Total for {count} shots: {totalElapsed:F5}ms. Average: {totalElapsed / count:F7}ms. Per 1000 shots: {totalElapsed / count * 1000:F5}ms.");
-
+        Benchmark.Increment();
+        Benchmark.Stop();
         // [ServersideBacktrack = true] Total for 100 shots: 56.80070ms. Average: 0.5680070ms. Per 1000 shots: 568.00700ms.
         // [ServersideBacktrack = false] Total for 100 shots: 119.02560ms. Average: 1.1902560ms. Per 1000 shots: 1190.25600ms.
         // Sunrise backtrack results in 2x performance increase (idk how lol nw code is baaaaaaaaad). Ratios reproduced on 3 different machines.

@@ -85,10 +85,10 @@ Sunrise adds a field-of-view (FOV) check to ensure that the player is looking at
 
 ## 🗺️ Planned Features
 
-| Feature                                   | Status         | Preview                                                                                               |
-|-------------------------------------------|----------------|-------------------------------------------------------------------------------------------------------|
-| Pickup spoofing (anti-ESP noise)          | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/ItemClutterPreview.gif)      |
-| Raycast based anti-wh for close distances | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomy2Preview.gif)|
+| Feature                                   | Status         | Preview                                                                                                |
+|-------------------------------------------|----------------|--------------------------------------------------------------------------------------------------------|
+| Pickup spoofing (anti-ESP noise)          | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/ItemClutterPreview.gif)       |
+| Raycast based anti-wh for close distances | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomy2Preview.gif) |
 
 ---
 

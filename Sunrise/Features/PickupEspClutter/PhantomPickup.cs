@@ -52,15 +52,13 @@ internal class PhantomPickup : MonoBehaviour
         while (true)
         {
             HideForEveryone();
-            
+
             yield return Timing.WaitForSeconds(Random.Range(0.4f, 0.5f));
-            
+
             // Choose a new position for the item
             PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
             _pickup.Position = position;
-            
-            // BUG: flickering
-            
+
             // Wait for the item to change position to one where it wont be noticed by legit players immediately, so we can safely update visibility
             yield return Timing.WaitForSeconds(Random.Range(0.4f, 0.5f));
 

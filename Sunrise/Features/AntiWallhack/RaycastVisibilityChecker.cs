@@ -34,6 +34,8 @@ internal static class RaycastVisibilityChecker
 
     static readonly Vector3[] VisibilityPointsBuffer = new Vector3[VisibilityPointOffsets.Length];
 
+    static readonly AutoBenchmark Benchmark = new("RaycastVisibilityChecker");
+
     public static bool IsVisible(Player playerA, Player playerB)
     {
         int key = RaycastVisibilityCache.GetKey(playerA.Id, playerB.Id);
@@ -41,8 +43,11 @@ internal static class RaycastVisibilityChecker
         if (RaycastVisibilityCache.TryGet(key, out bool value))
             return value;
 
+        Benchmark.Start();
         bool result = CheckAnyVisibility(playerA, playerB);
         RaycastVisibilityCache.Save(key, result);
+        Benchmark.Increment();
+        Benchmark.Stop();
         return result;
     }
 
@@ -55,7 +60,7 @@ internal static class RaycastVisibilityChecker
 
         Vector3 directionToObserver = (observerPosition - targetPosition).normalized;
 
-        var widthMultiplier = Mathf.Clamp(target.Velocity.magnitude * 0.5f, 1f, 3.5f);
+        float widthMultiplier = Mathf.Clamp(target.Velocity.magnitude * 0.5f, 1f, 3.5f);
         SetVisibilityPoints(targetPosition, Vector3.Cross(directionToObserver, Vector3.up), Vector3.up, widthMultiplier);
 
         foreach (Vector3 point in VisibilityPointsBuffer)

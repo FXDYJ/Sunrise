@@ -5,7 +5,7 @@ using PlayerRoles.FirstPersonControl;
 
 namespace Sunrise.Features.AntiWallhack;
 
-[HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.IgnoredFlags), MethodType.Getter)] [UsedImplicitly]
+[HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.IgnoredFlags), MethodType.Getter), UsedImplicitly] 
 internal static class FpcVisibilityControllerIgnoredFlagsPatch
 {
     [UsedImplicitly]
@@ -19,7 +19,7 @@ internal static class FpcVisibilityControllerIgnoredFlagsPatch
             .ThrowIfInvalid("Failed to find Ldc_I4_7")
             .RemoveInstruction()
             .Insert(new CodeInstruction(OpCodes.Ldc_I4_6));
-        
+
         return matcher.Instructions();
     }
 }

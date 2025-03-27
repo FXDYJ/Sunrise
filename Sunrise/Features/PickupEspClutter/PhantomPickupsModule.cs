@@ -10,16 +10,17 @@ internal class PhantomPickupsModule : PluginModule
         ItemType.SCP500,
         ItemType.Adrenaline,
         ItemType.ParticleDisruptor,
-        ItemType.MicroHID, 
+        ItemType.MicroHID,
         ItemType.Jailbird,
         ItemType.SCP1344,
     ];
 
     protected override void OnEnabled()
     {
-        Handlers.Server.RoundStarted += OnRoundStarted;
+        // BUG: Flickering
+        /*Handlers.Server.RoundStarted += OnRoundStarted;
         Handlers.Server.RoundEnded += OnRoundEnded;
-        Handlers.Player.PickingUpItem += OnPickingUpItem;
+        Handlers.Player.PickingUpItem += OnPickingUpItem;*/
     }
 
     protected override void OnDisabled()

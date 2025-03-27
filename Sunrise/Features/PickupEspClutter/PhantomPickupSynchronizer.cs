@@ -9,7 +9,7 @@ internal static class PhantomPickupSynchronizer
     static readonly HashSet<RoomType> ExcludedRooms =
     [
         RoomType.Surface,
-        
+
         RoomType.Hcz106,
         RoomType.HczCrossRoomWater,
         RoomType.HczStraightPipeRoom,

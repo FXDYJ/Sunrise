@@ -6,16 +6,14 @@ internal static class VisibilityDataDebugVisualizer
 {
     const float PrimitiveDuration = 15;
 
-    static readonly Dictionary<Vector3Int, DebugData> RoomDebugData = new();
+    static readonly Dictionary<Room, DebugData> RoomDebugData = new();
 
     public static void DrawDebugPrimitives(VisibilityData data)
     {
-        Vector3Int coords = RoomIdUtils.PositionToCoords(data.Room.Position);
-
-        if (!RoomDebugData.TryGetValue(coords, out DebugData debugData))
+        if (!RoomDebugData.TryGetValue(data.Room, out DebugData debugData))
         {
-            debugData = new(coords);
-            RoomDebugData[coords] = debugData;
+            debugData = new(data.Room);
+            RoomDebugData[data.Room] = debugData;
         }
 
         if (!debugData.IsReady())
@@ -46,17 +44,17 @@ internal static class VisibilityDataDebugVisualizer
         Debug.DrawLine(origin, origin + transform.up * 0.3f, Colors.Green * 50, PrimitiveDuration);
     }
 
-    struct DebugData(Vector3Int coords)
+    class DebugData(Room room)
     {
         public readonly Color Color = GetRandomColor();
         public readonly Vector3 OriginOffset = GetOriginOffset();
 
-        public readonly Vector3 Origin
+        float _lastPrimitiveSpawnTime = Time.time;
+
+        public Vector3 Origin
         {
             get => field + OriginOffset;
-        } = RoomIdUtils.CoordsToCenterPos(coords);
-
-        float _lastPrimitiveSpawnTime = Time.time;
+        } = RoomIdUtils.PositionToCoords(room.Position);
 
         static Color GetRandomColor()
             => Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;

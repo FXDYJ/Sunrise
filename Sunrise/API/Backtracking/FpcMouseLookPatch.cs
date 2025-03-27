@@ -4,7 +4,7 @@ using PlayerRoles.FirstPersonControl;
 
 namespace Sunrise.API.Backtracking;
 
-[HarmonyPatch(typeof(FpcMouseLook), nameof(FpcMouseLook.ApplySyncValues))] [UsedImplicitly]
+[HarmonyPatch(typeof(FpcMouseLook), nameof(FpcMouseLook.ApplySyncValues)), UsedImplicitly] 
 internal static class FpcMouseLookPatch
 {
     [UsedImplicitly]

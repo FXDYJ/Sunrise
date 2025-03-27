@@ -16,7 +16,7 @@ public class SunriseLoader : PluginModule
         // API
         new BacktrackingModule(),
         new AntiWallhackModule(),
-        
+
         // Features
         new PickupValidationModule(),
         new ServersideTeslaDamageModule(),

@@ -65,6 +65,6 @@ internal class ServersideTeslaHitreg(TeslaGate tesla)
 
         _hitPlayers.Clear();
     }
-    
+
     internal static ServersideTeslaHitreg Get(TeslaGate tesla) => Dictionary.GetOrAdd(tesla, () => new(tesla));
 }

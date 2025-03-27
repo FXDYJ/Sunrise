@@ -10,7 +10,7 @@ internal class PickupValidationModule : PluginModule
         Handlers.Scp914.UpgradingInventoryItem += OnScp914UpgradingInventoryItem;
         Handlers.Player.InteractingLocker += OnInteractingLocker;
         Handlers.Player.InteractingDoor += OnInteractingDoor;
-        
+
         Handlers.Player.PickingUpItem += PickupValidator.OnPickingUpItem;
     }
 
@@ -19,7 +19,7 @@ internal class PickupValidationModule : PluginModule
         Handlers.Scp914.UpgradingInventoryItem -= OnScp914UpgradingInventoryItem;
         Handlers.Player.InteractingLocker -= OnInteractingLocker;
         Handlers.Player.InteractingDoor -= OnInteractingDoor;
-        
+
         Handlers.Player.PickingUpItem -= PickupValidator.OnPickingUpItem;
     }
 
@@ -37,13 +37,13 @@ internal class PickupValidationModule : PluginModule
 
     static void OnInteractingLocker(InteractingLockerEventArgs ev)
     {
-        if (ev.IsAllowed) 
+        if (ev.IsAllowed)
             PickupValidator.LockerLastInteraction[ev.InteractingChamber.Base] = Time.time;
     }
 
     static void OnInteractingDoor(InteractingDoorEventArgs ev)
     {
-        if (ev.IsAllowed) 
+        if (ev.IsAllowed)
             PickupValidator.DoorLastInteraction[ev.Door.Base] = Time.time;
     }
 }

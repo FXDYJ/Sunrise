@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Sunrise")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("SCP:SL anti-cheat that actually works")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Sunrise")]
-[assembly: AssemblyCopyright("Copyright ©  2025")]
+[assembly: AssemblyCopyright("Copyright © 2025 Banalny Banan")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

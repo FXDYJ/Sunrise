@@ -13,6 +13,9 @@ public class Config : IConfig
     [Description("Enables some visual debugging features.")]
     public bool DebugPrimitives { get; set; } = false;
 
+    [Description("Enables benchmarks to measure performance impact of various features on your server performance.")]
+    public bool Benchmark { get; set; } = false;
+
     [Description("The maximum latency for which the server has to account. Higher values give more authority to clients, lower values may decrease gameplay quality for players with higher latency.")]
     public float AccountedLatencySeconds { get; set; } = 0.3f;
 

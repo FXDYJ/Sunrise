@@ -22,8 +22,8 @@ internal static class PickupValidator
             return;
 
         if (TemporaryPlayerBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
-            return ;
-        
+            return;
+
         if (ev.Pickup is BodyArmorPickup)
             return;
 
