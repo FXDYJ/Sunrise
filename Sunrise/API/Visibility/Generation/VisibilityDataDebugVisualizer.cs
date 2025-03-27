@@ -50,17 +50,19 @@ internal static class VisibilityDataDebugVisualizer
     {
         public readonly Color Color = GetRandomColor();
         public readonly Vector3 OriginOffset = GetOriginOffset();
-        public readonly Vector3 Position = RoomIdUtils.CoordsToCenterPos(coords);
-        public readonly Vector3 Origin => Position + OriginOffset;
+
+        public readonly Vector3 Origin
+        {
+            get => field + OriginOffset;
+        } = RoomIdUtils.CoordsToCenterPos(coords);
 
         float _lastPrimitiveSpawnTime = Time.time;
 
-        static Color GetRandomColor() =>
-            Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
+        static Color GetRandomColor()
+            => Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
 
-        static Vector3 GetOriginOffset() =>
-            (Random.insideUnitSphere * 0.5f) with { y = Random.Range(0, 0.2f) } +
-            Vector3.up * 0.3f;
+        static Vector3 GetOriginOffset()
+            => (Random.insideUnitSphere * 0.5f) with { y = Random.Range(0, 0.2f) } + Vector3.up * 0.3f;
 
         public void ResetTime() => _lastPrimitiveSpawnTime = Time.time;
         public bool IsReady() => Time.time > _lastPrimitiveSpawnTime + PrimitiveDuration;
