@@ -12,13 +12,6 @@ internal static class VisibilityDataDebugVisualizer
     {
         Vector3Int coords = RoomIdUtils.PositionToCoords(data.Room.Position);
 
-        /*if (Time.time < LastPrimitiveSpawnTimes.GetValueOrDefault(coords) + PrimitiveDuration)
-            return;
-
-        LastPrimitiveSpawnTimes[coords] = Time.time;
-        Color color = RoomColors.TryGetValue(coords, out Color roomColor) ? roomColor : RoomColors[coords] = GenerateRandomColor();
-        Vector3 origin = GetDebugOrigin(coords);*/
-
         if (!RoomDebugData.TryGetValue(coords, out DebugData debugData))
         {
             debugData = new(coords);
@@ -29,17 +22,15 @@ internal static class VisibilityDataDebugVisualizer
             return;
 
         debugData.ResetTime();
-        VisualizeRoomConnections(data, debugData.Origin, debugData.Color);
+        VisualizeRoomConnections(data, debugData);
         VisualizeRoomAxes(data, debugData.Origin);
     }
 
-    static void VisualizeRoomConnections(VisibilityData data, Vector3 origin, Color color)
+    static void VisualizeRoomConnections(VisibilityData data, DebugData debugData)
     {
-        Debug.DrawPoint(origin, color, PrimitiveDuration);
-
         foreach (Vector3Int coord in data.VisibleCoords)
         {
-            Debug.DrawLine(origin, RoomIdUtils.CoordsToCenterPos(coord) + origin.normalized * 0.1f, color, PrimitiveDuration);
+            Debug.DrawLine(debugData.Origin, RoomIdUtils.CoordsToCenterPos(coord) + debugData.OriginOffset, debugData.Color, PrimitiveDuration);
         }
     }
 
@@ -55,16 +46,17 @@ internal static class VisibilityDataDebugVisualizer
 
     struct DebugData(Vector3Int coords)
     {
-        public Color Color { get; } = GetRandomColor();
-        public Vector3 Origin { get; } = GetDebugOrigin(coords);
+        public readonly Color Color = GetRandomColor();
+        public readonly Vector3 OriginOffset = GetOriginOffset();
+        public readonly Vector3 Position = RoomIdUtils.CoordsToCenterPos(coords);
+        public readonly Vector3 Origin => Position + OriginOffset;
 
         float _lastPrimitiveSpawnTime = Time.time;
 
         static Color GetRandomColor() =>
             Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;
 
-        static Vector3 GetDebugOrigin(Vector3Int coords) =>
-            RoomIdUtils.CoordsToCenterPos(coords) +
+        static Vector3 GetOriginOffset() =>
             (Random.insideUnitSphere * 0.5f) with { y = Random.Range(0, 0.2f) } +
             Vector3.up * 0.3f;
 
