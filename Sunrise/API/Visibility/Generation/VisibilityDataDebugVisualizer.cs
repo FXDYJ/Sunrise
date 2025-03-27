@@ -28,6 +28,8 @@ internal static class VisibilityDataDebugVisualizer
 
     static void VisualizeRoomConnections(VisibilityData data, DebugData debugData)
     {
+        Debug.DrawPoint(debugData.Origin, debugData.Color, PrimitiveDuration);
+
         foreach (Vector3Int coord in data.VisibleCoords)
         {
             Debug.DrawLine(debugData.Origin, RoomIdUtils.CoordsToCenterPos(coord) + debugData.OriginOffset, debugData.Color, PrimitiveDuration);
