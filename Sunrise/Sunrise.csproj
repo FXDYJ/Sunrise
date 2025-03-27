@@ -79,9 +79,9 @@
         <Compile Include="API\Visibility\Generation\RoomConnectionChecker.cs" />
         <Compile Include="API\Visibility\Generation\RoomDirectionHelper.cs" />
         <Compile Include="API\Visibility\Generation\RoomVisibilityConfig.cs" />
+        <Compile Include="API\Visibility\Generation\VisibilityDataDebugVisualizer.cs" />
         <Compile Include="API\Visibility\Generation\VisibilityGenerator.cs" />
         <Compile Include="API\Visibility\VisibilityData.cs" />
-        <Compile Include="API\Visibility\RoomVisibilityDataDebugVisualizer.cs" />
         <Compile Include="API\Visibility\VisibilityDataModule.cs" />
         <Compile Include="EntryPoint\SunriseLoader.cs" />
         <Compile Include="Features\AntiWallhack\FpcVisibilityControllerIgnoredFlagsPatch.cs" />

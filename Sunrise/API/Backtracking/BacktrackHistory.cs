@@ -5,16 +5,16 @@ namespace Sunrise.API.Backtracking;
 /// <summary>
 ///     Records a history of player's positions and rotations for later use.
 /// </summary>
-internal class BacktrackHistory(Player player)
+public class BacktrackHistory(Player player)
 {
-    internal const float AcceptedDistance = 0.02f;
-    internal const float AcceptedAngle = 0.1f;
+    const float AcceptedDistance = 0.02f;
+    const float AcceptedAngle = 0.1f;
 
     internal static readonly Dictionary<ReferenceHub, BacktrackHistory> Dictionary = new();
 
-    internal readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AccountedLatencySeconds * 60));
+    public readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AccountedLatencySeconds * 60));
 
-    internal void RecordEntry(Vector3 position, Quaternion rotation)
+    public void RecordEntry(Vector3 position, Quaternion rotation)
     {
         Entries.PushFront(new(position, rotation));
     }
@@ -23,7 +23,7 @@ internal class BacktrackHistory(Player player)
     ///     When players move quickly, their position history may not contain the latest data because of latency.
     ///     This method forecasts the player's position to account for this.
     /// </summary>
-    void ForecastEntry()
+    public void ForecastEntry()
     {
         float speed = player.Velocity.magnitude;
         Vector3 direction = player.Velocity / speed;
@@ -48,47 +48,7 @@ internal class BacktrackHistory(Player player)
         Debug.DrawPoint(forecastPosition, Color.yellow * 50);
     }
 
-    /// <summary>
-    ///     Finds the closest position and rotation to the claimed entry that were present in history.
-    ///     This prevents clients from being able to shoot in directions they are not looking at.
-    /// </summary>
-    internal void RestoreClosestEntry(BacktrackEntry claimed, bool forecast)
-    {
-        if (forecast)
-            ForecastEntry();
-
-        BacktrackEntry best = GetClosest(claimed);
-
-        if (best.Timestamp != 0) // Null check struct edition
-        {
-            best.Restore(player);
-
-            if (Config.Instance.Debug)
-            {
-                Debug.Log($"Best entry found for {player.Nickname} " +
-                    $"Difference: A:{Quaternion.Angle(best.Rotation, claimed.Rotation):F5}, P:{Vector3.Distance(best.Position, claimed.Position):F} " +
-                    $"Age: {best.Age * 1000:F0}ms");
-            }
-        }
-        else
-        {
-            Debug.Log($"No suitable entry found for {player.Nickname}");
-        }
-    }
-
-    internal BacktrackEntry GetClosest(float timestamp)
-    {
-        // Entries are ordered from newest to oldest
-        foreach (BacktrackEntry entry in Entries)
-        {
-            if (entry.Timestamp <= timestamp)
-                return entry;
-        }
-
-        return Entries.Back();
-    }
-
-    internal BacktrackEntry GetClosest(BacktrackEntry claimed)
+    public BacktrackEntry GetClosest(BacktrackEntry claimed)
     {
         BacktrackEntry best = default;
         var minSqrDistance = float.MaxValue;
@@ -164,12 +124,12 @@ internal class BacktrackHistory(Player player)
         return best;
     }
 
-    internal static BacktrackHistory Get(Player player)
+    public static BacktrackHistory Get(Player player)
     {
         return Dictionary.GetOrAdd(player.ReferenceHub, () => new(player));
     }
 
-    internal static BacktrackHistory Get(ReferenceHub hub)
+    public static BacktrackHistory Get(ReferenceHub hub)
     {
         return Dictionary.GetOrAdd(hub, () => new(Player.Get(hub)));
     }

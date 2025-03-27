@@ -50,7 +50,7 @@ public class VisibilityData
         }
 
         if (Config.Instance.DebugPrimitives && allowDebug)
-            RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
+            VisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
 
         return data;
     }
@@ -71,7 +71,7 @@ public class VisibilityData
         }
 
         if (Config.Instance.DebugPrimitives && allowDebug)
-            RoomVisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
+            VisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
 
         return data;
     }

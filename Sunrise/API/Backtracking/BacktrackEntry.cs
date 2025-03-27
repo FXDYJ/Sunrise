@@ -3,9 +3,9 @@ namespace Sunrise.API.Backtracking;
 /// <summary>
 ///     A single entry in the serverside backtrack history.
 /// </summary>
-internal struct BacktrackEntry
+public struct BacktrackEntry
 {
-    internal BacktrackEntry(Player player)
+    public BacktrackEntry(Player player)
     {
         Position = player.Position;
         Rotation = player.CameraTransform.rotation;
@@ -14,19 +14,19 @@ internal struct BacktrackEntry
     /// <summary>
     ///     A single entry in the serverside backtrack history.
     /// </summary>
-    internal BacktrackEntry(Vector3 position, Quaternion rotation)
+    public BacktrackEntry(Vector3 position, Quaternion rotation)
     {
         Rotation = rotation;
         Position = position;
     }
 
-    internal Quaternion Rotation { get; set; }
-    internal Vector3 Position { get; set; }
-    internal float Timestamp { get; set; } = Time.time;
+    public Quaternion Rotation { get; set; }
+    public Vector3 Position { get; set; }
+    public float Timestamp { get; set; } = Time.time;
 
-    internal readonly float Age => Time.time - Timestamp;
+    public readonly float Age => Time.time - Timestamp;
 
-    internal readonly void Restore(Player player)
+    public readonly void Restore(Player player)
     {
         player.Transform.position = Position;
         player.CameraTransform.rotation = Rotation;
