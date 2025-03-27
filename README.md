@@ -17,6 +17,8 @@ Designed to prevent common exploits and add server authority in places where it 
 
 ## 🔫 Server-Side Backtrack
 
+![Preview](/Previews/BacktrackLobotomyPreview.gif)
+
 > Silent aim doesn't aim, spinbots fire in random directions, fake rotation prevents aiming.
 > Cheaters are forced to use aim lock, which is much easier to notice.
 
@@ -32,6 +34,8 @@ ensuring that only legitimate shots, based on real past positions and rotations,
 
 ## 🧱 Anti-Wallhack
 
+![Preview](/Previews/WallhackLobotomyPreview.gif)
+
 > Reduces wallhack effective range to approximately **15 meters** inside the facility.
 
 In the base game, the server sends data about players from 36 meters away, regardless of walls or room boundaries.
@@ -44,6 +48,8 @@ This effectively prevents wallhacks from spotting players across the map.
 Edge cases like SCP abilities (e.g., SCP-049’s sense or SCP-939’s hearing) are respected to preserve vanilla gameplay mechanics.
 
 ## 📦 Pickup Validation
+
+![Preview](/Previews/PickupValidationPreview.gif)
 
 > Prevents item pickups through walls.
 
@@ -79,10 +85,10 @@ Sunrise adds a field-of-view (FOV) check to ensure that the player is looking at
 
 ## 🗺️ Planned Features
 
-| Feature                                   | Status         |
-|-------------------------------------------|----------------|
-| Pickup spoofing (anti-ESP noise)          | In development |
-| Raycast based anti-wh for close distances | In development |
+| Feature                                   | Status         | Preview                                            |
+|-------------------------------------------|----------------|----------------------------------------------------|
+| Pickup spoofing (anti-ESP noise)          | In development | ![Preview](/Previews/ItemClutterPreview.gif)       |
+| Raycast based anti-wh for close distances | In development | ![Preview](/Previews/WallhackLobotomy2Preview.gif) |
 
 ---
 
