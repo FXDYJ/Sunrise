@@ -15,6 +15,7 @@ internal static class RoomVisibilityConfig
         [RoomType.Hcz079] = [Vector3Int.left],
         [RoomType.HczIntersection] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
         [RoomType.HczHid] = [Vector3Int.left, Vector3Int.right],
+        [RoomType.Hcz939] = [Vector3Int.right, Vector3Int.back],
 
         [RoomType.EzSmallrooms] = [Vector3Int.forward, Vector3Int.back],
         [RoomType.EzIntercom] = [Vector3Int.left, Vector3Int.back],
