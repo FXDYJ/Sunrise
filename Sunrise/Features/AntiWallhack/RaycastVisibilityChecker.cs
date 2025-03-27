@@ -1,3 +1,4 @@
+using Exiled.API.Features.Items;
 using PlayerRoles.PlayableScps;
 
 namespace Sunrise.Features.AntiWallhack;
@@ -32,7 +33,7 @@ internal static class RaycastVisibilityChecker
         new(0, -0.63f), // центр тела
     ];
 
-    static readonly Vector3[] VisibilityPointsBuffer = new Vector3[VisibilityPointOffsets.Length];
+    static readonly Vector3[] VisibilityPointsBuffer = new Vector3[VisibilityPointOffsets.Length + 1];
 
     static readonly AutoBenchmark Benchmark = new("RaycastVisibilityChecker");
 
@@ -60,8 +61,7 @@ internal static class RaycastVisibilityChecker
 
         Vector3 directionToObserver = (observerPosition - targetPosition).normalized;
 
-        float widthMultiplier = Mathf.Clamp(target.Velocity.magnitude * 0.5f, 1f, 3.5f);
-        SetVisibilityPoints(targetPosition, Vector3.Cross(directionToObserver, Vector3.up), Vector3.up, widthMultiplier);
+        SetVisibilityPoints(targetPosition, Vector3.Cross(directionToObserver, Vector3.up), Vector3.up, target);
 
         foreach (Vector3 point in VisibilityPointsBuffer)
         {
@@ -78,13 +78,34 @@ internal static class RaycastVisibilityChecker
         return false;
     }
 
-    static void SetVisibilityPoints(Vector3 position, Vector3 right, Vector3 up, float widthMultiplier)
+    static void SetVisibilityPoints(Vector3 position, Vector3 right, Vector3 up, Player player)
     {
+        float rightForecastValue = Vector3.Dot(player.Velocity * Config.Instance.AccountedLatencySeconds, right);
+        Vector3 rightForecast = rightForecastValue * right; // Project forecast on the 'right' vector
+
         for (var i = 0; i < VisibilityPointOffsets.Length; i++)
         {
-            Vector2 offset = VisibilityPointOffsets[i];
-            VisibilityPointsBuffer[i] = position + offset.x * widthMultiplier * right + offset.y * up;
+            Vector2 cameraSpaceOffset = VisibilityPointOffsets[i];
+            Vector3 worldSpaceOffset = cameraSpaceOffset.x * right + cameraSpaceOffset.y * up;
+
+            if (rightForecastValue != 0 && cameraSpaceOffset.x != 0)
+            {
+                // Right side && moving right || Left side && moving left
+                if ((cameraSpaceOffset.x < 0 && rightForecastValue < 0) || (cameraSpaceOffset.x > 0 && rightForecastValue > 0))
+                {
+                    VisibilityPointsBuffer[i] = position + worldSpaceOffset + rightForecast;
+                    continue;
+                }
+            }
+
+            VisibilityPointsBuffer[i] = position + worldSpaceOffset;
         }
+
+        VisibilityPointsBuffer[^1] = player.CurrentItem is Firearm ?
+            position + player.CameraTransform.rotation * new Vector3(0, -0.5f, 1.2f) :
+            position + player.CameraTransform.rotation * new Vector3(0, -0.5f, 0.5f);
+        
+        // Add custom point for laser sight
     }
 }
 

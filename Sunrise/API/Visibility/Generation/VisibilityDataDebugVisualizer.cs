@@ -16,12 +16,13 @@ internal static class VisibilityDataDebugVisualizer
             RoomDebugData[data.Room] = debugData;
         }
 
-        if (!debugData.IsReady())
-            return;
+        if (debugData.IsReady())
+        {
+            debugData.ResetTime();
 
-        debugData.ResetTime();
-        VisualizeRoomConnections(data, debugData);
-        VisualizeRoomAxes(data, debugData.Origin);
+            VisualizeRoomConnections(data, debugData);
+            VisualizeRoomAxes(data, debugData.Origin);
+        }
     }
 
     static void VisualizeRoomConnections(VisibilityData data, DebugData debugData)
@@ -48,13 +49,9 @@ internal static class VisibilityDataDebugVisualizer
     {
         public readonly Color Color = GetRandomColor();
         public readonly Vector3 OriginOffset = GetOriginOffset();
+        public Vector3 Origin => room.Position + OriginOffset;
 
         float _lastPrimitiveSpawnTime = Time.time;
-
-        public Vector3 Origin
-        {
-            get => field + OriginOffset;
-        } = RoomIdUtils.PositionToCoords(room.Position);
 
         static Color GetRandomColor()
             => Random.ColorHSV(0, 1, 0.7f, 1, 0.7f, 1) * 50;

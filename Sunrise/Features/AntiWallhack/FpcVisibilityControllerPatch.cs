@@ -1,17 +1,17 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
-using CustomPlayerEffects;
+using Exiled.API.Features.Items;
 using HarmonyLib;
 using JetBrains.Annotations;
 using MapGeneration;
-using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
-using PlayerRoles.PlayableScps.Scp049;
-using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.Visibility;
-using PlayerRoles.Voice;
 using Sunrise.API.Visibility;
+using IVoiceRole = PlayerRoles.Voice.IVoiceRole;
+using Scp049Role = Exiled.API.Features.Roles.Scp049Role;
+using Scp939Role = Exiled.API.Features.Roles.Scp939Role;
 
 namespace Sunrise.Features.AntiWallhack;
 
@@ -34,6 +34,8 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags)), UsedImplicitly]
 internal static class FpcVisibilityControllerPatch
 {
+    static int counter = 0;
+
     [UsedImplicitly]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
@@ -42,11 +44,9 @@ internal static class FpcVisibilityControllerPatch
         newInstructions.InsertRange(newInstructions.Count - 1,
         [
             // activeFlags are already on the stack ready to be returned
+
             new(OpCodes.Ldloc_1), // currentRole1 (observer)
             new(OpCodes.Ldloc_2), // currentRole2 (target)
-
-            new(OpCodes.Ldarg_0),
-            new(OpCodes.Ldfld, Field(typeof(FpcVisibilityController), nameof(FpcVisibilityController._scp1344Effect))), // this._scp1344Effect
 
             new(OpCodes.Ldloc_S, 5), // V_5 (position difference)
 
@@ -56,69 +56,90 @@ internal static class FpcVisibilityControllerPatch
         return newInstructions;
     }
 
-    // Some roles' footstep sounds can be heard from a distance higher than human 12m forced visibility distance
-    static float GetForcedVisibilitySqrDistance(IFpcRole targetRole, Scp1344 scp1344Effect)
-    {
-        int targetForcedVisibility = targetRole.FpcModule.Role.RoleTypeId switch
-        {
-            RoleTypeId.Scp939 or RoleTypeId.Scp173 => 5000,
-            RoleTypeId.Scp106 => 29 * 29,
-            _ when scp1344Effect.IsEnabled => 24 * 24,
-            _ => 12 * 12,
-        };
-
-        // Voice chat can be heard from a distance of 22m
-        if (targetRole is IVoiceRole vr && vr.VoiceModule.ServerIsSending)
-            targetForcedVisibility = Mathf.Max(targetForcedVisibility, 22 * 22);
-
-        return targetForcedVisibility;
-    }
-
     /// <summary>
     ///     This method limits visibility diagonally when players are inside the facility.
     /// </summary>
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Scp1344 scp1344Effect, Vector3 positionDifference)
+    static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Vector3 positionDifference)
     {
+        counter = (counter + 1) % 31;
+
         if (!Config.Instance.AntiWallhack)
             return flags;
 
         // Players are out of range
-        if ((flags & InvisibilityFlags.OutOfRange) != 0 || IsExceptionalCase(observerRole, targetRole))
+        if ((flags & InvisibilityFlags.OutOfRange) != 0)
+            return flags;
+
+        Player observer = Player.Get(observerRole.FpcModule.Hub);
+        Player target = Player.Get(targetRole.FpcModule.Hub);
+
+        if (IsExceptionalCase(observer, observerRole, target))
             return flags;
 
         float sqrDistance = positionDifference.sqrMagnitude;
+        float forcedVisibility = ForcedVisibilityHelper.GetForcedVisibility(target);
 
-        if (sqrDistance < GetForcedVisibilitySqrDistance(targetRole, scp1344Effect))
+        if (sqrDistance < forcedVisibility * forcedVisibility)
+        {
+            if (counter == 0)
+            {
+                Debug.Log($"+ Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} has forced visibility on {targetRole.FpcModule.Hub.nicknameSync.MyNick}. " +
+                    $"Forced visibility distance: {forcedVisibility}m, distance: {Mathf.Sqrt(sqrDistance)}m");
+            }
+
             return flags;
+        }
+        else
+        {
+            if (counter == 0)
+            {
+                Debug.Log($"- Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} doesn't have forced visibility on {targetRole.FpcModule.Hub.nicknameSync.MyNick}. " +
+                    $"Forced visibility distance: {forcedVisibility}m, distance: {Mathf.Sqrt(sqrDistance)}m");
+            }
+        }
 
         Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
         Vector3Int targetCoords = RoomIdUtils.PositionToCoords(targetRole.FpcModule.Position);
 
         if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
+        {
+            if (counter == 0)
+                Debug.Log($"Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} can't see {targetRole.FpcModule.Hub.nicknameSync.MyNick} at {targetCoords} according to visibility data. sqrDistance: {sqrDistance}");
+
             return flags | InvisibilityFlags.OutOfRange;
+        }
 
         if (Config.Instance.RaycastVisibilityValidation && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
+        {
+            if (counter == 0)
+                Debug.Log($"Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} can't see {targetRole.FpcModule.Hub.nicknameSync.MyNick} at {targetCoords} according to raycasts. sqrDistance: {sqrDistance}");
+
             return flags | InvisibilityFlags.OutOfRange;
+        }
 
         return flags;
     }
 
-    static bool IsExceptionalCase(IFpcRole observerRole, IFpcRole targetRole)
+    static bool IsExceptionalCase(Player observer, IFpcRole observerRole, Player target)
     {
         if (observerRole.FpcModule.Noclip.IsActive)
             return true;
 
-        // Scp049's sense ability allows to see the target through walls
-        if (observerRole is Scp049Role scp049Role && scp049Role.SubroutineModule.TryGetSubroutine<Scp049SenseAbility>(out Scp049SenseAbility? sense) && sense.HasTarget && sense.Target == targetRole.FpcModule.Hub)
+        if (target.CurrentItem is Firearm { FlashlightEnabled: true } or Flashlight { IsEmittingLight: true })
             return true;
 
-        // Scp939 can hear players through walls and has its own surprisingly robust VisibilityController
-        if (observerRole is Scp939Role)
-            return true;
+        switch (observer.Role)
+        {
+            // Scp049's sense ability allows to see the target through walls
+            case Scp049Role { SenseAbility: { HasTarget: true, Target: ReferenceHub senseTarget } } when senseTarget == target.ReferenceHub:
 
-        // Remarks:
-        // Scp096 ignores OutOfRange flag when enraged
+            // Scp939 can hear players through walls and has its own visibility system
+            case Scp939Role:
+                return true;
+
+            // Scp096 ignores OutOfRange flag when enraged and has its own visibility system
+        }
 
         return false;
     }

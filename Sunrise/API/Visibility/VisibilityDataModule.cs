@@ -3,7 +3,7 @@ using MapGeneration;
 
 namespace Sunrise.API.Visibility;
 
-internal class AntiWallhackModule : PluginModule
+internal class VisibilityModule : PluginModule
 {
     protected override void OnEnabled()
     {

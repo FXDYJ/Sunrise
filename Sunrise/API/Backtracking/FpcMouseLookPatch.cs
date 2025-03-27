@@ -11,7 +11,7 @@ internal static class FpcMouseLookPatch
     static void Prefix(ushort horizontal, ushort vertical, FpcMouseLook __instance)
     {
         Quaternion curRotation = ConvertToQuaternion(horizontal, vertical);
-        BacktrackHistory.Get(__instance._hub).RecordEntry(__instance._hub.transform.position, curRotation);
+        BacktrackHistory.Get(__instance._hub).RecordEntry(__instance._hub.transform.position, curRotation); 
     }
 
     static Quaternion ConvertToQuaternion(ushort horizontal, ushort vertical)

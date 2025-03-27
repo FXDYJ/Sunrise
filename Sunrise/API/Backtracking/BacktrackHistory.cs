@@ -14,10 +14,7 @@ public class BacktrackHistory(Player player)
 
     public readonly CircularBuffer<BacktrackEntry> Entries = new((int)(Config.Instance.AccountedLatencySeconds * 60));
 
-    public void RecordEntry(Vector3 position, Quaternion rotation)
-    {
-        Entries.PushFront(new(position, rotation));
-    }
+    public void RecordEntry(Vector3 position, Quaternion rotation) => Entries.PushFront(new(position, rotation));
 
     /// <summary>
     ///     When players move quickly, their position history may not contain the latest data because of latency.
@@ -50,6 +47,8 @@ public class BacktrackHistory(Player player)
 
     public BacktrackEntry GetClosest(BacktrackEntry claimed)
     {
+        int count = 0;
+        
         BacktrackEntry best = default;
         var minSqrDistance = float.MaxValue;
         var minAngle = float.MaxValue;
@@ -61,6 +60,8 @@ public class BacktrackHistory(Player player)
 
         while (enumerator.MoveNext())
         {
+            count++;
+            
             BacktrackEntry oldest = enumerator.Current;
 
             Debug.DrawLine(oldest.Position, newest.Position, Colors.Blue * 50);
@@ -121,6 +122,7 @@ public class BacktrackHistory(Player player)
             newest = oldest;
         }
 
+        Log.Warn($"Found closest entry for {player.Nickname} after {count} iterations: {best.Position} {best.Rotation.eulerAngles}. Entries.Count: {Entries.Size}");
         return best;
     }
 
