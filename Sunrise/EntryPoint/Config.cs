@@ -25,9 +25,10 @@ public class Config : IConfig
     [Description(
         "Completely cuts off wallhack past 12m range using precise line-of-sight checks." +
         "Performance impact possible: ~1.3% of server time consumed with 30 players in close proximity." +
-        "May cause issues with custom maps if transparent objects are using the default layer (0) instead of glass layer (14)"
+        "May cause issues with custom maps if transparent objects are using the default layer (0) instead of glass layer (14)" +
+        "Works in combination with AntiWallhack."
     )]
-    public bool RaycastVisibilityValidation { get; set; } = true;
+    public bool RaycastAntiWallhack { get; set; } = true;
 
     [Description("Prevents picking up items through walls. Performance impact negligible.")]
     public bool PickupValidation { get; set; } = true;

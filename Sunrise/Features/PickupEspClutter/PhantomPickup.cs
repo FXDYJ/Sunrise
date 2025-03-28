@@ -25,21 +25,23 @@ internal class PhantomPickup : MonoBehaviour
     void Start()
     {
         _node = List.AddLast(this);
+        Pickups.Add(_pickup);
+
         _pickup = Pickup.Get(gameObject);
         _netIdentity = _pickup.Base.netIdentity;
-
-        Pickups.Add(_pickup);
 
         _coroutine = Timing.RunCoroutine(Coroutine());
     }
 
     void OnDestroy()
     {
-        Timing.KillCoroutines(_coroutine);
-        _pickup.Destroy();
-
         List.Remove(_node);
+        Pickups.Remove(_pickup);
+
+        _pickup.Destroy();
         HashSetPool<Player>.Shared.Return(_hiddenFor);
+
+        Timing.KillCoroutines(_coroutine);
     }
 
     public void Destroy()

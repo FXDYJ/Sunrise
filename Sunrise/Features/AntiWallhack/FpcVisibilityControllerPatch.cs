@@ -1,15 +1,14 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
-using Exiled.API.Features.Items;
 using HarmonyLib;
+using InventorySystem.Items;
+using InventorySystem.Items.Firearms;
 using JetBrains.Annotations;
 using MapGeneration;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.Visibility;
 using Sunrise.API.Visibility;
-using IVoiceRole = PlayerRoles.Voice.IVoiceRole;
 using Scp049Role = Exiled.API.Features.Roles.Scp049Role;
 using Scp939Role = Exiled.API.Features.Roles.Scp939Role;
 
@@ -34,7 +33,7 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 [HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags)), UsedImplicitly]
 internal static class FpcVisibilityControllerPatch
 {
-    static int counter = 0;
+    static readonly AutoBenchmark Benchmark = new("Anti Wallhack (without raycasts)");
 
     [UsedImplicitly]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -62,8 +61,6 @@ internal static class FpcVisibilityControllerPatch
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
     static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Vector3 positionDifference)
     {
-        counter = (counter + 1) % 31;
-
         if (!Config.Instance.AntiWallhack)
             return flags;
 
@@ -71,32 +68,24 @@ internal static class FpcVisibilityControllerPatch
         if ((flags & InvisibilityFlags.OutOfRange) != 0)
             return flags;
 
+        Benchmark.Start();
+
         Player observer = Player.Get(observerRole.FpcModule.Hub);
         Player target = Player.Get(targetRole.FpcModule.Hub);
 
         if (IsExceptionalCase(observer, observerRole, target))
+        {
+            Benchmark.Stop();
             return flags;
+        }
 
         float sqrDistance = positionDifference.sqrMagnitude;
         float forcedVisibility = ForcedVisibilityHelper.GetForcedVisibility(target);
 
         if (sqrDistance < forcedVisibility * forcedVisibility)
         {
-            if (counter == 0)
-            {
-                Debug.Log($"+ Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} has forced visibility on {targetRole.FpcModule.Hub.nicknameSync.MyNick}. " +
-                    $"Forced visibility distance: {forcedVisibility}m, distance: {Mathf.Sqrt(sqrDistance)}m");
-            }
-
+            Benchmark.Stop();
             return flags;
-        }
-        else
-        {
-            if (counter == 0)
-            {
-                Debug.Log($"- Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} doesn't have forced visibility on {targetRole.FpcModule.Hub.nicknameSync.MyNick}. " +
-                    $"Forced visibility distance: {forcedVisibility}m, distance: {Mathf.Sqrt(sqrDistance)}m");
-            }
         }
 
         Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
@@ -104,19 +93,14 @@ internal static class FpcVisibilityControllerPatch
 
         if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
         {
-            if (counter == 0)
-                Debug.Log($"Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} can't see {targetRole.FpcModule.Hub.nicknameSync.MyNick} at {targetCoords} according to visibility data. sqrDistance: {sqrDistance}");
-
+            Benchmark.Stop();
             return flags | InvisibilityFlags.OutOfRange;
         }
 
-        if (Config.Instance.RaycastVisibilityValidation && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
-        {
-            if (counter == 0)
-                Debug.Log($"Observer {observerRole.FpcModule.Hub.nicknameSync.MyNick} can't see {targetRole.FpcModule.Hub.nicknameSync.MyNick} at {targetCoords} according to raycasts. sqrDistance: {sqrDistance}");
+        Benchmark.Stop();
 
+        if (Config.Instance.RaycastAntiWallhack && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
             return flags | InvisibilityFlags.OutOfRange;
-        }
 
         return flags;
     }
@@ -125,8 +109,9 @@ internal static class FpcVisibilityControllerPatch
     {
         if (observerRole.FpcModule.Noclip.IsActive)
             return true;
-
-        if (target.CurrentItem is Firearm { FlashlightEnabled: true } or Flashlight { IsEmittingLight: true })
+        
+        // BUG: Night vision scopes count as emitting light (nw classic)
+        if (target.Inventory.CurInstance is ILightEmittingItem { IsEmittingLight: true })
             return true;
 
         switch (observer.Role)

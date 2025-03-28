@@ -86,6 +86,7 @@
         <Compile Include="EntryPoint\SunriseLoader.cs"/>
         <Compile Include="Features\AntiWallhack\AntiWallhackModule.cs" />
         <Compile Include="Features\AntiWallhack\ForcedVisibilityHelper.cs" />
+        <Compile Include="Features\AntiWallhack\ItemVisibilityHelper.cs" />
         <Compile Include="Features\AntiWallhack\RaycastVisibilityChecker.cs"/>
         <Compile Include="Features\DoorInteractionValidation\DoorInteractionValidationModule.cs"/>
         <Compile Include="Features\PickupEspClutter\PhantomPickup.cs"/>

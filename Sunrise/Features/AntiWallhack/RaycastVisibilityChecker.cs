@@ -35,7 +35,7 @@ internal static class RaycastVisibilityChecker
 
     static readonly Vector3[] VisibilityPointsBuffer = new Vector3[VisibilityPointOffsets.Length + 1];
 
-    static readonly AutoBenchmark Benchmark = new("RaycastVisibilityChecker");
+    static readonly AutoBenchmark Benchmark = new("Raycast Anti Wallhack");
 
     public static bool IsVisible(Player playerA, Player playerB)
     {

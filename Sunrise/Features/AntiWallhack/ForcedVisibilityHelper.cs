@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Exiled.API.Features.Items;
 using Exiled.API.Features.Roles;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp096;
@@ -11,7 +10,6 @@ namespace Sunrise.Features.AntiWallhack;
 
 internal static class ForcedVisibilityHelper
 {
-    // TODO Make jumps last (test)
     // TODO Test voice chat (prob fixed)
     // TODO Add support for reloading sound (test)
 
@@ -36,11 +34,7 @@ internal static class ForcedVisibilityHelper
         float result = GetMovementInfo(scp939, out bool isJumping) switch
         {
             MovementState.Sprinting => 100,
-            _ => scp939.LungeState switch
-            {
-                Scp939LungeState.Triggered => 7f,
-                _ => 15,
-            },
+            _ => scp939.IsFocused ? 7f : 15f,
         };
 
         if (isJumping)
@@ -92,9 +86,8 @@ internal static class ForcedVisibilityHelper
             result = Mathf.Max(result, 22);
         else if (isJumping)
             result = Mathf.Max(result, 8);
-        
-        if(player.CurrentItem is Firearm { IsReloading: true })
-            result = Mathf.Max(result, 8); // TODO TEST VALUE
+
+        result = Mathf.Max(result, ItemVisibilityHelper.GetVisibilityRange(player.CurrentItem));
 
         return result;
     }

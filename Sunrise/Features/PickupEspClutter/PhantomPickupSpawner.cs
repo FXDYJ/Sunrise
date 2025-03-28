@@ -33,7 +33,7 @@ internal static class PhantomItemSpawner
             sw.Start();
             PhantomPickup.Create();
             sw.Stop();
-            yield return Timing.WaitForOneFrame;
+            yield return Timing.WaitForSeconds(Random.Range(1, 2f));
         }
 
         sw.Stop();
