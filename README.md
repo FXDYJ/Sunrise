@@ -17,7 +17,7 @@ Designed to prevent common exploits and add server authority in places where it 
 
 ## 🔫 Server-Side Backtrack
 
-![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/BacktrackLobotomyPreview.gif)
+[![Preview](https://img.youtube.com/vi/BXD3hgJhIg8/0.jpg)](https://www.youtube.com/watch?v=BXD3hgJhIg8)
 
 > Silent aim doesn't aim, spinbots fire in random directions, fake rotation prevents aiming.
 > Cheaters are forced to use aim lock, which is much easier to notice.
@@ -34,7 +34,7 @@ ensuring that only legitimate shots, based on real past positions and rotations,
 
 ## 🧱 Anti-Wallhack
 
-![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomyPreview.gif)
+[![Preview](https://img.youtube.com/vi/_mTNjmtNl9w/0.jpg)](https://www.youtube.com/watch?v=_mTNjmtNl9w)
 
 > Reduces wallhack effective range to approximately **15 meters** inside the facility.
 
@@ -49,7 +49,7 @@ Edge cases like SCP abilities (e.g., SCP-049’s sense or SCP-939’s hearing) a
 
 ## 📦 Pickup Validation
 
-![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/PickupValidationPreview.gif)
+[![Preview](https://img.youtube.com/vi/27KDExzOV5U/0.jpg)](https://www.youtube.com/watch?v=27KDExzOV5U)
 
 > Prevents item pickups through walls.
 
@@ -87,8 +87,8 @@ Sunrise adds a field-of-view (FOV) check to ensure that the player is looking at
 
 | Feature                                   | Status         | Preview                                                                                                |
 |-------------------------------------------|----------------|--------------------------------------------------------------------------------------------------------|
-| Pickup spoofing (anti-ESP noise)          | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/ItemClutterPreview.gif)       |
-| Raycast based anti-wh for close distances | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomy2Preview.gif) |
+| Pickup spoofing (anti-ESP noise)          | In development | [![Preview](https://img.youtube.com/vi/irGoUUztALY/0.jpg)](https://www.youtube.com/watch?v=irGoUUztALY)|
+| Raycast based anti-wh for close distances | In development | [![Preview](https://img.youtube.com/vi/IbkTeSodSpw/0.jpg)](https://www.youtube.com/watch?v=IbkTeSodSpw)|
 
 ---
 
