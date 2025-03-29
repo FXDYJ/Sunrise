@@ -45,10 +45,11 @@ public class BacktrackHistory(Player player)
         Debug.DrawPoint(forecastPosition, Color.yellow * 50);
     }
 
+    // Todo only use last rotation cause its 100% accurate
     public BacktrackEntry GetClosest(BacktrackEntry claimed)
     {
-        int count = 0;
-        
+        var count = 0;
+
         BacktrackEntry best = default;
         var minSqrDistance = float.MaxValue;
         var minAngle = float.MaxValue;
@@ -61,7 +62,7 @@ public class BacktrackHistory(Player player)
         while (enumerator.MoveNext())
         {
             count++;
-            
+
             BacktrackEntry oldest = enumerator.Current;
 
             Debug.DrawLine(oldest.Position, newest.Position, Colors.Blue * 50);
