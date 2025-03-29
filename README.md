@@ -37,16 +37,22 @@ ensuring that only legitimate shots, based on real past positions and rotations,
 
 ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomyPreview.gif)
 
-> Reduces wallhack effective range to approximately **15 meters** inside the facility.
+> Significantly reduces wallhack effective range inside the facility.
 
 In the base game, the server sends data about players from 36 meters away, regardless of walls or room boundaries.
 Sunrise significantly limits this by introducing a visibility system based on room layouts.
 
-The server now only shares player data if the observer's current room can "see" the target's room
-(e.g., through connected doors or open spaces).
-This effectively prevents wallhacks from spotting players across the map.
+The server now only shares player data if the observer's current room can "see" the target's room (e.g., through connected doors or open spaces).
+This effectively prevents wallhack from spotting players across the map.
 
 Edge cases like SCP abilities (e.g., SCP-049’s sense or SCP-939’s hearing) are respected to preserve vanilla gameplay mechanics.
+
+### Raycast Anti-Wallhack
+
+Raycast Anti-Wallhack is an additional feature that complements the system by using raycasts to confirm visibility.
+It yields almost perfect results, but can be computationally expensive.
+If it's the case for you, it is always possible to disable it in the configuration file.
+It is recommended to use `benchmark` option in the config to test the performance.
 
 ## 📦 Pickup Validation
 
@@ -59,8 +65,8 @@ This allows cheaters to pick up items through walls, doors, and other obstacles.
 
 The pickup validation module checks if the item is genuinely reachable from the player’s point of view using raycasts.
 Multiple raycasts may be performed to avoid false positives.
-_As a last resort, the system simulates slight vertical movement to handle edge cases where a player jumped before starting the pickup action._
-_If all checks fail, the pickup attempt is denied._
+As a last resort, the system simulates slight vertical movement to handle edge cases where a player jumped before starting the pickup action.
+If all checks fail, the pickup attempt is denied.
 
 ## ⚡ Server-Side Tesla Damage
 
@@ -86,10 +92,9 @@ Sunrise adds a field-of-view (FOV) check to ensure that the player is looking at
 
 ## 🗺️ Planned Features
 
-| Feature                                   | Status         | Preview                                                                                                |
-|-------------------------------------------|----------------|--------------------------------------------------------------------------------------------------------|
-| Pickup spoofing (anti-ESP noise)          | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/ItemClutterPreview.gif)       |
-| Raycast based anti-wh for close distances | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomy2Preview.gif) |
+| Feature                          | Status         | Preview                                                                                          |
+|----------------------------------|----------------|--------------------------------------------------------------------------------------------------|
+| Pickup spoofing (anti-ESP noise) | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/ItemClutterPreview.gif) |
 
 ---
 
