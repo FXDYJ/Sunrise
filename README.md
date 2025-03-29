@@ -25,7 +25,7 @@ Designed to prevent common exploits and add server authority in places where it 
 
 The default latency compensation system (Backtrack) in SCP:SL
 allows shooters to send their own and the target's position and rotation at the moment of firing.
-The server does minimal validation and no rotation validation, opening the door for exploits like silent aim and shooting through walls.
+The server does minimal position validation and no rotation validation, opening the door for exploits like silent aim and shooting through walls.
 
 We replace this default system with a more secure server-side solution, effectively eliminating the possibility of such exploits.
 
