@@ -40,7 +40,7 @@ internal static class ForcedVisibilityHelper
         if (isJumping)
             result = Mathf.Max(result, 30);
 
-        // TODO add support for mimicry
+        // TODO test mimicry
 
         return result;
     }

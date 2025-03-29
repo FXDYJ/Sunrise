@@ -6,11 +6,6 @@ namespace Sunrise.Features.DoorInteractionValidation;
 
 internal class AntiDoorManipulatorModule : PluginModule
 {
-    static readonly HashSet<DoorType> DoorWhiteList =
-    [
-        DoorType.SurfaceGate, // Bugged
-    ];
-
     protected override void OnEnabled()
     {
         Handlers.Player.InteractingDoor += OnInteractingDoor;
@@ -29,9 +24,6 @@ internal class AntiDoorManipulatorModule : PluginModule
         if (ev is not { Door: not null, Collider: not null, Player: not null })
             return;
 
-        if (DoorWhiteList.Contains(ev.Door.Type))
-            return;
-
         if (!CanInteract(ev.Player, ev))
         {
             if (Config.Instance.Debug)
@@ -45,12 +37,12 @@ internal class AntiDoorManipulatorModule : PluginModule
     {
         Vector3 colliderPos = ev.Collider.transform.position + ev.Collider.transform.TransformDirection(ev.Collider.VerificationOffset);
 
-        if (CanInteractWithCollider(player, colliderPos))
+        if (LooksAtCollider(player, colliderPos))
             return true;
 
         foreach (BoxCollider collider in ev.Door.Base._colliders)
         {
-            if (CanInteractWithCollider(player, collider.transform.position + collider.transform.TransformDirection(collider.center)))
+            if (LooksAtCollider(player, collider.transform.position + collider.transform.TransformDirection(collider.center)))
                 return true;
         }
 
@@ -66,7 +58,7 @@ internal class AntiDoorManipulatorModule : PluginModule
         return false;
     }
 
-    static bool CanInteractWithCollider(Player player, Vector3 colliderPos)
+    static bool LooksAtCollider(Player player, Vector3 colliderPos)
     {
         const float AllowedAngle = 30;
 

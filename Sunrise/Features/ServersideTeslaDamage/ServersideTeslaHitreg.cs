@@ -9,7 +9,7 @@ internal class ServersideTeslaHitreg(TeslaGate tesla)
     internal static readonly Dictionary<TeslaGate, ServersideTeslaHitreg> Dictionary = new();
     internal static readonly Dictionary<Player, float> ShockedPlayers = new();
 
-    readonly Bounds _bounds = new(tesla.transform.position + Vector3.up * (tesla.sizeOfKiller.y / 2f), tesla.transform.rotation * new Vector3(4f, 0.7f, 5f));
+    readonly Bounds _bounds = new(tesla.transform.position + Vector3.up * (tesla.sizeOfKiller.y / 2f), (tesla.transform.rotation * new Vector3(4f, 0.7f, 5f)).Abs());
     readonly Collider[] _hitBuffer = new Collider[100];
     readonly HashSet<Player> _hitPlayers = [];
 
