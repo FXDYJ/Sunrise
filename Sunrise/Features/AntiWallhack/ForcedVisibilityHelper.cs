@@ -39,8 +39,8 @@ internal static class ForcedVisibilityHelper
 
         if (isJumping)
             result = Mathf.Max(result, 30);
-
-        // TODO test mimicry
+        else if (!scp939.EnvironmentalMimicry.Cooldown.IsReady)
+            result = Mathf.Max(result, 30);
 
         return result;
     }
