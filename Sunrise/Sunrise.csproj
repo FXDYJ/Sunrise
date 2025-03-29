@@ -57,8 +57,8 @@
         <Reference Include="Assembly-CSharp-firstpass" HintPath="..\_ProjectDependencies\Assembly-CSharp-firstpass.dll"/>
         <Reference Include="Mirror" HintPath="..\_ProjectDependencies\Mirror-Publicized.dll"/>
         <Reference Include="System" HintPath="..\_ProjectDependencies\System.dll"/>
+        <Reference Include="0Harmony" HintPath="..\_ProjectDependencies\0Harmony.dll"/>
 
-        <Reference Include="0Harmony" HintPath="$(EXILED_REFERENCES)\0Harmony.dll"/>
         <Reference Include="CommandSystem.Core" HintPath="$(EXILED_REFERENCES)\CommandSystem.Core.dll"/>
         <Reference Include="NorthwoodLib" HintPath="$(EXILED_REFERENCES)\NorthwoodLib.dll"/>
         <Reference Include="PluginAPI" HintPath="$(EXILED_REFERENCES)\PluginAPI.dll"/>
@@ -121,6 +121,9 @@
         </Content>
         <Content Include="..\README.md">
             <Link>README.md</Link>
+        </Content>
+        <Content Include="..\_ProjectDependencies\0Harmony.dll">
+          <Link>_ProjectDependencies\0Harmony.dll</Link>
         </Content>
         <Content Include="..\_ProjectDependencies\Assembly-CSharp-firstpass.dll">
             <Link>_ProjectDependencies\Assembly-CSharp-firstpass.dll</Link>
