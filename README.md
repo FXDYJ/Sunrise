@@ -49,6 +49,8 @@ Edge cases like SCP abilities (e.g., SCP-049’s sense or SCP-939’s hearing) a
 
 ### Raycast Anti-Wallhack
 
+![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomyOnRaycasts.gif)
+
 Raycast Anti-Wallhack is an additional feature that complements the system by using raycasts to confirm visibility.
 It yields almost perfect results, but can be computationally expensive.
 If it's the case for you, it is always possible to disable it in the configuration file.
