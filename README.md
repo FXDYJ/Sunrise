@@ -10,6 +10,7 @@ Designed to prevent common exploits and add server authority in places where it 
 
 [![Downloads](https://img.shields.io/github/downloads/Banalny-Banan/Sunrise/total?label=Downloads&color=333333&style=for-the-badge)](https://github.com/Banalny-Banan/Sunrise/releases/latest)
 [![Discord](https://img.shields.io/discord/1277301350828478525?style=for-the-badge&logo=discord&logoColor=f9f9f9&label=Discord&color=5865f2)](https://discord.gg/9nAaRVNCq3)
+[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/@SunriseAC)
 
 ---
 
