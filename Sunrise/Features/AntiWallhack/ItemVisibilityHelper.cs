@@ -23,9 +23,7 @@ internal static class ItemVisibilityHelper
                 if (firearm.Base is ParticleDisruptor disruptor)
                     return disruptor.AllowHolster ? 0 : 100;
 
-                if (firearm.FlashlightEnabled)
-                    return 100;
-                else if (firearm.IsReloading)
+                if (firearm.IsReloading)
                     return 11.5f;
                 else
                     return 0;
@@ -40,19 +38,19 @@ internal static class ItemVisibilityHelper
                     _ => 0,
                 };
             }
-            case Consumable { IsUsing: true }:
+            case Consumable consumable:
             {
                 // medkit 14.5
                 // painkillers 14.5
                 // cola 14.5, candy 14.5
-                // adrenaline 14.5, 
+                // adrenaline 14.5,
                 // steroids - 14.5
-                return 14.5f;
+                return consumable.IsUsing ? 14.5f : 0;
             }
-            case Radio { IsEnabled: true }:
+            case Radio radio:
             {
                 // radio - 11 when receiving
-                return 11;
+                return radio.IsEnabled ? 11 : 0;
             }
             // coin 5
             // 268 - 5
@@ -66,7 +64,7 @@ internal static class ItemVisibilityHelper
             }
             case Throwable throwable:
             {
-                return throwable.Base.AllowHolster ? 0 : 5;
+                return !throwable.Base.AllowHolster ? 5 : 0;
             }
             default:
             {
