@@ -122,7 +122,6 @@ public class BacktrackHistory(Player player)
             newest = oldest;
         }
 
-        Log.Warn($"Found closest entry for {player.Nickname} after {count} iterations: {best.Position} {best.Rotation.eulerAngles}. Entries.Count: {Entries.Size}");
         return best;
     }
 

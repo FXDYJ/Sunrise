@@ -4,6 +4,8 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
+using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.Firearms.Attachments.Components;
 using JetBrains.Annotations;
 using MapGeneration;
 using PlayerRoles.FirstPersonControl;
@@ -109,10 +111,25 @@ internal static class FpcVisibilityControllerPatch
     {
         if (observerRole.FpcModule.Noclip.IsActive)
             return true;
-        
-        // BUG: Night vision scopes count as emitting light (nw classic)
-        if (target.Inventory.CurInstance is ILightEmittingItem { IsEmittingLight: true })
-            return true;
+
+        switch (target.Inventory.CurInstance) // Light emitting items make players visible
+        {
+            // Night vision scopes count as emitting light (nw classic), so firearms need special handling
+            case Firearm firearm:
+            {
+                foreach (ILightEmittingItem lightEmitter in firearm._modifiersCombiner._lightEmitters)
+                {
+                    if (lightEmitter is FlashlightAttachment { IsEmittingLight: true })
+                        return true;
+                }
+
+                return false;
+            }
+            case ILightEmittingItem { IsEmittingLight: true }:
+            {
+                return true;
+            }
+        }
 
         switch (observer.Role)
         {

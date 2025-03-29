@@ -14,23 +14,23 @@ internal static class RaycastVisibilityChecker
 {
     static readonly Vector2[] VisibilityPointOffsets =
     [
-        new(0, 0), // камера
+        new(0, 0), // camera
 
-        new(0.65f, -0.13f), // правое плечо (дальняя)
-        new(-0.65f, -0.13f), // левое плечо (дальняя)
+        new(0.65f, -0.13f), // right shoulder (far)
+        new(-0.65f, -0.13f), // left shoulder (far)
 
-        new(0.3f, -1.03f), // правое колено (дальняя)
-        new(-0.3f, -1.03f), // левое колено (дальняя)
+        new(0.3f, -1.03f), // right knee (far)
+        new(-0.3f, -1.03f), // left knee (far)
 
-        new(0f, 0.57f), // над головой
+        new(0f, 0.57f), // above the head
 
-        new(0.27f, -1.43f), // около ног справа
-        new(-0.27f, -1.43f), // около ног слева
+        new(0.27f, -1.43f), // near the feet on the right
+        new(-0.27f, -1.43f), // near the feet on the left
 
-        new(0.07f, -0.13f), // правое плечо
-        new(-0.07f, -0.13f), // левое плечо
+        new(0.07f, -0.13f), // right shoulder
+        new(-0.07f, -0.13f), // left shoulder
 
-        new(0, -0.63f), // центр тела
+        new(0, -0.63f), // center of the body
     ];
 
     static readonly Vector3[] VisibilityPointsBuffer = new Vector3[VisibilityPointOffsets.Length + 1];
@@ -104,8 +104,6 @@ internal static class RaycastVisibilityChecker
         VisibilityPointsBuffer[^1] = player.CurrentItem is Firearm ?
             position + player.CameraTransform.rotation * new Vector3(0, -0.5f, 1.2f) :
             position + player.CameraTransform.rotation * new Vector3(0, -0.5f, 0.5f);
-        
-        // Add custom point for laser sight
     }
 }
 

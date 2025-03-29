@@ -21,6 +21,6 @@ public class SunriseLoader : PluginModule
         new PickupValidationModule(),
         new ServersideTeslaDamageModule(),
         new AntiDoorManipulatorModule(),
-        new PhantomPickupsModule(),
+        // new PhantomPickupsModule(), // BUG: Flickering
     ];
 }
