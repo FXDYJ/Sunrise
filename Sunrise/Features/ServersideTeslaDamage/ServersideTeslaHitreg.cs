@@ -10,7 +10,7 @@ internal class ServersideTeslaHitreg(TeslaGate tesla)
     internal static readonly Dictionary<Player, float> ShockedPlayers = new();
 
     readonly Bounds _bounds = new(tesla.transform.position + Vector3.up * (tesla.sizeOfKiller.y / 2f), tesla.transform.rotation * new Vector3(4f, 0.7f, 5f));
-    readonly Collider[] _hitBuffer = new Collider[32];
+    readonly Collider[] _hitBuffer = new Collider[100];
     readonly HashSet<Player> _hitPlayers = [];
 
     public void Burst() => Timing.RunCoroutine(BurstCoroutine());
@@ -58,7 +58,7 @@ internal class ServersideTeslaHitreg(TeslaGate tesla)
 
             // If the player have reported the damage themselves we don't want to deal it twice
             if (ShockedPlayers.TryGetValue(player, out float shockTime) && Time.time - shockTime < ShockDuration)
-                return;
+                continue;
 
             TeslaGateController.ServerReceiveMessage(player.Connection, new(tesla));
         }

@@ -18,9 +18,9 @@ internal class PhantomPickupsModule : PluginModule
     protected override void OnEnabled()
     {
         // BUG: Flickering
-        Handlers.Server.RoundStarted += OnRoundStarted;
+        /*Handlers.Server.RoundStarted += OnRoundStarted;
         Handlers.Server.RoundEnded += OnRoundEnded;
-        Handlers.Player.PickingUpItem += OnPickingUpItem;
+        Handlers.Player.PickingUpItem += OnPickingUpItem;*/
     }
 
     protected override void OnDisabled()

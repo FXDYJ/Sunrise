@@ -45,6 +45,7 @@ internal class ServersideTeslaDamageModule : PluginModule
 
     static void OnPlayerHurt(HurtEventArgs ev)
     {
-        if (ev.DamageHandler.Type == DamageType.Tesla) ServersideTeslaHitreg.ShockedPlayers[ev.Player] = Time.time;
+        if (ev.DamageHandler.Type == DamageType.Tesla)
+            ServersideTeslaHitreg.ShockedPlayers[ev.Player] = Time.time;
     }
 }

@@ -1,10 +1,16 @@
+using Exiled.API.Enums;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
 
 namespace Sunrise.Features.DoorInteractionValidation;
 
-public class AntiDoorManipulatorModule : PluginModule
+internal class AntiDoorManipulatorModule : PluginModule
 {
+    static readonly HashSet<DoorType> DoorWhiteList =
+    [
+        DoorType.SurfaceGate, // Bugged
+    ];
+
     protected override void OnEnabled()
     {
         Handlers.Player.InteractingDoor += OnInteractingDoor;
@@ -21,6 +27,9 @@ public class AntiDoorManipulatorModule : PluginModule
             return;
 
         if (ev is not { Door: not null, Collider: not null, Player: not null })
+            return;
+
+        if (DoorWhiteList.Contains(ev.Door.Type))
             return;
 
         if (!CanInteract(ev.Player, ev))
