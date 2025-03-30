@@ -1,6 +1,7 @@
 using Exiled.API.Enums;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
+using PlayerRoles;
 
 namespace Sunrise.Features.DoorInteractionValidation;
 
@@ -18,7 +19,7 @@ internal class AntiDoorManipulatorModule : PluginModule
 
     static void OnInteractingDoor(InteractingDoorEventArgs ev)
     {
-        if (!Config.Instance.DoorInteractionValidation || ev.Player.Role is not FpcRole fpcRole || fpcRole.IsNoclipEnabled)
+        if (!Config.Instance.DoorInteractionValidation || ev.Player.Role.Type is RoleTypeId.Scp079 || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
             return;
 
         if (ev is not { Door: not null, Collider: not null, Player: not null })
