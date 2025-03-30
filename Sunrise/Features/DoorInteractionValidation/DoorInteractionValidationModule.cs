@@ -19,7 +19,7 @@ internal class AntiDoorManipulatorModule : PluginModule
 
     static void OnInteractingDoor(InteractingDoorEventArgs ev)
     {
-        if (!Config.Instance.DoorInteractionValidation || ev.Player.Role.Type is RoleTypeId.Scp079 || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
+        if (!Config.Instance.DoorInteractionValidation || ev.Player.Role is not FpcRole fpcRole || fpcRole.IsNoclipEnabled)
             return;
 
         if (ev is not { Door: not null, Collider: not null, Player: not null })
