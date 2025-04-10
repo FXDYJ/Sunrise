@@ -165,7 +165,10 @@ internal static class PickupValidator
 
                 // Primitives with collision disabled
                 case Layer.DefaultColliders when hit.collider.GetComponentInParent<PrimitiveObjectToy>() is PrimitiveObjectToy toy && !toy.NetworkPrimitiveFlags.HasFlagFast(PrimitiveFlags.Collidable):
+                {
+                    Debug.DrawPoint(hit.point, Colors.Green * 50, 10f);
                     continue;
+                }
             }
 
             // Obstruction found
