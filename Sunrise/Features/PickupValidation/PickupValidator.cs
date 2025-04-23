@@ -19,7 +19,7 @@ internal static class PickupValidator
 
     static readonly RaycastHit[] HitBuffer = new RaycastHit[32];
 
-    [UsedImplicitly] public static bool AlwaysBlock;
+    [UsedImplicitly] public static bool AlwaysBlock { get; set; }
 
     internal static void OnPickingUpItem(PickingUpItemEventArgs ev)
     {
