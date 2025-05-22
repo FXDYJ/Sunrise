@@ -41,7 +41,7 @@ internal class AntiDoorManipulatorModule : PluginModule
         if (LooksAtCollider(player, colliderPos))
             return true;
 
-        foreach (BoxCollider collider in ev.Door.Base._colliders)
+        foreach (BoxCollider collider in ev.Door.Base.AllColliders)
         {
             if (LooksAtCollider(player, collider.transform.position + collider.transform.TransformDirection(collider.center)))
                 return true;

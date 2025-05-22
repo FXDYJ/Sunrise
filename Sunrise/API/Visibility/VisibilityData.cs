@@ -1,8 +1,5 @@
 using System;
-using System.Linq;
-using Exiled.API.Enums;
 using Exiled.API.Interfaces;
-using HarmonyLib;
 using MapGeneration;
 using Sunrise.API.Visibility.Generation;
 
@@ -17,36 +14,51 @@ public class VisibilityData
         if (room == null)
             throw new ArgumentNullException(nameof(room));
 
-        Room = room;
+        TargetRoom = room;
         InitializeVisibilityData();
     }
 
-    public Room Room { get; }
+    public Room TargetRoom { get; }
     public HashSet<Vector3Int> VisibleCoords { get; } = [];
 
-    public bool IsVisible(IPosition positionObject) => IsVisible(positionObject.Position);
-    public bool IsVisible(Vector3 position) => IsVisible(RoomIdUtils.PositionToCoords(position));
-    public bool IsVisible(Vector3Int coords) => VisibleCoords.Contains(coords);
+    public bool IsVisible(Player player) => IsVisible(Room.Get(player.Position));
+    public bool IsVisible(Room room) => VisibleCoords.Contains(room.Identifier.MainCoords);
 
     void InitializeVisibilityData()
     {
-        VisibilityGenerator.AddRoomAndNeighbors(VisibleCoords, Room);
-        Debug.Log($"Generated visibility data for room {Room.Type}. Total visible coords: {VisibleCoords.Count}");
+        VisibilityGenerator.AddRoomAndNeighbors(VisibleCoords, TargetRoom);
+        Debug.Log($"Generated visibility data for room {TargetRoom.Type}. Total visible coords: {VisibleCoords.Count}");
+    }
+
+    public static VisibilityData? Get(Player player, bool allowDebug = true)
+    {
+        if (player is null)
+            throw new ArgumentNullException(nameof(player));
+
+        return Get(player.Position, allowDebug);
+    }
+
+    public static VisibilityData? Get(Vector3 position, bool allowDebug = true)
+    {
+        Room room = Room.Get(position);
+
+        if (room is null)
+            return null;
+
+        return Get(room, allowDebug);
     }
 
     public static VisibilityData Get(Room room, bool allowDebug = true)
     {
-        if (room == null)
+        if (room is null)
             throw new ArgumentNullException(nameof(room));
 
-        Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
+        Vector3Int coords = room.Identifier.MainCoords;
 
         if (!Cache.TryGetValue(coords, out VisibilityData? data))
         {
             data = new(room);
-
-            foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
-                Cache[occupiedCoord] = data;
+            Cache[room.Identifier.MainCoords] = data;
         }
 
         if (Config.Instance.DebugPrimitives && allowDebug)
@@ -54,27 +66,4 @@ public class VisibilityData
 
         return data;
     }
-
-    public static VisibilityData? Get(Vector3Int coords, bool allowDebug = true)
-    {
-        if (!Cache.TryGetValue(coords, out VisibilityData? data))
-        {
-            Room room = Room.Get(coords);
-
-            if (room == null)
-                return null;
-
-            data = new(room);
-
-            foreach (Vector3Int occupiedCoord in room.Identifier.OccupiedCoords)
-                Cache[occupiedCoord] = data;
-        }
-
-        if (Config.Instance.DebugPrimitives && allowDebug)
-            VisibilityDataDebugVisualizer.DrawDebugPrimitives(data);
-
-        return data;
-    }
-
-    public static VisibilityData? Get(Vector3 position, bool allowDebug = true) => Get(RoomIdUtils.PositionToCoords(position), allowDebug);
 }

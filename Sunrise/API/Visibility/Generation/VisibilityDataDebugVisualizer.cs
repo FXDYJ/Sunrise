@@ -10,10 +10,10 @@ internal static class VisibilityDataDebugVisualizer
 
     public static void DrawDebugPrimitives(VisibilityData data)
     {
-        if (!RoomDebugData.TryGetValue(data.Room, out DebugData debugData))
+        if (!RoomDebugData.TryGetValue(data.TargetRoom, out DebugData debugData))
         {
-            debugData = new(data.Room);
-            RoomDebugData[data.Room] = debugData;
+            debugData = new(data.TargetRoom);
+            RoomDebugData[data.TargetRoom] = debugData;
         }
 
         if (debugData.IsReady())
@@ -31,13 +31,13 @@ internal static class VisibilityDataDebugVisualizer
 
         foreach (Vector3Int coord in data.VisibleCoords)
         {
-            Debug.DrawLine(debugData.Origin, RoomIdUtils.CoordsToCenterPos(coord) + debugData.OriginOffset, debugData.Color, PrimitiveDuration);
+            Debug.DrawLine(debugData.Origin, RoomUtils.CoordsToCenterPos(coord) + debugData.OriginOffset, debugData.Color, PrimitiveDuration);
         }
     }
 
     static void VisualizeRoomAxes(VisibilityData data, Vector3 origin)
     {
-        Transform transform = data.Room.transform;
+        Transform transform = data.TargetRoom.transform;
         origin += Vector3.up * 0.05f;
 
         Debug.DrawLine(origin, origin + transform.right * 0.3f, Colors.Red * 50, PrimitiveDuration);

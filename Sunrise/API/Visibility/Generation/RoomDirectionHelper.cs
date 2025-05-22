@@ -32,22 +32,22 @@ internal static class RoomDirectionHelper
         }).ToArray();
     }
 
-    internal static void IncludeDirection(Vector3Int startCoords, Vector3Int direction, bool known, HashSet<Vector3Int> visibleCoords)
+    internal static void IncludeDirection(Vector3Int startCoords, Vector3Int direction, bool knownConnected, HashSet<Vector3Int> visibleCoords)
     {
         if (direction.sqrMagnitude != 1)
             throw new ArgumentException("Direction must be normalized");
 
         Vector3Int currentCoords = startCoords + direction;
         Vector3Int previousCoords = startCoords;
-
-        while (RoomIdentifier.RoomsByCoordinates.TryGetValue(currentCoords, out RoomIdentifier? identifier)
+        
+        while (RoomIdentifier.RoomsByCoords.TryGetValue(currentCoords, out RoomIdentifier? identifier)
             && Room.Get(identifier) is Room room
-            && (RoomConnectionChecker.AreConnected(previousCoords, currentCoords) || known))
+            && (RoomConnectionChecker.AreConnected(previousCoords, currentCoords) || knownConnected))
         {
-            visibleCoords.UnionWith(room.Identifier.OccupiedCoords);
+            visibleCoords.Add(room.Identifier.MainCoords);
             previousCoords = currentCoords;
             currentCoords += direction;
-            known = false; // Only first room is guaranteed when direction is known
+            knownConnected = false; // Only first room is guaranteed when direction is known
         }
     }
 }

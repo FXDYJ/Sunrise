@@ -46,6 +46,9 @@
         <Reference Include="Exiled.CreditTags">
             <HintPath>..\_ProjectDependencies\Exiled.CreditTags.dll</HintPath>
         </Reference>
+        <Reference Include="LabApi">
+          <HintPath>..\_ProjectDependencies\LabApi.dll</HintPath>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="Exiled.API" HintPath="..\_ProjectDependencies\Exiled.API.dll"/>

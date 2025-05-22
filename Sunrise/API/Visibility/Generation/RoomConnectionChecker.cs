@@ -20,7 +20,7 @@ internal static class RoomConnectionChecker
     }
 
     static Vector3 GetCenterPosition(Vector3Int coords) =>
-        RoomIdUtils.CoordsToCenterPos(coords) + Vector3.up;
+        RoomUtils.CoordsToCenterPos(coords) + Vector3.up;
 
     static bool CheckOffsetConnection(Vector3 posA, Vector3 posB, Vector3 direction, float offset)
     {

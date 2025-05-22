@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Exiled.API.Features.Pickups;
 using JetBrains.Annotations;
 using MEC;
@@ -10,14 +9,14 @@ namespace Sunrise.Features.PickupEspClutter;
 
 internal class PhantomPickup : MonoBehaviour
 {
-    [UsedImplicitly] public static bool DebugMode;
-
     readonly HashSet<Player> _hiddenFor = HashSetPool<Player>.Shared.Rent();
     CoroutineHandle _coroutine;
     NetworkIdentity _netIdentity = null!;
 
     LinkedListNode<PhantomPickup> _node = null!;
     Pickup _pickup = null!;
+
+    [UsedImplicitly] public static bool DebugMode { get; set; }
 
     internal static LinkedList<PhantomPickup> List { get; } = [];
     internal static HashSet<Pickup> Pickups { get; } = [];
@@ -125,7 +124,7 @@ internal class PhantomPickup : MonoBehaviour
     static bool IsObserving(Player player, VisibilityData visibilityData)
     {
         if (DebugMode)
-            return MathExtensions.SqrDistance(player.Position, visibilityData.Room.Position) < 1.5f * 1.5f;
+            return MathExtensions.SqrDistance(player.Position, visibilityData.TargetRoom.Position) < 1.5f * 1.5f;
 
         return visibilityData.IsVisible(player);
     }

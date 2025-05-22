@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
+using Exiled.API.Enums;
 using HarmonyLib;
 using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
@@ -90,10 +91,7 @@ internal static class FpcVisibilityControllerPatch
             return flags;
         }
 
-        Vector3Int observerCoords = RoomIdUtils.PositionToCoords(observerRole.FpcModule.Position);
-        Vector3Int targetCoords = RoomIdUtils.PositionToCoords(targetRole.FpcModule.Position);
-
-        if (VisibilityData.Get(observerCoords) is VisibilityData observerVisibility && !observerVisibility.IsVisible(targetCoords))
+        if (VisibilityData.Get(observerRole.FpcModule.Position) is VisibilityData observerVisibility && !observerVisibility.IsVisible(target))
         {
             Benchmark.Stop();
             return flags | InvisibilityFlags.OutOfRange;

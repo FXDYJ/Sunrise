@@ -20,7 +20,7 @@ internal static class VisibilityGenerator
 
     static void IncludeRoom(HashSet<Vector3Int> visibleCoords, Room room)
     {
-        visibleCoords.UnionWith(room.Identifier.OccupiedCoords);
+        visibleCoords.Add(room.Identifier.MainCoords);
 
         if (RoomVisibilityConfig.DiagonalVisibilityRooms.Contains(room.Type))
         {
@@ -30,7 +30,7 @@ internal static class VisibilityGenerator
 
     static void AddDiagonalNeighbors(HashSet<Vector3Int> visibleCoords, Room room)
     {
-        Vector3Int coords = RoomIdUtils.PositionToCoords(room.Position);
+        Vector3Int coords = RoomUtils.PositionToCoords(room.Position);
 
         foreach (Vector3Int direction in RoomDirectionHelper.GetSearchDirections(room, out _))
         {
@@ -40,7 +40,7 @@ internal static class VisibilityGenerator
 
     static void ProcessRoomDirections(HashSet<Vector3Int> visibleCoords, Room room)
     {
-        Vector3Int roomCoords = RoomIdUtils.PositionToCoords(room.Position);
+        Vector3Int roomCoords = RoomUtils.PositionToCoords(room.Position);
         Vector3Int[] directions = RoomDirectionHelper.GetSearchDirections(room, out bool known);
 
         foreach (Vector3Int direction in directions)
@@ -54,8 +54,8 @@ internal static class VisibilityGenerator
         foreach (Room nearestRoom in room.NearestRooms)
         {
             IncludeRoom(visibleCoords, nearestRoom);
-            Vector3Int nearestRoomCoords = RoomIdUtils.PositionToCoords(nearestRoom.Position);
-            Vector3Int direction = RoomIdUtils.PositionToCoords(room.Position) - nearestRoomCoords;
+            Vector3Int nearestRoomCoords = RoomUtils.PositionToCoords(nearestRoom.Position);
+            Vector3Int direction = RoomUtils.PositionToCoords(room.Position) - nearestRoomCoords;
             RoomDirectionHelper.IncludeDirection(nearestRoomCoords, direction, true, visibleCoords);
         }
     }
