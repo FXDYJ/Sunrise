@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
@@ -33,7 +34,7 @@ InvisibilityFlags GetActiveFlags(ReferenceHub observer)
 ///     Works by only sending data about players in rooms that can be seen from the room the observer is currently in.
 ///     Reduces wallhack effective distance to around 12m (from 36m in base game)
 /// </summary>
-[HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags)), UsedImplicitly]
+[HarmonyPatch(typeof(FpcVisibilityController), nameof(FpcVisibilityController.GetActiveFlags))] [UsedImplicitly]
 internal static class FpcVisibilityControllerPatch
 {
     static readonly AutoBenchmark Benchmark = new("Anti Wallhack (without raycasts)");
@@ -64,45 +65,53 @@ internal static class FpcVisibilityControllerPatch
     [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
     static InvisibilityFlags AddCustomVisibility(InvisibilityFlags flags, IFpcRole observerRole, IFpcRole targetRole, Vector3 positionDifference)
     {
-        if (!Config.Instance.AntiWallhack)
-            return flags;
-
-        // Players are out of range
-        if ((flags & InvisibilityFlags.OutOfRange) != 0)
-            return flags;
-
-        Benchmark.Start();
-
-        Player observer = Player.Get(observerRole.FpcModule.Hub);
-        Player target = Player.Get(targetRole.FpcModule.Hub);
-
-        if (IsExceptionalCase(observer, observerRole, target))
+        try
         {
+            if (!Config.Instance.AntiWallhack)
+                return flags;
+
+            // Players are out of range
+            if ((flags & InvisibilityFlags.OutOfRange) != 0)
+                return flags;
+
+            Benchmark.Start();
+
+            Player observer = Player.Get(observerRole.FpcModule.Hub);
+            Player target = Player.Get(targetRole.FpcModule.Hub);
+
+            if (IsExceptionalCase(observer, observerRole, target))
+            {
+                Benchmark.Stop();
+                return flags;
+            }
+
+            float sqrDistance = positionDifference.sqrMagnitude;
+            float forcedVisibility = ForcedVisibilityHelper.GetForcedVisibility(target);
+
+            if (sqrDistance < forcedVisibility * forcedVisibility)
+            {
+                Benchmark.Stop();
+                return flags;
+            }
+
+            if (VisibilityData.Get(observerRole.FpcModule.Position) is VisibilityData observerVisibility && !observerVisibility.IsVisible(target))
+            {
+                Benchmark.Stop();
+                return flags | InvisibilityFlags.OutOfRange;
+            }
+
             Benchmark.Stop();
+
+            if (Config.Instance.RaycastAntiWallhack && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
+                return flags | InvisibilityFlags.OutOfRange;
+
             return flags;
         }
-
-        float sqrDistance = positionDifference.sqrMagnitude;
-        float forcedVisibility = ForcedVisibilityHelper.GetForcedVisibility(target);
-
-        if (sqrDistance < forcedVisibility * forcedVisibility)
+        catch (Exception e)
         {
-            Benchmark.Stop();
+            Log.Error($"Error in {nameof(FpcVisibilityControllerPatch)}.{nameof(AddCustomVisibility)}: {e}");
             return flags;
         }
-
-        if (VisibilityData.Get(observerRole.FpcModule.Position) is VisibilityData observerVisibility && !observerVisibility.IsVisible(target))
-        {
-            Benchmark.Stop();
-            return flags | InvisibilityFlags.OutOfRange;
-        }
-
-        Benchmark.Stop();
-
-        if (Config.Instance.RaycastAntiWallhack && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
-            return flags | InvisibilityFlags.OutOfRange;
-
-        return flags;
     }
 
     static bool IsExceptionalCase(Player observer, IFpcRole observerRole, Player target)

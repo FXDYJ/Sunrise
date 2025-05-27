@@ -11,18 +11,15 @@ public class VisibilityData
 
     VisibilityData(Room room)
     {
-        if (room == null)
-            throw new ArgumentNullException(nameof(room));
-
-        TargetRoom = room;
+        TargetRoom = room ?? throw new ArgumentNullException(nameof(room));
         InitializeVisibilityData();
     }
 
     public Room TargetRoom { get; }
     public HashSet<Vector3Int> VisibleCoords { get; } = [];
 
-    public bool IsVisible(Player player) => IsVisible(Room.Get(player.Position));
-    public bool IsVisible(Room room) => VisibleCoords.Contains(room.Identifier.MainCoords);
+    public bool IsVisible(Player player) => player is { IsConnected: true } && IsVisible(Room.Get(player.Position));
+    public bool IsVisible(Room? room) => room?.Identifier is RoomIdentifier identifier && VisibleCoords.Contains(identifier.MainCoords);
 
     void InitializeVisibilityData()
     {
