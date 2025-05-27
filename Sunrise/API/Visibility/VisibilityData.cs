@@ -18,8 +18,8 @@ public class VisibilityData
     public Room TargetRoom { get; }
     public HashSet<Vector3Int> VisibleCoords { get; } = [];
 
-    public bool IsVisible(Player player) => player is { IsConnected: true } && IsVisible(Room.Get(player.Position));
-    public bool IsVisible(Room? room) => room?.Identifier is RoomIdentifier identifier && VisibleCoords.Contains(identifier.MainCoords);
+    public bool IsVisible(Player player) => player is not { IsConnected: true } || IsVisible(Room.Get(player.Position));
+    public bool IsVisible(Room? room) => room?.Identifier is not RoomIdentifier identifier || VisibleCoords.Contains(identifier.MainCoords);
 
     void InitializeVisibilityData()
     {

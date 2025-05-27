@@ -102,7 +102,7 @@ internal static class FpcVisibilityControllerPatch
 
             Benchmark.Stop();
 
-            if (Config.Instance.RaycastAntiWallhack && !RaycastVisibilityChecker.IsVisible(Player.Get(observerRole.FpcModule.Hub), Player.Get(targetRole.FpcModule.Hub)))
+            if (Config.Instance.RaycastAntiWallhack && !RaycastVisibilityChecker.IsVisible(observer, target))
                 return flags | InvisibilityFlags.OutOfRange;
 
             return flags;
