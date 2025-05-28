@@ -13,6 +13,7 @@ using MapGeneration;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.Visibility;
 using Sunrise.API.Visibility;
+using Sunrise.Features.AntiWallhack.ForcedVisibility;
 using Scp049Role = Exiled.API.Features.Roles.Scp049Role;
 using Scp939Role = Exiled.API.Features.Roles.Scp939Role;
 

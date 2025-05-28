@@ -2,17 +2,13 @@ using System.Diagnostics.CodeAnalysis;
 using Exiled.API.Features.Roles;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp096;
-using PlayerRoles.PlayableScps.Scp939;
 using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
 using Scp939Role = Exiled.API.Features.Roles.Scp939Role;
 
-namespace Sunrise.Features.AntiWallhack;
+namespace Sunrise.Features.AntiWallhack.ForcedVisibility;
 
 internal static class ForcedVisibilityHelper
 {
-    // TODO Test voice chat (prob fixed)
-    // TODO Add support for reloading sound (test)
-
     public static float GetForcedVisibility(Player player) => player.Role switch
     {
         Scp939Role scp939 => Get939Visibility(scp939),

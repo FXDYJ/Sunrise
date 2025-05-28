@@ -6,7 +6,7 @@ using InventorySystem.Items.Usables;
 using Consumable = Exiled.API.Features.Items.Consumable;
 using Firearm = Exiled.API.Features.Items.Firearm;
 
-namespace Sunrise.Features.AntiWallhack;
+namespace Sunrise.Features.AntiWallhack.ForcedVisibility;
 
 internal static class ItemVisibilityHelper
 {
