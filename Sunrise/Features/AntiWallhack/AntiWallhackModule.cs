@@ -24,6 +24,9 @@ internal class AntiWallhackModule : PluginModule
 
     static void OnPlayerLanding(LandingEventArgs ev)
     {
-        LandingTimes[ev.Player] = Time.time;
+        if (ev.Player is not null)
+        {
+            LandingTimes[ev.Player] = Time.time;
+        }
     }
 }
