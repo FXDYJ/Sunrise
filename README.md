@@ -106,13 +106,6 @@ The only dependency is [EXILED](https://github.com/ExMod-Team/EXILED).
 To install the plugin, simply download the latest release from the [releases page](https://github.com/Banalny-Banan/Sunrise/releases)
 and put it in the `Plugins` folder.
 
-> ⚠️ **WARNING:** The project is in early development. While thoroughly tested on our servers, it may still contain bugs.
-> If you encounter any issues, please report them on the [Issues](https://github.com/Banalny-Banan/Sunrise/issues) page
-> or in the [Discord server](https://discord.gg/9nAaRVNCq3).
-> You can also disable specific modules in the configuration file.
-> If you are a developer, feel free to investigate the issue yourself for which the debug logs and primitives visualizations might prove useful.
-> Thank you for supporting the project.
-
 ---
 
 # 🤝 Community & Contributions
