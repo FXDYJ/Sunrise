@@ -1,5 +1,4 @@
 using System;
-using Exiled.API.Interfaces;
 using MapGeneration;
 using Sunrise.API.Visibility.Generation;
 

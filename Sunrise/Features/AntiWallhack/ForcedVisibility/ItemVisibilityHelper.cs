@@ -44,16 +44,16 @@ internal static class ItemVisibilityHelper
                 // painkillers 14.5
                 // cola 14.5, candy 14.5
                 // adrenaline 14.5,
-                // steroids - 14.5
+                // steroids 14.5
                 return consumable.IsUsing ? 14.5f : 0;
             }
             case Radio radio:
             {
-                // radio - 11 when receiving
+                // radio 11 when receiving
                 return radio.IsEnabled ? 11 : 0;
             }
             // coin 5
-            // 268 - 5
+            // 268 5
             case Usable:
             {
                 return item.Base switch

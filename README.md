@@ -18,8 +18,6 @@ Designed to prevent common exploits and add server authority in places where it 
 
 ## 🔫 Server-Side Backtrack
 
-![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/BacktrackLobotomyPreview.gif)
-
 > Silent aim doesn't aim, spinbots fire in random directions, fake rotation prevents aiming.
 > Cheaters are forced to use aim lock, which is much easier to notice.
 
@@ -34,8 +32,6 @@ the server no longer trusts client-provided data. Instead, it locates the closes
 ensuring that only legitimate shots, based on real past positions and rotations, are processed.
 
 ## 🧱 Anti-Wallhack
-
-![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/WallhackLobotomyPreview.gif)
 
 > Significantly reduces wallhack effective range inside the facility.
 
@@ -57,8 +53,6 @@ If it's the case for you, it is always possible to disable it in the configurati
 It is recommended to use `benchmark` option in the config to test the performance.
 
 ## 📦 Pickup Validation
-
-![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/PickupValidationPreview.gif)
 
 > Prevents item pickups through walls.
 
@@ -94,9 +88,9 @@ Sunrise adds a field-of-view (FOV) check to ensure that the player is looking at
 
 ## 🗺️ Planned Features
 
-| Feature                    | Status         | Preview                                                                                          |
-|----------------------------|----------------|--------------------------------------------------------------------------------------------------|
-| Pickup spoofing (anti-ESP) | In development | ![Preview](https://github.com/Banalny-Banan/Sunrise/blob/master/Previews/ItemClutterPreview.gif) |
+| Feature                    | Status         |
+|----------------------------|----------------|
+| Pickup spoofing (anti-ESP) | In development |
 
 ---
 
@@ -109,13 +103,6 @@ and put it in the `Plugins` folder.
 ---
 
 # 🤝 Community & Contributions
-
-> We believe cheaters are supposed to suffer everywhere, not only on servers that can develop their own anti-cheat.
-
-This is why instead of keeping our tools private, we decided to make it open-source.
-
-If you support this idea, feel free to contribute to the project by implementing more features
-or researching new ways to prevent common exploits.
 
 If you want to contribute or just like the project, feel free to join the [Discord server](https://discord.gg/9nAaRVNCq3).
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.

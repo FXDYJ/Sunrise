@@ -1,7 +1,5 @@
-using Exiled.API.Enums;
 using Exiled.API.Features.Roles;
 using Exiled.Events.EventArgs.Player;
-using PlayerRoles;
 
 namespace Sunrise.Features.DoorInteractionValidation;
 

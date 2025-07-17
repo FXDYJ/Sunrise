@@ -2,9 +2,7 @@ using Sunrise.API.Backtracking;
 using Sunrise.API.Visibility;
 using Sunrise.Features.AntiWallhack;
 using Sunrise.Features.DoorInteractionValidation;
-using Sunrise.Features.PickupEspClutter;
 using Sunrise.Features.PickupValidation;
-using Sunrise.Features.ServersideBacktrack;
 using Sunrise.Features.ServersideTeslaDamage;
 
 namespace Sunrise.EntryPoint;

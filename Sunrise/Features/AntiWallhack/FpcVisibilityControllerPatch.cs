@@ -2,14 +2,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
-using Exiled.API.Enums;
 using HarmonyLib;
 using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
-using InventorySystem.Items.Firearms.Attachments.Components;
 using JetBrains.Annotations;
-using MapGeneration;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.Visibility;
 using Sunrise.API.Visibility;
@@ -122,7 +119,7 @@ internal static class FpcVisibilityControllerPatch
 
         switch (target.Inventory.CurInstance) // Light emitting items make players visible
         {
-            // Night vision scopes count as emitting light (nw classic), so firearms need special handling
+            // Night vision scopes count as emitting light, so firearms need special handling
             case Firearm firearm:
             {
                 foreach (ILightEmittingItem lightEmitter in firearm._modifiersCombiner._lightEmitters)

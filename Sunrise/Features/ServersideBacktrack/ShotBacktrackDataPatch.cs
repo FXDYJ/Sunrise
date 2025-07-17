@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Exiled.Events.EventArgs.Player;
 using HarmonyLib;
 using InventorySystem.Items.Firearms.Modules.Misc;
@@ -79,7 +78,7 @@ internal static class BacktrackOverridePatch
         Benchmark.Stop();
         // [ServersideBacktrack = true] Total for 100 shots: 56.80070ms. Average: 0.5680070ms. Per 1000 shots: 568.00700ms.
         // [ServersideBacktrack = false] Total for 100 shots: 119.02560ms. Average: 1.1902560ms. Per 1000 shots: 1190.25600ms.
-        // Sunrise backtrack results in 2x performance increase (idk how lol nw code is baaaaaaaaad). Ratios reproduced on 3 different machines.
+        // Sunrise backtrack results in 2x performance increase. Ratios reproduced on 3 different machines.
     }
 #endif
 }

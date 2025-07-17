@@ -46,6 +46,7 @@ internal static class ForcedVisibilityHelper
         // crying - 30
         // trying not to cry - 4
         // enraged max
+
         Scp096AbilityState.None => 30,
         Scp096AbilityState.TryingNotToCry => 4,
         _ => 100,
