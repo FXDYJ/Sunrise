@@ -93,7 +93,7 @@ internal static class ForcedVisibilityHelper
     {
         FirstPersonMovementModule movementModule = fpcRole.FirstPersonController.FpcModule;
 
-        isJumping = movementModule.Motor.IsJumping || (AntiWallhackModule.LandingTimes.TryGetValue(fpcRole.Owner, out float landingTime) && Time.time - landingTime < 0.5f);
+        isJumping = movementModule.Motor.JumpController.IsJumping || (AntiWallhackModule.LandingTimes.TryGetValue(fpcRole.Owner, out float landingTime) && Time.time - landingTime < 0.5f);
 
         return movementModule.CurrentMovementState switch
         {
