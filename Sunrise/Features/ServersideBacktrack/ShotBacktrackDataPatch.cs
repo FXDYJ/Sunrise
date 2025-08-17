@@ -1,5 +1,4 @@
 using System;
-using Exiled.Events.EventArgs.Player;
 using HarmonyLib;
 using InventorySystem.Items.Firearms.Modules.Misc;
 using JetBrains.Annotations;

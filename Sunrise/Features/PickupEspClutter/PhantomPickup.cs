@@ -1,8 +1,9 @@
-using Exiled.API.Features.Pickups;
+using InventorySystem.Items.Pickups;
 using JetBrains.Annotations;
 using MEC;
 using Mirror;
 using NorthwoodLib.Pools;
+using PluginAPI.Core;
 using Sunrise.API.Visibility;
 
 namespace Sunrise.Features.PickupEspClutter;
@@ -14,20 +15,20 @@ internal class PhantomPickup : MonoBehaviour
     NetworkIdentity _netIdentity = null!;
 
     LinkedListNode<PhantomPickup> _node = null!;
-    Pickup _pickup = null!;
+    ItemPickupBase _pickup = null!;
 
     [UsedImplicitly] public static bool DebugMode { get; set; }
 
     internal static LinkedList<PhantomPickup> List { get; } = [];
-    internal static HashSet<Pickup> Pickups { get; } = [];
+    internal static HashSet<ItemPickupBase> Pickups { get; } = [];
 
     void Start()
     {
         _node = List.AddLast(this);
         Pickups.Add(_pickup);
 
-        _pickup = Pickup.Get(gameObject);
-        _netIdentity = _pickup.Base.netIdentity;
+        _pickup = gameObject.GetComponent<ItemPickupBase>();
+        _netIdentity = _pickup.netIdentity;
 
         _coroutine = Timing.RunCoroutine(Coroutine());
     }
@@ -37,7 +38,8 @@ internal class PhantomPickup : MonoBehaviour
         List.Remove(_node);
         Pickups.Remove(_pickup);
 
-        _pickup.Destroy();
+        if (_pickup != null)
+            NetworkServer.Destroy(_pickup.gameObject);
         HashSetPool<Player>.Shared.Return(_hiddenFor);
 
         Timing.KillCoroutines(_coroutine);
@@ -45,7 +47,8 @@ internal class PhantomPickup : MonoBehaviour
 
     public void Destroy()
     {
-        _pickup.Destroy();
+        if (_pickup != null)
+            NetworkServer.Destroy(_pickup.gameObject);
     }
 
     IEnumerator<float> Coroutine()
@@ -58,7 +61,7 @@ internal class PhantomPickup : MonoBehaviour
 
             // Choose a new position for the item
             PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
-            _pickup.Position = position;
+            _pickup.transform.position = position;
 
             // Wait for the item to change position to one where it wont be noticed by legit players immediately, so we can safely update visibility
             yield return Timing.WaitForSeconds(Random.Range(0.4f, 0.5f));
@@ -76,20 +79,12 @@ internal class PhantomPickup : MonoBehaviour
 
                 yield return Timing.WaitForSeconds(waitTime);
             }
-
-            /*
-            Debug.Log($"{cycleCount} PhantomPickup cycles took {SW.Elapsed.TotalMilliseconds:F5}ms");
-            Tested with 30 players and 200 phantom pickups
-            [2025-03-25 19:19:00.027 +02:00] [DEBUG] [Sunrise] 271 PhantomPickup cycles took 93.61230ms
-            [2025-03-25 19:19:29.977 +02:00] [DEBUG] [Sunrise] 800 PhantomPickup cycles took 212.33240ms
-            in ~30 seconds, 529 cycles took 118.7201ms. This means the average MSPT is (1000/60)*(118.72/30000) = 0.065955
-            */
         }
     }
 
     void HideForEveryone()
     {
-        foreach (Player player in Player.Dictionary.Values)
+        foreach (Player player in Player.GetPlayers())
             SetVisibility(player, false);
     }
 
@@ -103,7 +98,7 @@ internal class PhantomPickup : MonoBehaviour
             return;
         }
 
-        foreach (Player player in Player.Dictionary.Values)
+        foreach (Player player in Player.GetPlayers())
             SetVisibility(player, !IsObserving(player, visibilityData));
     }
 
@@ -112,10 +107,10 @@ internal class PhantomPickup : MonoBehaviour
         switch (visibility)
         {
             case true when _hiddenFor.Remove(player):
-                NetworkServer.ShowForConnection(_netIdentity, player.Connection);
+                NetworkServer.ShowForConnection(_netIdentity, player.ReferenceHub.connectionToClient);
                 break;
             case false when _hiddenFor.Add(player):
-                NetworkServer.HideForConnection(_netIdentity, player.Connection);
+                NetworkServer.HideForConnection(_netIdentity, player.ReferenceHub.connectionToClient);
                 break;
         }
     }
@@ -139,7 +134,14 @@ internal class PhantomPickup : MonoBehaviour
     {
         PhantomPickupSynchronizer.GetNextPosition(out Vector3 position);
         ItemType type = PhantomPickupsModule.PhantomItemTypes.RandomItem();
-        var pickup = Pickup.CreateAndSpawn(type, position, Random.rotation);
-        pickup.GameObject.AddComponent<PhantomPickup>();
+        
+        // Simplified pickup creation for LabAPI
+        var pickupPrefab = NetworkManager.singleton.spawnPrefabs.FirstOrDefault(p => p.GetComponent<ItemPickupBase>()?.ItemTypeId == type);
+        if (pickupPrefab != null)
+        {
+            var pickup = UnityEngine.Object.Instantiate(pickupPrefab, position, Random.rotation);
+            pickup.AddComponent<PhantomPickup>();
+            NetworkServer.Spawn(pickup);
+        }
     }
 }
