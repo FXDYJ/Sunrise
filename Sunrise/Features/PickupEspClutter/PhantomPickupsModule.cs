@@ -1,5 +1,5 @@
-using Exiled.Events.EventArgs.Player;
-using Exiled.Events.EventArgs.Server;
+using PluginAPI.Events;
+using PluginAPI.Events.Arguments;
 
 namespace Sunrise.Features.PickupEspClutter;
 
@@ -17,16 +17,14 @@ internal class PhantomPickupsModule : PluginModule
 
     protected override void OnEnabled()
     {
-        Handlers.Server.RoundStarted += OnRoundStarted;
-        Handlers.Server.RoundEnded += OnRoundEnded;
-        Handlers.Player.PickingUpItem += OnPickingUpItem;
+        EventManager.RegisterEvents<ServerEvents>(this);
+        EventManager.RegisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnDisabled()
     {
-        Handlers.Server.RoundStarted -= OnRoundStarted;
-        Handlers.Server.RoundEnded -= OnRoundEnded;
-        Handlers.Player.PickingUpItem -= OnPickingUpItem;
+        EventManager.UnregisterEvents<ServerEvents>(this);
+        EventManager.UnregisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnReset()
@@ -34,19 +32,22 @@ internal class PhantomPickupsModule : PluginModule
         PhantomPickup.Pickups.Clear();
     }
 
-    static void OnRoundStarted()
+    [PluginEvent(PluginAPI.Enums.ServerEventType.RoundStart)]
+    void OnRoundStarted()
     {
         PhantomItemSpawner.Start();
     }
 
-    static void OnRoundEnded(RoundEndedEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.RoundEnd)]
+    void OnRoundEnded(RoundEndEventArgs ev)
     {
         PhantomItemSpawner.Stop();
     }
 
-    static void OnPickingUpItem(PickingUpItemEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerPickupItem)]
+    void OnPickingUpItem(PlayerPickupItemEventArgs ev)
     {
-        if (PhantomPickup.Pickups.Contains(ev.Pickup))
-            ev.IsAllowed = false;
+        if (PhantomPickup.Pickups.Contains(ev.Item))
+            ev.CanPickup = false;
     }
 }

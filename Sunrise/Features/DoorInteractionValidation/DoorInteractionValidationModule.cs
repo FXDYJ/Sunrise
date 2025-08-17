@@ -1,5 +1,6 @@
-using Exiled.API.Features.Roles;
-using Exiled.Events.EventArgs.Player;
+using PluginAPI.Core;
+using PluginAPI.Events;
+using PluginAPI.Events.Arguments;
 
 namespace Sunrise.Features.DoorInteractionValidation;
 
@@ -7,66 +8,59 @@ internal class AntiDoorManipulatorModule : PluginModule
 {
     protected override void OnEnabled()
     {
-        Handlers.Player.InteractingDoor += OnInteractingDoor;
+        EventManager.RegisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnDisabled()
     {
-        Handlers.Player.InteractingDoor -= OnInteractingDoor;
+        EventManager.UnregisterEvents<PlayerEvents>(this);
     }
 
-    static void OnInteractingDoor(InteractingDoorEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerInteractingDoor)]
+    void OnInteractingDoor(PlayerInteractingDoorEventArgs ev)
     {
-        if (!Config.Instance.DoorInteractionValidation || ev.Player.Role is not FpcRole fpcRole || fpcRole.IsNoclipEnabled)
+        if (!Config.Instance.DoorInteractionValidation || ev.Player.IsNoclipEnabled)
             return;
 
-        if (ev is not { Door: not null, Collider: not null, Player: not null })
+        if (ev.Door == null || ev.Player == null)
             return;
 
         if (!CanInteract(ev.Player, ev))
         {
+            ev.CanInteract = false;
             if (Config.Instance.Debug)
-                ev.IsAllowed = false;
-            else
-                ev.CanInteract = false;
+                Log.Debug($"Door interaction blocked for player {ev.Player.Nickname}");
         }
     }
 
-    static bool CanInteract(Player player, InteractingDoorEventArgs ev)
+    static bool CanInteract(Player player, PlayerInteractingDoorEventArgs ev)
     {
-        Vector3 colliderPos = ev.Collider.transform.position + ev.Collider.transform.TransformDirection(ev.Collider.VerificationOffset);
-
-        if (LooksAtCollider(player, colliderPos))
+        // Check if player is looking at the door
+        Vector3 doorPosition = ev.Door.Position;
+        
+        if (LooksAtDoor(player, doorPosition))
             return true;
 
-        foreach (BoxCollider collider in ev.Door.Base.AllColliders)
-        {
-            if (LooksAtCollider(player, collider.transform.position + collider.transform.TransformDirection(collider.center)))
-                return true;
-        }
+        // Raycast check for door interaction
+        Ray ray = new(player.Camera.position, player.Camera.forward);
 
-        Ray ray = new(player.CameraTransform.position, player.CameraTransform.forward);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, 3, (int)(Mask.Doors | Mask.DoorButtons | Mask.Glass)))
+        if (Physics.Raycast(ray, out RaycastHit hit, 3, LayerMask.GetMask("Door", "DoorButton", "Glass")))
         {
-            Debug.DrawLine(ray.origin, hit.point, Colors.Yellow * 50, 15);
+            Debug.DrawLine(ray.origin, hit.point, Color.yellow, 15);
             return true;
         }
 
-        Debug.Log($"Door interaction blocked. Player: {player.Nickname}, Door: {ev.Door.Position}, Collider: {colliderPos}");
+        Log.Debug($"Door interaction blocked. Player: {player.Nickname}, Door: {ev.Door.Position}");
         return false;
     }
 
-    static bool LooksAtCollider(Player player, Vector3 colliderPos)
+    static bool LooksAtDoor(Player player, Vector3 doorPos)
     {
         const float AllowedAngle = 30;
 
-        Vector3 direction = (colliderPos - player.CameraTransform.position).normalized;
-        float angle = Vector3.Angle(player.CameraTransform.forward with { y = direction.y }, direction);
+        Vector3 direction = (doorPos - player.Camera.position).normalized;
+        float angle = Vector3.Angle(player.Camera.forward, direction);
 
-        if (angle < AllowedAngle)
-            return true;
-
-        return false;
+        return angle < AllowedAngle;
     }
 }

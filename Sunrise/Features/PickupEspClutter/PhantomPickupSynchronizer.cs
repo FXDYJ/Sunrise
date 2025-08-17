@@ -1,35 +1,35 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Exiled.API.Enums;
+using MapGeneration;
 
 namespace Sunrise.Features.PickupEspClutter;
 
 internal static class PhantomPickupSynchronizer
 {
-    static readonly HashSet<RoomType> ExcludedRooms =
+    static readonly HashSet<RoomName> ExcludedRooms =
     [
-        RoomType.Surface,
+        RoomName.Outside,
 
-        RoomType.Hcz106,
-        RoomType.HczCrossRoomWater,
-        RoomType.HczStraightPipeRoom,
-        RoomType.HczNuke,
-        RoomType.HczHid,
+        RoomName.Hcz106,
+        RoomName.HczCrossing,
+        RoomName.HczStraight,
+        RoomName.HczNuke,
+        RoomName.HczHid,
 
-        RoomType.Lcz173,
+        RoomName.Lcz173,
     ];
 
     [field: AllowNull, MaybeNull]
-    static List<Room> Rooms => field ??= Room.List.Where(r => !ExcludedRooms.Contains(r.Type)).ToList();
+    static List<RoomIdentifier> Rooms => field ??= RoomIdentifier.AllRoomIdentifiers.Where(r => !ExcludedRooms.Contains(r.Name)).ToList();
 
     static int index;
 
     internal static void GetNextPosition(out Vector3 position)
     {
-        Room room = Rooms[index];
+        RoomIdentifier room = Rooms[index];
 
-        const float RandomOffset = 1.5f; //todo increase
-        position = room.Position + (Random.insideUnitSphere * RandomOffset) with { y = Random.Range(10, 15) };
+        const float RandomOffset = 1.5f;
+        position = room.transform.position + (Random.insideUnitSphere * RandomOffset) with { y = Random.Range(10, 15) };
 
         index = (index + 1) % Rooms.Count;
     }

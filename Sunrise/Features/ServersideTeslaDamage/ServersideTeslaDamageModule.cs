@@ -1,6 +1,7 @@
 using System;
-using Exiled.API.Enums;
-using Exiled.Events.EventArgs.Player;
+using PluginAPI.Events;
+using PluginAPI.Events.Arguments;
+using PlayerStatsSystem;
 
 namespace Sunrise.Features.ServersideTeslaDamage;
 
@@ -13,13 +14,13 @@ internal class ServersideTeslaDamageModule : PluginModule
     protected override void OnEnabled()
     {
         TeslaGate.OnBursted += OnTeslaGateBursted;
-        Handlers.Player.Hurt += OnPlayerHurt;
+        EventManager.RegisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnDisabled()
     {
         TeslaGate.OnBursted -= OnTeslaGateBursted;
-        Handlers.Player.Hurt -= OnPlayerHurt;
+        EventManager.UnregisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnReset()
@@ -46,9 +47,11 @@ internal class ServersideTeslaDamageModule : PluginModule
         }
     }
 
-    static void OnPlayerHurt(HurtEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerDamage)]
+    void OnPlayerHurt(PlayerDamageEventArgs ev)
     {
-        if (ev.DamageHandler.Type == DamageType.Tesla)
-            ServersideTeslaHitreg.ShockedPlayers[ev.Player] = Time.time;
+        // Check if damage is from Tesla
+        if (ev.DamageHandler is ElectrocutionDamageHandler)
+            ServersideTeslaHitreg.ShockedPlayers[ev.Target] = Time.time;
     }
 }

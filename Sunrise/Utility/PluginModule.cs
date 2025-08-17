@@ -14,7 +14,7 @@ public abstract class PluginModule
         OnEnabled();
         IsEnabled = true;
 
-        Handlers.Server.WaitingForPlayers += OnReset;
+        EventManager.RegisterEvents<ServerEvents>(this);
 
         foreach (PluginModule module in SubModules)
             module.Enable();
@@ -28,7 +28,7 @@ public abstract class PluginModule
         OnDisabled();
         IsEnabled = false;
 
-        Handlers.Server.WaitingForPlayers -= OnReset;
+        EventManager.UnregisterEvents<ServerEvents>(this);
 
         foreach (PluginModule module in SubModules)
             module.Disable();
@@ -36,5 +36,7 @@ public abstract class PluginModule
 
     protected virtual void OnEnabled() { }
     protected virtual void OnDisabled() { }
+    
+    [PluginAPI.Events.PluginEvent(PluginAPI.Enums.ServerEventType.WaitingForPlayers)]
     protected virtual void OnReset() { }
 }
