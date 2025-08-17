@@ -1,4 +1,5 @@
-using Exiled.Events.EventArgs.Player;
+using PluginAPI.Events;
+using PluginAPI.Events.Arguments;
 
 namespace Sunrise.Features.AntiWallhack;
 
@@ -9,12 +10,12 @@ internal class AntiWallhackModule : PluginModule
 
     protected override void OnEnabled()
     {
-        Handlers.Player.Landing += OnPlayerLanding;
+        EventManager.RegisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnDisabled()
     {
-        Handlers.Player.Landing -= OnPlayerLanding;
+        EventManager.UnregisterEvents<PlayerEvents>(this);
     }
 
     protected override void OnReset()
@@ -22,7 +23,8 @@ internal class AntiWallhackModule : PluginModule
         LandingTimes.Clear();
     }
 
-    static void OnPlayerLanding(LandingEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerLanding)]
+    void OnPlayerLanding(PlayerLandingEventArgs ev)
     {
         if (ev.Player is not null)
         {

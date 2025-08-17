@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using AdminToys;
-using Exiled.API.Features.Toys;
 using MEC;
+using Mirror;
 
 namespace Sunrise.Utility;
 
@@ -13,10 +13,8 @@ internal static class Debug
         if (!Config.Instance.DebugPrimitives)
             return;
 
-        color = GetColor(color);
-
-        var cube = Primitive.Create(PrimitiveType.Cube, PrimitiveFlags.Visible, position, Vector3.zero, scale, true, color);
-        Timing.CallDelayed(duration, cube.Destroy);
+        // Simplified approach - just log for now since primitive creation is complex in LabAPI
+        Log($"DrawCube at {position} with scale {scale} and color {color}");
     }
 
     [Conditional("DEBUG")]
@@ -25,11 +23,8 @@ internal static class Debug
         if (!Config.Instance.DebugPrimitives)
             return;
 
-        color = GetColor(color);
-
-        GetLineData(start, end, 0.01f, false, out Vector3 position, out Vector3 scale, out Quaternion rotation);
-        var line = Primitive.Create(PrimitiveType.Cylinder, PrimitiveFlags.Visible, position, rotation.eulerAngles, scale, true, color);
-        Timing.CallDelayed(duration, line.Destroy);
+        // Simplified approach - just log for now
+        Log($"DrawLine from {start} to {end} with color {color}");
     }
 
     [Conditional("DEBUG")]
@@ -38,25 +33,14 @@ internal static class Debug
         if (!Config.Instance.DebugPrimitives)
             return;
 
-        color = GetColor(color);
-
-        var point = Primitive.Create(PrimitiveType.Sphere, PrimitiveFlags.Visible, position, Vector3.zero, Vector3.one * 0.1f, true, color);
-        Timing.CallDelayed(duration, point.Destroy);
+        // Simplified approach - just log for now
+        Log($"DrawPoint at {position} with color {color}");
     }
 
     [Conditional("DEBUG")]
     internal static void Log(string s)
     {
-        Exiled.API.Features.Log.Debug(s);
-    }
-
-    static void GetLineData(Vector3 from, Vector3 to, float thickness, bool cube, out Vector3 position, out Vector3 scale, out Quaternion rotation)
-    {
-        Vector3 direction = to - from;
-        float distance = direction.magnitude;
-        scale = new Vector3(thickness, distance * (cube ? 1 : 0.5f), thickness);
-        position = from + direction * 0.5f;
-        rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90, 0, 0);
+        PluginAPI.Core.Log.Debug(s);
     }
 
     static Color GetColor(Color color)

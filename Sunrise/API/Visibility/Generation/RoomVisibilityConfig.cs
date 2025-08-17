@@ -1,33 +1,32 @@
-using Exiled.API.Enums;
+using MapGeneration;
 
 namespace Sunrise.API.Visibility.Generation;
 
 internal static class RoomVisibilityConfig
 {
-    public static readonly Dictionary<RoomType, Vector3Int[]> KnownDirectionsRooms = new()
+    public static readonly Dictionary<RoomName, Vector3Int[]> KnownDirectionsRooms = new()
     {
-        [RoomType.HczCornerDeep] = [Vector3Int.back, Vector3Int.right],
-        [RoomType.HczNuke] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-        [RoomType.HczCrossRoomWater] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right],
-        [RoomType.HczArmory] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-        [RoomType.HczIntersectionJunk] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomName.HczCurve] = [Vector3Int.back, Vector3Int.right],
+        [RoomName.HczNuke] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomName.HczCrossing] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right],
+        [RoomName.HczArmory] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
 
-        [RoomType.Hcz079] = [Vector3Int.left],
-        [RoomType.HczIntersection] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
-        [RoomType.HczHid] = [Vector3Int.left, Vector3Int.right],
-        [RoomType.Hcz939] = [Vector3Int.right, Vector3Int.back],
+        [RoomName.Hcz079] = [Vector3Int.left],
+        [RoomName.HczTCross] = [Vector3Int.forward, Vector3Int.back, Vector3Int.left],
+        [RoomName.HczHid] = [Vector3Int.left, Vector3Int.right],
+        [RoomName.Hcz939] = [Vector3Int.right, Vector3Int.back],
 
-        [RoomType.EzSmallrooms] = [Vector3Int.forward, Vector3Int.back],
-        [RoomType.EzIntercom] = [Vector3Int.left, Vector3Int.back],
+        [RoomName.EzStraight] = [Vector3Int.forward, Vector3Int.back],
+        [RoomName.EzIntercom] = [Vector3Int.left, Vector3Int.back],
     };
 
-    public static readonly HashSet<RoomType> DiagonalVisibilityRooms =
+    public static readonly HashSet<RoomName> DiagonalVisibilityRooms =
     [
-        RoomType.HczCornerDeep,
-        RoomType.HczNuke,
-        RoomType.HczCrossRoomWater,
-        RoomType.HczArmory,
-        RoomType.HczIntersectionJunk,
+        RoomName.HczCurve,
+        RoomName.HczNuke,
+        RoomName.HczCrossing,
+        RoomName.HczArmory,
+        RoomName.HczTCross,
     ];
 
     public static readonly Vector3Int[] DefaultDirections =

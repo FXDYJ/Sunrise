@@ -1,3 +1,5 @@
+using PluginAPI.Events;
+
 namespace Sunrise.API.Backtracking;
 
 /// <summary>
@@ -9,12 +11,18 @@ internal class BacktrackingModule : PluginModule
 {
     protected override void OnEnabled()
     {
-        Handlers.Server.ReloadedConfigs += OnReset;
+        EventManager.RegisterEvents<ServerEvents>(this);
     }
 
     protected override void OnDisabled()
     {
-        Handlers.Server.ReloadedConfigs -= OnReset;
+        EventManager.UnregisterEvents<ServerEvents>(this);
+    }
+
+    [PluginEvent(PluginAPI.Enums.ServerEventType.ReloadedConfigs)]
+    void OnConfigReloaded()
+    {
+        OnReset();
     }
 
     protected override void OnReset()
