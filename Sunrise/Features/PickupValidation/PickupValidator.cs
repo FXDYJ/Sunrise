@@ -1,12 +1,9 @@
 using System;
 using AdminToys;
-using Exiled.API.Extensions;
-using Exiled.API.Features.Pickups;
-using Exiled.API.Features.Roles;
-using Exiled.Events.EventArgs.Player;
+using PluginAPI.Core;
+using PluginAPI.Events.Arguments;
 using Interactables.Interobjects.DoorUtils;
 using InventorySystem.Items.Pickups;
-using JetBrains.Annotations;
 using MapGeneration.Distributors;
 
 namespace Sunrise.Features.PickupValidation;
@@ -14,42 +11,46 @@ namespace Sunrise.Features.PickupValidation;
 internal static class PickupValidator
 {
     internal static readonly Dictionary<Player, float> TemporaryPlayerBypass = new();
-    internal static readonly Dictionary<LockerChamber, float> LockerLastInteraction = new();
-    internal static readonly Dictionary<DoorVariant, float> DoorLastInteraction = new();
+    internal static readonly Dictionary<object, float> LockerLastInteraction = new(); // Changed to object for LabAPI compatibility
+    internal static readonly Dictionary<object, float> DoorLastInteraction = new(); // Changed to object for LabAPI compatibility
 
     static readonly RaycastHit[] HitBuffer = new RaycastHit[32];
 
-    [UsedImplicitly] public static bool AlwaysBlock { get; set; }
+    public static bool AlwaysBlock { get; set; }
 
-    internal static void OnPickingUpItem(PickingUpItemEventArgs ev)
+    internal static void OnPickingUpItem(PlayerPickupItemEventArgs ev)
     {
-        if (!Config.Instance.PickupValidation || !ev.Pickup.Base || ev.Player.Role is FpcRole { IsNoclipEnabled: true })
+        if (!Config.Instance.PickupValidation || ev.Item == null || ev.Player.IsNoclipEnabled)
             return;
 
         if (TemporaryPlayerBypass.TryGetValue(ev.Player, out float time) && time > Time.time)
             return;
 
-        if (ev.Pickup is BodyArmorPickup)
+        // Skip armor pickups
+        if (ev.Item.ItemTypeId == ItemType.ArmorLight || ev.Item.ItemTypeId == ItemType.ArmorCombat || ev.Item.ItemTypeId == ItemType.ArmorHeavy)
             return;
 
-        if (AlwaysBlock || !CanPickUp(ev.Player, ev.Pickup))
+        if (AlwaysBlock || !CanPickUp(ev.Player, ev.Item))
         {
-            ev.IsAllowed = false;
+            ev.CanPickup = false;
+            if (Config.Instance.Debug)
+                Log.Debug($"Pickup blocked for player {ev.Player.Nickname}: {ev.Item.ItemTypeId}");
         }
     }
 
-    static bool CanPickUp(Player player, Pickup pickup)
+    static bool CanPickUp(Player player, ItemPickupBase item)
     {
-        float bypassTime = pickup.PickupTimeForPlayer(player) + 1f;
+        Vector3 itemPosition = item.transform.position;
+        float bypassTime = 1f; // Simplified bypass time calculation
 
-        if (!IsObstructed(player.CameraTransform.position, pickup.Position, out _, bypassTime))
+        if (!IsObstructed(player.Camera.position, itemPosition, out _, bypassTime))
             return true;
 
-        Bounds bounds = pickup.Base.GetComponentInChildren<Renderer>().bounds;
-        Vector3 eyePos = player.CameraTransform.position;
-        Vector3 direction = player.CameraTransform.forward;
+        Bounds bounds = item.GetComponentInChildren<Renderer>()?.bounds ?? new Bounds(itemPosition, Vector3.one);
+        Vector3 eyePos = player.Camera.position;
+        Vector3 direction = player.Camera.forward;
 
-        if (CanPickUpDirect(eyePos, direction, pickup))
+        if (CanPickUpDirect(eyePos, direction, item))
             return true;
 
         bool result = CanPickupBounds(eyePos, bounds, bypassTime);
@@ -79,17 +80,18 @@ internal static class PickupValidator
         return result;
     }
 
-    static bool CanPickUpDirect(Vector3 eyePos, Vector3 direction, Pickup pickup)
+    static bool CanPickUpDirect(Vector3 eyePos, Vector3 direction, ItemPickupBase item)
     {
         var ray = new Ray(eyePos, direction);
 
-        if (!Physics.Raycast(ray, out RaycastHit pickupHit, 3, (int)(Mask.HitregObstacles | Mask.Pickups)))
+        int layerMask = LayerMask.GetMask("Default", "Pickup"); // Simplified layer mask
+        if (!Physics.Raycast(ray, out RaycastHit pickupHit, 3, layerMask))
             return false;
 
-        if (pickupHit.collider.gameObject.layer != (int)Layer.Pickups)
+        if (pickupHit.collider.gameObject.layer != LayerMask.NameToLayer("Pickup"))
             return false;
 
-        if (pickupHit.collider.GetComponentInParent<ItemPickupBase>() != pickup.Base)
+        if (pickupHit.collider.GetComponentInParent<ItemPickupBase>() != item)
             return false;
 
         Debug.DrawLine(ray.origin, pickupHit.point, Colors.Blue * 50, 15);
@@ -118,7 +120,8 @@ internal static class PickupValidator
         var upRay = new Ray(eyePos, Vector3.up);
         var jumpHeight = 0.75f;
 
-        if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, (int)Mask.PlayerObstacles))
+        int layerMask = LayerMask.GetMask("Default", "Player"); // Simplified layer mask
+        if (Physics.Raycast(upRay, out RaycastHit hit, jumpHeight, layerMask))
             jumpHeight = hit.distance - 0.05f;
 
         return upRay.GetPoint(jumpHeight);
@@ -142,10 +145,11 @@ internal static class PickupValidator
         yield return center + new Vector3(-extents.x, -extents.y, -extents.z);
     }
 
-    static bool IsObstructed(Vector3 a, Vector3 b, out RaycastHit hit, float bypassTime) //todo test
+    static bool IsObstructed(Vector3 a, Vector3 b, out RaycastHit hit, float bypassTime)
     {
         var ray = new Ray(a, b - a);
-        int count = Physics.RaycastNonAlloc(ray, HitBuffer, Vector3.Distance(a, b), (int)Mask.HitregObstacles);
+        int layerMask = LayerMask.GetMask("Default", "Door", "Glass"); // Simplified layer mask
+        int count = Physics.RaycastNonAlloc(ray, HitBuffer, Vector3.Distance(a, b), layerMask);
 
         // Sort hits by distance
         Array.Sort(HitBuffer, 0, count, RaycastHitComparer.Instance);
@@ -154,21 +158,34 @@ internal static class PickupValidator
         {
             hit = HitBuffer[i];
 
-            // Pass through ignored colliders
-            switch ((Layer)hit.collider.gameObject.layer)
+            // Pass through recently interacted doors and lockers
+            string layerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
+            
+            if (layerName == "Door")
             {
-                // Moving doors 
-                case Layer.Doors when hit.collider.gameObject.GetComponentInParent<DoorVariant>() is DoorVariant door && DoorLastInteraction.TryGetValue(door, out float time) && time + bypassTime > Time.time:
-
-                // Moving SCP pedestal doors
-                case Layer.Glass when hit.collider.GetComponentInParent<LockerChamber>() is LockerChamber locker && LockerLastInteraction.TryGetValue(locker, out time) && time + bypassTime > Time.time:
-
-                // Primitives with collision disabled
-                case Layer.DefaultColliders when hit.collider.GetComponentInParent<PrimitiveObjectToy>() is PrimitiveObjectToy toy && !toy.NetworkPrimitiveFlags.HasFlagFast(PrimitiveFlags.Collidable):
+                var door = hit.collider.gameObject.GetComponentInParent<DoorVariant>();
+                if (door != null && DoorLastInteraction.TryGetValue(door, out float time) && time + bypassTime > Time.time)
                 {
                     Debug.DrawPoint(hit.point, Colors.Green * 50, 10f);
                     continue;
                 }
+            }
+            else if (layerName == "Glass")
+            {
+                var locker = hit.collider.GetComponentInParent<LockerChamber>();
+                if (locker != null && LockerLastInteraction.TryGetValue(locker, out float time) && time + bypassTime > Time.time)
+                {
+                    Debug.DrawPoint(hit.point, Colors.Green * 50, 10f);
+                    continue;
+                }
+            }
+
+            // Check for primitives with collision disabled
+            var toy = hit.collider.GetComponentInParent<PrimitiveObjectToy>();
+            if (toy != null && !toy.NetworkPrimitiveFlags.HasFlag(PrimitiveFlags.Collidable))
+            {
+                Debug.DrawPoint(hit.point, Colors.Green * 50, 10f);
+                continue;
             }
 
             // Obstruction found

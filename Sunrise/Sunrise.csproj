@@ -38,23 +38,16 @@
     </PropertyGroup>
     <PropertyGroup>
         <PostBuildEvent>
-            copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).dll" "$(AppData)\EXILED\Plugins\$(AssemblyName).dll"
-            copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).pdb" "$(AppData)\EXILED\Plugins\$(AssemblyName).pdb"
+            copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).dll" "$(AppData)\SCP Secret Laboratory\PluginAPI\plugins\global\$(AssemblyName).dll"
+            copy /y "$(SolutionDir)$(AssemblyName)\$(OutputPath)$(AssemblyName).pdb" "$(AppData)\SCP Secret Laboratory\PluginAPI\plugins\global\$(AssemblyName).pdb"
         </PostBuildEvent>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="Exiled.CreditTags">
-            <HintPath>..\_ProjectDependencies\Exiled.CreditTags.dll</HintPath>
-        </Reference>
         <Reference Include="LabApi">
           <HintPath>..\_ProjectDependencies\LabApi.dll</HintPath>
         </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
-        <Reference Include="Exiled.API" HintPath="..\_ProjectDependencies\Exiled.API.dll"/>
-        <Reference Include="Exiled.Events" HintPath="..\_ProjectDependencies\Exiled.Events.dll"/>
-        <Reference Include="Exiled.Loader" HintPath="..\_ProjectDependencies\Exiled.Loader.dll"/>
-        <Reference Include="Exiled.Permissions" HintPath="..\_ProjectDependencies\Exiled.Permissions.dll"/>
         <Reference Include="mscorlib" HintPath="..\_ProjectDependencies\mscorlib.dll"/>
         <Reference Include="Assembly-CSharp" HintPath="..\_ProjectDependencies\Assembly-CSharp-Publicized.dll"/>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="..\_ProjectDependencies\Assembly-CSharp-firstpass.dll"/>
@@ -135,35 +128,8 @@
         <Content Include="..\_ProjectDependencies\Assembly-CSharp-Publicized.dll">
             <Link>_ProjectDependencies\Assembly-CSharp-Publicized.dll</Link>
         </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.API.dll">
-            <Link>_ProjectDependencies\Exiled.API.dll</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.API.xml">
-            <Link>_ProjectDependencies\Exiled.API.xml</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.CreditTags.dll">
-            <Link>_ProjectDependencies\Exiled.CreditTags.dll</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.CreditTags.xml">
-            <Link>_ProjectDependencies\Exiled.CreditTags.xml</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.Events.dll">
-            <Link>_ProjectDependencies\Exiled.Events.dll</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.Events.xml">
-            <Link>_ProjectDependencies\Exiled.Events.xml</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.Loader.dll">
-            <Link>_ProjectDependencies\Exiled.Loader.dll</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.Loader.xml">
-            <Link>_ProjectDependencies\Exiled.Loader.xml</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.Permissions.dll">
-            <Link>_ProjectDependencies\Exiled.Permissions.dll</Link>
-        </Content>
-        <Content Include="..\_ProjectDependencies\Exiled.Permissions.xml">
-            <Link>_ProjectDependencies\Exiled.Permissions.xml</Link>
+        <Content Include="..\_ProjectDependencies\LabApi.dll">
+            <Link>_ProjectDependencies\LabApi.dll</Link>
         </Content>
         <Content Include="..\_ProjectDependencies\Mirror-Publicized.dll">
             <Link>_ProjectDependencies\Mirror-Publicized.dll</Link>

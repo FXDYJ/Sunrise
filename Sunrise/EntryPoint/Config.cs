@@ -1,11 +1,8 @@
 using System.ComponentModel;
-using Exiled.API.Interfaces;
-using JetBrains.Annotations;
 
 namespace Sunrise.EntryPoint;
 
-[UsedImplicitly]
-public class Config : IConfig
+public class Config
 {
     public bool IsEnabled { get; set; } = true;
     public bool Debug { get; set; } = false;

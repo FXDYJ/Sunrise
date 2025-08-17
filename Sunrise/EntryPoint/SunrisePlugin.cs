@@ -1,33 +1,38 @@
 ﻿using System;
-using Exiled.API.Enums;
 using HarmonyLib;
-using JetBrains.Annotations;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Core.Interfaces;
+using PluginAPI.Enums;
 
 namespace Sunrise.EntryPoint;
 
-[UsedImplicitly]
-public class SunrisePlugin : Plugin<Config>
+public class SunrisePlugin : IPlugin<Config>
 {
-    public override string Name { get; } = "Sunrise";
-    public override string Author { get; } = "BanalnyBanan";
-    public override Version RequiredExiledVersion { get; } = new(9, 5, 1);
-    public override Version Version { get; } = new(1, 4, 4);
-    public override PluginPriority Priority { get; } = PluginPriority.Highest;
+    [PluginConfig]
+    public Config Config { get; set; } = new();
+
+    public string Name { get; } = "Sunrise";
+    public string Author { get; } = "BanalnyBanan";
+    public string Version { get; } = "1.4.4";
+    public string Description { get; } = "Anti-cheat plugin for SCP:SL servers";
+    public PluginPriority Priority { get; } = PluginPriority.Higher;
 
     public SunriseLoader Loader { get; } = new();
     public Harmony Harmony { get; } = new("Sunrise");
 
-    public override void OnEnabled()
+    [PluginEntryPoint("Sunrise", "1.4.4", "Anti-cheat plugin for SCP:SL servers", "BanalnyBanan")]
+    public void OnEnabled()
     {
         Loader.Enable();
         Harmony.PatchAll();
-        base.OnEnabled();
+        Log.Info("Sunrise plugin has been enabled!");
     }
 
-    public override void OnDisabled()
+    [PluginUnload]
+    public void OnDisabled()
     {
         Loader.Disable();
         Harmony.UnpatchAll();
-        base.OnDisabled();
+        Log.Info("Sunrise plugin has been disabled!");
     }
 }

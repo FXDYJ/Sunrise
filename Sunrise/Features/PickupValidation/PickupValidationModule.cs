@@ -1,5 +1,5 @@
-using Exiled.Events.EventArgs.Player;
-using Exiled.Events.EventArgs.Scp914;
+using PluginAPI.Events;
+using PluginAPI.Events.Arguments;
 
 namespace Sunrise.Features.PickupValidation;
 
@@ -7,20 +7,14 @@ internal class PickupValidationModule : PluginModule
 {
     protected override void OnEnabled()
     {
-        Handlers.Scp914.UpgradingInventoryItem += OnScp914UpgradingInventoryItem;
-        Handlers.Player.InteractingLocker += OnInteractingLocker;
-        Handlers.Player.InteractingDoor += OnInteractingDoor;
-
-        Handlers.Player.PickingUpItem += PickupValidator.OnPickingUpItem;
+        EventManager.RegisterEvents<PlayerEvents>(this);
+        EventManager.RegisterEvents<Scp914Events>(this);
     }
 
     protected override void OnDisabled()
     {
-        Handlers.Scp914.UpgradingInventoryItem -= OnScp914UpgradingInventoryItem;
-        Handlers.Player.InteractingLocker -= OnInteractingLocker;
-        Handlers.Player.InteractingDoor -= OnInteractingDoor;
-
-        Handlers.Player.PickingUpItem -= PickupValidator.OnPickingUpItem;
+        EventManager.UnregisterEvents<PlayerEvents>(this);
+        EventManager.UnregisterEvents<Scp914Events>(this);
     }
 
     protected override void OnReset()
@@ -30,20 +24,29 @@ internal class PickupValidationModule : PluginModule
         PickupValidator.DoorLastInteraction.Clear();
     }
 
-    static void OnScp914UpgradingInventoryItem(UpgradingInventoryItemEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.Scp914UpgradeInventory)]
+    void OnScp914UpgradingInventoryItem(Scp914UpgradeInventoryEventArgs ev)
     {
         PickupValidator.TemporaryPlayerBypass[ev.Player] = Time.time + 0.01f;
     }
 
-    static void OnInteractingLocker(InteractingLockerEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerInteractLocker)]
+    void OnInteractingLocker(PlayerInteractLockerEventArgs ev)
     {
-        if (ev.IsAllowed)
-            PickupValidator.LockerLastInteraction[ev.InteractingChamber.Base] = Time.time;
+        if (ev.CanInteract)
+            PickupValidator.LockerLastInteraction[ev.Locker] = Time.time;
     }
 
-    static void OnInteractingDoor(InteractingDoorEventArgs ev)
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerInteractingDoor)]
+    void OnInteractingDoor(PlayerInteractingDoorEventArgs ev)
     {
-        if (ev.IsAllowed)
-            PickupValidator.DoorLastInteraction[ev.Door.Base] = Time.time;
+        if (ev.CanInteract)
+            PickupValidator.DoorLastInteraction[ev.Door] = Time.time;
+    }
+
+    [PluginEvent(PluginAPI.Enums.ServerEventType.PlayerPickupItem)]
+    void OnPickingUpItem(PlayerPickupItemEventArgs ev)
+    {
+        PickupValidator.OnPickingUpItem(ev);
     }
 }
